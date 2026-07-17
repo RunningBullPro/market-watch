@@ -339,7 +339,8 @@ svg .pin:hover{stroke:var(--ink);stroke-width:2}
 <div class="footer">
   <span>Data: Home Builders Research — Weekly Traffic &amp; Sales Watch, week ending 07/12/2026</span>
   <span class="dotsep"></span><span>61 Henderson subdivisions</span>
-  <span class="dotsep"></span><span>v1 · saved in this browser · team sync via Supabase next</span>
+  <span class="dotsep"></span><span>saved in this browser · team sync via Supabase next</span>
+  <span class="dotsep"></span><span id="buildStamp" style="font-weight:600;color:var(--ink2)"></span>
 </div>
 
 <!-- detail panel -->
@@ -355,6 +356,9 @@ const SUBS = [{"id": "aria-crossing-2", "builder": "Beazer Homes", "sub": "Aria 
 const GROUPS = ["Cadence","Lake Las Vegas","Inspirada","Standalone"];
 const GROUP_COLOR = {"Cadence":"#2e6bd6","Lake Las Vegas":"#0f9b6c","Inspirada":"#e08a1e","Standalone":"#64748b"};
 const BUILDERS = [...new Set(SUBS.map(s=>s.builder))].sort();
+/* Bump these two on each deploy so you can confirm the live page updated */
+const BUILD = "1.0";
+const BUILD_DATE = "Jul 17, 2026";
 
 /* ============ STORAGE (localStorage w/ in-memory fallback) ============ */
 const NS="b2b_watch_v1";
@@ -795,6 +799,7 @@ $('#q').addEventListener('keydown',e=>{ if(e.key==='Enter'){ clearTimeout(qTimer
 
 /* ============ INIT ============ */
 buildRail(); syncControls(); refreshWho(); render();
+document.getElementById('buildStamp').textContent = 'Build '+BUILD+' · '+BUILD_DATE;
 if(!IDENTITY){ openIdModal(); }
 </script>
 </body>
