@@ -266,12 +266,26 @@ svg .pin:hover{stroke:var(--ink);stroke-width:2}
 .card .clienttoggle{width:100%;margin-top:12px;border:1px dashed var(--line);background:var(--surface2);border-radius:9px;padding:8px;font-weight:700;font-size:12px;color:var(--brand-d)}
 .card .clienttoggle.on{background:var(--brand-soft);border-style:solid;border-color:var(--brand)}
 .card .clienttoggle:hover{border-color:var(--brand)}
+/* client profile — large centered modal */
+.cmodal{position:fixed;inset:0;background:rgba(20,38,58,.55);z-index:95;display:none;padding:24px}
+.cmodal.on{display:grid;place-items:center}
+.cmodal-card{background:var(--surface);border-radius:16px;width:min(960px,96vw);max-height:90vh;display:flex;flex-direction:column;box-shadow:0 24px 70px rgba(0,0,0,.35);overflow:hidden}
+.cmodal-head{display:flex;align-items:flex-start;gap:12px;padding:18px 22px;border-bottom:1px solid var(--line)}
+.cmodal-title{font-family:'Fraunces';font-size:23px;font-weight:700;color:var(--ink);line-height:1.15}
+.cmodal-sub{font-size:12.5px;color:var(--muted);margin-top:3px}
+.cmodal-head .pclose{position:static;margin-left:auto;flex-shrink:0}
+.cmodal-body{padding:20px 22px;overflow:auto;display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.cmodal-col{min-width:0;display:flex;flex-direction:column;gap:20px}
+.cmodal-body h5{margin:0 0 9px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--ink2)}
+.cmodal-foot{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:14px 22px;border-top:1px solid var(--line);background:var(--surface2)}
+.reportmap{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#eef2f7}
+@media (max-width:820px){ .cmodal-body{grid-template-columns:1fr} }
 
 /* ---------- print report ---------- */
 #printReport{display:none}
 @media print{
   @page{margin:14mm}
-  .topbar,.chiprow,.rail,.tabs,.sortbar,.panel,.scrim,.modal,.footer,.storewarn,#results{display:none !important}
+  .topbar,.chiprow,.rail,.tabs,.sortbar,.panel,.scrim,.modal,.cmodal,.footer,.storewarn,#results{display:none !important}
   body{background:#fff;font-size:11px}
   .wrap{display:block;padding:0;max-width:none}
   #printReport{display:block}
@@ -292,6 +306,12 @@ svg .pin:hover{stroke:var(--ink);stroke-width:2}
   .creport-client .cc-nm{font-family:'Fraunces';font-size:20px;font-weight:700;color:#000}
   .creport-client .cc-ct{font-size:12px;color:#333}
   .creport-meta{font-size:10.5px;color:#333;margin:4px 0 14px;border-bottom:2px solid var(--ink);padding-bottom:10px;line-height:1.55}
+  .creport-map{margin:0 0 14px;page-break-inside:avoid}
+  .creport-map svg{width:100%;height:auto;border:1px solid #ccd;border-radius:8px;background:#eef2f7}
+  .creport-map .cm-cap{font-size:10px;color:#666;margin-top:4px}
+  .prep-item .pi-num{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:var(--ink);color:#fff;font-size:10px;font-weight:700;margin-right:6px;vertical-align:middle}
+  .creport-notes{border:1px solid #ccc;border-radius:8px;padding:10px 12px;margin-top:10px;page-break-inside:avoid}
+  .creport-notes .crnote{font-size:11px;color:#222;margin-top:4px}
   *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
 </style>
@@ -316,8 +336,8 @@ svg .pin:hover{stroke:var(--ink);stroke-width:2}
   </div>
   <div class="topbtns">
     <button class="tbtn" id="clientsBtn" title="Client profiles"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Clients</button>
-    <button class="tbtn" id="exportBtn" title="Download current results as CSV"><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>Export</button>
-    <button class="tbtn primary" id="printBtn"><svg viewBox="0 0 24 24"><path d="M6 9V3h12v6"/><path d="M6 18H4a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8" rx="1"/></svg>Print report</button>
+    <button class="tbtn" id="exportBtn" title="Download the current market view (all filtered subdivisions) as CSV"><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>Export CSV</button>
+    <button class="tbtn primary" id="printBtn" title="Print the current market view (choose “Save as PDF” in the dialog). For a client-specific report, open a client profile."><svg viewBox="0 0 24 24"><path d="M6 9V3h12v6"/><path d="M6 18H4a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8" rx="1"/></svg>Print / PDF</button>
     <div class="who" id="whoBtn"><span class="av" id="whoAv">?</span><span class="nm" id="whoNm">Sign in</span></div>
   </div>
 </div>
@@ -402,8 +422,8 @@ svg .pin:hover{stroke:var(--ink);stroke-width:2}
 <div class="scrim" id="scrim"></div>
 <div class="panel" id="panel"><div id="panelInner"></div></div>
 
-<!-- client profile panel -->
-<div class="panel" id="clientPanel"><div id="clientPanelInner"></div></div>
+<!-- client profile modal -->
+<div class="cmodal" id="clientModal"><div class="cmodal-card" id="clientPanelInner"></div></div>
 
 <!-- clients modal -->
 <div class="modal" id="clientsModal">
@@ -843,12 +863,12 @@ function buildPrintReport(){
 }
 $('#printBtn').onclick=()=>{ buildPrintReport(); setTimeout(()=>window.print(),60); };
 
-function prepItemHTML(s, captured){
+function prepItemHTML(s, captured, num){
   const r=RECORDS[s.id]||{};
   const inc=(r.incentives||[]);
   const c=r.contact||{}; const contact=[c.name,c.phone,c.email].filter(Boolean).join(' · ');
   return `<div class="prep-item">
-    <div class="pi-top"><span>${esc(s.sub)} — ${esc(s.builder)}</span><span>${money(s.lo)} – ${money(s.hi)}</span></div>
+    <div class="pi-top"><span>${num?`<span class="pi-num">${num}</span>`:''}${esc(s.sub)} — ${esc(s.builder)}</span><span>${money(s.lo)} – ${money(s.hi)}</span></div>
     ${captured?`<div class="pi-grid"><span style="color:#888">Saved to profile ${captured}</span></div>`:''}
     <div class="pi-grid">
       <span>${s.type==='Attached'?'Townhome':'Detached'}</span>
@@ -907,7 +927,7 @@ function toggleClientCommunity(cid,sid){
     c.communities.push({id:sid, snap:{...s}, addedAt:nowStr(), addedBy:IDENTITY?IDENTITY.name:'Unknown'}); }
   c.updatedBy=IDENTITY?IDENTITY.name:'Unknown'; c.updatedAt=nowStr();
   saveClients(); refreshClientBar(); render();
-  if(openClientId===cid && $('#clientPanel').classList.contains('on')) refreshClientPanelDynamic(cid);
+  if(openClientId===cid && $('#clientModal').classList.contains('on')) refreshClientPanelDynamic(cid);
 }
 function refreshClientBar(){
   const el=$('#clientBar'); if(!el)return;
@@ -955,48 +975,61 @@ function commItemHTML(e){
     </div>
     <button class="c-x" data-comm-x="${e.id}" title="Remove">×</button></div>`;
 }
-function openClientPanel(id){ openClientId=id; renderClientPanel(id); $('#clientPanel').classList.add('on'); $('#scrim').classList.add('on'); }
-function closeClientPanel(){ $('#clientPanel').classList.remove('on'); openClientId=null; if(!$('#panel').classList.contains('on')) $('#scrim').classList.remove('on'); }
+function openClientPanel(id){ openClientId=id; renderClientPanel(id); $('#clientModal').classList.add('on'); }
+function closeClientPanel(){ $('#clientModal').classList.remove('on'); openClientId=null; }
+$('#clientModal').addEventListener('click', e=>{ if(e.target.id==='clientModal') closeClientPanel(); });
 function renderClientPanel(cid){
   const c=clientOf(cid); if(!c){ closeClientPanel(); return; }
-  const n=(c.communities||[]).length;
   const entries=c.communities||[];
-  const commHTML = entries.length ? entries.map(commItemHTML).join('') : `<div style="color:var(--muted);font-size:13px">No communities yet. Add from the list below, or tap “Add to profile” on any community while browsing.</div>`;
+  const n=entries.length;
+  const commHTML = entries.length ? entries.map(commItemHTML).join('') : `<div style="color:var(--muted);font-size:13px">No communities yet. Add from the list on the right, or use “Add to profile” on any community while browsing the market.</div>`;
   const pickHTML = SUBS.slice().sort((a,b)=>a.sub.localeCompare(b.sub)).map(s=>{
     const on=clientHas(c,s.id);
     return `<label class="pickrow" data-pick="${s.id}"><input type="checkbox" ${on?'checked':''}><span class="dotcol" style="background:${GROUP_COLOR[s.group]}"></span><span>${esc(s.sub)}</span><span class="pk-sub">${esc(s.builder)}</span></label>`;
   }).join('');
   $('#clientPanelInner').innerHTML=`
-   <div class="phead" style="border-top:5px solid var(--brand)">
+   <div class="cmodal-head">
+     <div><div class="cmodal-title">${esc(c.name)}</div>
+       <div class="cmodal-sub">Client profile · <span id="cmCount">${n} communit${n===1?'y':'ies'}</span> · created by ${esc(c.createdBy||'—')} · ${c.createdAt||'—'}${c.updatedAt?(' · updated '+c.updatedAt):''}</div></div>
      <button class="pclose" id="clpclose">×</button>
-     <div class="pname">${esc(c.name)}</div>
-     <div class="pbuilder">Client profile · ${n} communit${n===1?'y':'ies'}</div>
    </div>
-   <div class="pbody">
-     <div class="sect">
-       <div class="field"><label>Client name</label><input id="clName" value="${(c.name||'').replace(/"/g,'&quot;')}"></div>
-       <div class="field"><label>Phone</label><input id="clPhone" value="${(c.phone||'').replace(/"/g,'&quot;')}"></div>
-       <div class="field"><label>Email</label><input id="clEmail" value="${(c.email||'').replace(/"/g,'&quot;')}"></div>
-       <div style="display:flex;align-items:center;gap:12px"><button class="savebtn" id="clSave">Save details</button><span class="savedhint" id="clHint">Saved ✓</span></div>
+   <div class="cmodal-body">
+     <div class="cmodal-col">
+       <section>
+         <h5>Client details</h5>
+         <div class="field"><label>Client name</label><input id="clName" value="${(c.name||'').replace(/"/g,'&quot;')}"></div>
+         <div class="field"><label>Phone</label><input id="clPhone" value="${(c.phone||'').replace(/"/g,'&quot;')}"></div>
+         <div class="field"><label>Email</label><input id="clEmail" value="${(c.email||'').replace(/"/g,'&quot;')}"></div>
+         <div style="display:flex;align-items:center;gap:12px"><button class="savebtn" id="clSave">Save details</button><span class="savedhint" id="clHint">Saved ✓</span></div>
+       </section>
+       <section>
+         <h5>Client notes</h5>
+         <div class="itemlist" id="clNoteList">${clientNoteItems(c)}</div>
+         <div class="addrow"><textarea id="clNoteInput" rows="2" placeholder="Notes specific to this client — preferences, budget, timeline…"></textarea><button class="addbtn" id="clNoteAdd">Add</button></div>
+       </section>
      </div>
-     <div class="sect">
-       <h5>Communities in this profile</h5>
-       <div id="commList">${commHTML}</div>
-     </div>
-     <div class="sect">
-       <h5>Add communities</h5>
-       <input id="pickFilter" placeholder="Search communities or builders…" style="width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:9px;background:var(--surface2)">
-       <div class="pickscroll" id="pickScroll">${pickHTML}</div>
-     </div>
-     <div class="sect">
-       <button class="savebtn" id="clReport" style="width:100%;background:var(--ink)">Generate report (print / PDF)</button>
-       <div class="rowbtns">
-         <button class="ghostbtn" id="clActive">${activeClientId===cid?'✓ Active for selecting':'Set active for selecting'}</button>
-         <button class="ghostbtn" id="clDelete" style="color:var(--danger);margin-left:auto">Delete profile</button>
-       </div>
+     <div class="cmodal-col">
+       <section>
+         <h5>Communities in this profile</h5>
+         <div id="commList">${commHTML}</div>
+       </section>
+       <section>
+         <h5>Add communities</h5>
+         <input id="pickFilter" placeholder="Search communities or builders…" style="width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:9px;background:var(--surface2)">
+         <div class="pickscroll" id="pickScroll">${pickHTML}</div>
+       </section>
+       <section>
+         <h5>Report map preview</h5>
+         <div class="reportmap" id="cmMap">${reportMapSVG(entries)||'<div style="padding:14px;color:var(--muted);font-size:12.5px">Add communities to see them mapped.</div>'}</div>
+       </section>
      </div>
    </div>
-   <div class="pfoot"><span>Created by ${esc(c.createdBy||'—')} · ${c.createdAt||'—'}</span><span>${c.updatedAt?('Updated '+c.updatedAt):''}</span></div>`;
+   <div class="cmodal-foot">
+     <button class="savebtn" id="clReport" style="background:var(--ink)">Print / Save PDF report</button>
+     <button class="ghostbtn" id="clCSV">Export CSV</button>
+     <button class="ghostbtn" id="clActive">${activeClientId===cid?'✓ Active for selecting':'Set active for selecting'}</button>
+     <button class="ghostbtn" id="clDelete" style="color:var(--danger);margin-left:auto">Delete profile</button>
+   </div>`;
   wireClientPanel(cid);
 }
 function refreshClientPanelDynamic(cid){
@@ -1004,12 +1037,13 @@ function refreshClientPanelDynamic(cid){
   const entries=c.communities||[];
   const cl=$('#commList');
   if(cl){
-    cl.innerHTML = entries.length ? entries.map(commItemHTML).join('') : `<div style="color:var(--muted);font-size:13px">No communities yet. Add from the list below, or tap “Add to profile” on any community while browsing.</div>`;
+    cl.innerHTML = entries.length ? entries.map(commItemHTML).join('') : `<div style="color:var(--muted);font-size:13px">No communities yet. Add from the list on the right, or use “Add to profile” on any community while browsing the market.</div>`;
     $$('#commList [data-comm-x]').forEach(b=> b.onclick=()=>toggleClientCommunity(cid,b.getAttribute('data-comm-x')));
     $$('#commList [data-comm-sync]').forEach(b=> b.onclick=()=>syncCommunity(cid,b.getAttribute('data-comm-sync')));
   }
   $$('#pickScroll .pickrow').forEach(l=>{ const cb=l.querySelector('input'); if(cb) cb.checked=clientHas(c,l.getAttribute('data-pick')); });
-  const pb=$('#clientPanelInner .pbuilder'); if(pb){ const n=(c.communities||[]).length; pb.textContent='Client profile · '+n+' communit'+(n===1?'y':'ies'); }
+  const cnt=$('#cmCount'); if(cnt) cnt.textContent=entries.length+' communit'+(entries.length===1?'y':'ies');
+  const mp=$('#cmMap'); if(mp) mp.innerHTML=reportMapSVG(entries)||'<div style="padding:14px;color:var(--muted);font-size:12.5px">Add communities to see them mapped.</div>';
 }
 function wireClientPanel(cid){
   const c=clientOf(cid); if(!c)return;
@@ -1020,22 +1054,66 @@ function wireClientPanel(cid){
     const h=$('#clHint'); h.classList.add('on'); setTimeout(()=>h.classList.remove('on'),1500);
     refreshClientBar(); renderClientPanel(cid);
   };
+  const addNote=()=>{ const v=$('#clNoteInput').value.trim(); if(!v)return; c.notes=c.notes||[]; c.notes.unshift({id:uid(),text:v,by:IDENTITY?IDENTITY.name:'Unknown',at:nowStr()}); c.updatedBy=IDENTITY?IDENTITY.name:'Unknown'; c.updatedAt=nowStr(); saveClients(); $('#clNoteInput').value=''; $('#clNoteList').innerHTML=clientNoteItems(c); wireClientNotes(cid); };
+  $('#clNoteAdd').onclick=addNote;
+  wireClientNotes(cid);
   $$('#commList [data-comm-x]').forEach(b=> b.onclick=()=>toggleClientCommunity(cid,b.getAttribute('data-comm-x')));
   $$('#commList [data-comm-sync]').forEach(b=> b.onclick=()=>syncCommunity(cid,b.getAttribute('data-comm-sync')));
   $$('#pickScroll [data-pick]').forEach(l=> l.onclick=e=>{ e.preventDefault(); toggleClientCommunity(cid,l.getAttribute('data-pick')); });
   $('#pickFilter').oninput=e=>{ const q=e.target.value.toLowerCase(); $$('#pickScroll .pickrow').forEach(row=>{ row.style.display=row.textContent.toLowerCase().includes(q)?'':'none'; }); };
   $('#clReport').onclick=()=>buildClientReport(cid);
+  $('#clCSV').onclick=()=>exportClientCSV(cid);
   $('#clActive').onclick=()=>{ setActiveClient(activeClientId===cid?null:cid); renderClientPanel(cid); };
   $('#clDelete').onclick=()=>{ if(!confirm('Delete this client profile? This cannot be undone.'))return; CLIENTS=CLIENTS.filter(x=>x.id!==cid); if(activeClientId===cid){activeClientId=null;sset('activeClient',null);} saveClients(); closeClientPanel(); refreshClientBar(); render(); };
 }
-function closeOverlays(){ $('#panel').classList.remove('on'); $('#clientPanel').classList.remove('on'); $('#scrim').classList.remove('on'); openId=null; openClientId=null; }
+function wireClientNotes(cid){ const c=clientOf(cid); if(!c)return;
+  $$('#clNoteList [data-delcnote]').forEach(b=> b.onclick=()=>{ c.notes=(c.notes||[]).filter(x=>x.id!==b.getAttribute('data-delcnote')); c.updatedBy=IDENTITY?IDENTITY.name:'Unknown'; c.updatedAt=nowStr(); saveClients(); $('#clNoteList').innerHTML=clientNoteItems(c); wireClientNotes(cid); });
+}
+function clientNoteItems(c){
+  return (c.notes||[]).map(it=>`<div class="item"><button class="del" data-delcnote="${it.id}">×</button><div class="txt">${esc(it.text)}</div><div class="by">${esc(it.by)} · ${it.at}</div></div>`).join('') || `<div style="color:var(--muted);font-size:13px">No client notes yet.</div>`;
+}
+function reportMapSVG(entries){
+  const pts=(entries||[]).map((e,i)=>({e,i,lat:e.snap&&e.snap.lat,lng:e.snap&&e.snap.lng})).filter(p=>typeof p.lat==='number'&&typeof p.lng==='number');
+  if(!pts.length) return '';
+  let minLat=Math.min(...pts.map(p=>p.lat)), maxLat=Math.max(...pts.map(p=>p.lat));
+  let minLng=Math.min(...pts.map(p=>p.lng)), maxLng=Math.max(...pts.map(p=>p.lng));
+  const cLat=(minLat+maxLat)/2, cLng=(minLng+maxLng)/2;
+  const spanLat=Math.max(maxLat-minLat,0.02)*1.35, spanLng=Math.max(maxLng-minLng,0.02)*1.35;
+  minLat=cLat-spanLat/2; maxLat=cLat+spanLat/2; minLng=cLng-spanLng/2; maxLng=cLng+spanLng/2;
+  const W=760,H=360,pad=26;
+  const px=lng=> pad+(lng-minLng)/(maxLng-minLng)*(W-2*pad);
+  const py=lat=> pad+(maxLat-lat)/(maxLat-minLat)*(H-2*pad);
+  const ctx=SUBS.filter(s=>s.lat>=minLat&&s.lat<=maxLat&&s.lng>=minLng&&s.lng<=maxLng)
+    .map(s=>`<circle cx="${px(s.lng).toFixed(1)}" cy="${py(s.lat).toFixed(1)}" r="2.5" fill="#c7d0da"/>`).join('');
+  const pins=pts.map(p=>{const x=px(p.lng),y=py(p.lat),col=GROUP_COLOR[p.e.snap.group]||'#64748b';
+    return `<g><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="11" fill="${col}" stroke="#fff" stroke-width="2"/><text x="${x.toFixed(1)}" y="${(y+4).toFixed(1)}" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">${p.i+1}</text></g>`;}).join('');
+  return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" style="display:block;width:100%;height:auto;background:#eef2f7">${ctx}${pins}</svg>`;
+}
+function exportClientCSV(cid){
+  const c=clientOf(cid); if(!c)return;
+  const cols=['#','Subdivision','Builder','Type','Master Plan','Low Price','High Price','Min Sqft','Max Sqft','Standing','YTD Sold','Address','Saved (snapshot date)','Latest dataset status'];
+  const q=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"';
+  const lines=[cols.join(',')];
+  (c.communities||[]).forEach((e,i)=>{const s=e.snap||{};
+    const live=SUBS.find(x=>x.id===e.id); const status=!live?'removed from dataset':(snapDiffers(s)?'differs from latest':'current');
+    lines.push([i+1,s.sub,s.builder,s.type,s.group,s.lo,s.hi,s.minSqft,s.maxSqft,s.standing,s.ytd,s.address,e.addedAt,status].map(q).join(','));
+  });
+  const blob=new Blob([lines.join('\n')],{type:'text/csv'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  const safe=(c.name||'client').replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'').toLowerCase()||'client';
+  a.download='client-'+safe+'-'+new Date().toISOString().slice(0,10)+'.csv'; a.click();
+}
+function closeOverlays(){ $('#panel').classList.remove('on'); $('#clientModal').classList.remove('on'); $('#scrim').classList.remove('on'); openId=null; openClientId=null; }
 $('#scrim').onclick=closeOverlays;
 
 /* ---- client report ---- */
 function buildClientReport(cid){
   const c=clientOf(cid); if(!c)return;
   const entries=c.communities||[];
-  const items = entries.length ? entries.map(e=>prepItemHTML(e.snap||{id:e.id}, e.addedAt)).join('') : `<div style="color:#555;font-size:12px;padding:10px 0">No communities have been added to this profile yet.</div>`;
+  const items = entries.length ? entries.map((e,i)=>prepItemHTML(e.snap||{id:e.id}, e.addedAt, i+1)).join('') : `<div style="color:#555;font-size:12px;padding:10px 0">No communities have been added to this profile yet.</div>`;
+  const mapSVG = reportMapSVG(entries);
+  const mapBlock = mapSVG ? `<div class="creport-map">${mapSVG}<div class="cm-cap">Numbered pins correspond to the communities listed below · gray dots are other nearby subdivisions for context.</div></div>` : '';
+  const notesBlock = (c.notes&&c.notes.length) ? `<div class="creport-notes"><span class="pi-lbl">Client notes</span>${c.notes.map(nt=>`<div class="crnote">• ${esc(nt.text)} <span style="color:#888">— ${esc(nt.by)}, ${nt.at}</span></div>`).join('')}</div>` : '';
   const when=new Date().toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'});
   const contact=[c.phone,c.email].filter(Boolean).join(' · ');
   $('#printReport').innerHTML=`
@@ -1052,7 +1130,9 @@ function buildClientReport(cid){
       Profile created by ${esc(c.createdBy||'—')} · ${c.createdAt||'—'}<br>
       <span style="color:#666">Community details reflect the dataset captured when each was added to this profile.</span>
     </div>
-    ${items}`;
+    ${mapBlock}
+    ${items}
+    ${notesBlock}`;
   setTimeout(()=>window.print(),80);
 }
 
