@@ -110,7 +110,9 @@ a:hover{text-decoration:underline}
 .card:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(20,38,58,.14)}
 .card .stripe{height:5px}
 .card .body{padding:15px 16px 16px}
-.card .top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.card .top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.card .topleft{min-width:0}
+.card .topright{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0}
 .card .name{font-weight:700;font-size:15.5px;line-height:1.25;color:var(--ink)}
 .card .builder{font-size:12.5px;color:var(--muted);margin-top:2px}
 .badge{font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;white-space:nowrap}
@@ -125,7 +127,7 @@ a:hover{text-decoration:underline}
 .tag.inc{background:var(--good-soft);color:#0b7350}
 .tag.vis{background:#eef1f6;color:var(--ink2)}
 .tag.rate{background:#fff6e6;color:#9a6410}
-.card .gtag{position:absolute;top:12px;right:12px}
+.card .gtag{white-space:nowrap}
 
 /* table */
 .tablewrap{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:auto}
@@ -513,9 +515,8 @@ function cardHTML(s){
   return `<div class="card" data-open="${s.id}">
     <div class="stripe" style="background:${col}"></div>
     <div class="body">
-      <span class="tag mp gtag">${s.group}</span>
-      <div class="top"><div><div class="name">${s.sub}</div><div class="builder">${s.builder}</div></div>
-        <span class="badge ${s.type==='Attached'?'att':'det'}">${s.type==='Attached'?'Townhome':'Detached'}</span></div>
+      <div class="top"><div class="topleft"><div class="name">${s.sub}</div><div class="builder">${s.builder}</div></div>
+        <div class="topright"><span class="badge ${s.type==='Attached'?'att':'det'}">${s.type==='Attached'?'Townhome':'Detached'}</span><span class="tag mp gtag">${s.group}</span></div></div>
       <div class="price tnum">${money(s.lo)} <span style="color:var(--muted);font-weight:600;font-size:14px">– ${money(s.hi)}</span></div>
       <div class="meta">
         <span><b>${s.minSqft?s.minSqft.toLocaleString():'—'}–${s.maxSqft?s.maxSqft.toLocaleString():'—'}</b> sq ft</span>
