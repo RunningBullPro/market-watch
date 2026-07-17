@@ -37,9 +37,9 @@ a:hover{text-decoration:underline}
   position:sticky;top:0;z-index:40;background:var(--ink);color:#fff;
   display:flex;align-items:center;gap:16px;padding:12px 20px;flex-wrap:wrap;
 }
-.brand{display:flex;align-items:baseline;gap:10px;white-space:nowrap}
-.brand .mark{font-family:'Fraunces';font-weight:600;font-size:20px;letter-spacing:.01em;color:#fff}
-.brand .sub{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#9fb2c9;font-weight:600}
+.brand{display:flex;align-items:center;gap:12px;white-space:nowrap}
+.brand .logo{height:34px;width:auto;display:block}
+.brand .sub{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#9fb2c9;font-weight:600;padding-left:12px;border-left:1px solid rgba(255,255,255,.18)}
 .qwrap{flex:1;min-width:260px;position:relative;display:flex;align-items:center}
 .qwrap svg{position:absolute;left:14px;width:18px;height:18px;stroke:#8ea3bd;pointer-events:none}
 #q{
@@ -256,7 +256,7 @@ svg .pin:hover{stroke:var(--ink);stroke-width:2}
 </div>
 
 <div class="topbar">
-  <div class="brand"><span class="mark">Buyer2Builder</span><span class="sub">Market Watch</span></div>
+  <div class="brand"><img class="logo" src="Buyer%202%20Builder%20Logo_Wht.png" alt="Buyer2Builder.com — Your New Home Source" /><span class="sub">Market Watch</span></div>
   <div class="qwrap">
     <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>
     <input id="q" placeholder='Ask: "townhomes 350 to 400k"  ·  "detached under 500k in Cadence"  ·  "Lennar available"' autocomplete="off" />
