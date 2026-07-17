@@ -314,6 +314,10 @@ svg .pin:hover{stroke:var(--ink);stroke-width:2}
   .prep-item .pi-num{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:var(--ink);color:#fff;font-size:10px;font-weight:700;margin-right:6px;vertical-align:middle}
   .creport-notes{border:1px solid #ccc;border-radius:8px;padding:10px 12px;margin-top:10px;page-break-inside:avoid}
   .creport-notes .crnote{font-size:11px;color:#222;margin-top:4px}
+  .sr-stats{display:flex;flex-wrap:wrap;gap:9px 28px;margin:0 0 14px;padding-bottom:12px;border-bottom:1px solid #ddd}
+  .sr-stat{min-width:110px}
+  .sr-stat .sr-k{font-size:9px;text-transform:uppercase;letter-spacing:.05em;color:#666;font-weight:700}
+  .sr-stat .sr-v{font-size:13px;font-weight:700;color:#000;margin-top:1px}
   *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
 </style>
@@ -802,7 +806,7 @@ function openPanel(id){
        </section>
      </div>
    </div>
-   <div class="cmodal-foot"><span>${lastEdited(r)}</span><span style="margin-left:auto">${esc(s.geoNote||'')}</span></div>`;
+   <div class="cmodal-foot"><button class="savebtn" id="subReport" style="background:var(--ink)">Print / Save PDF report</button><span style="color:var(--muted);font-size:12px">${lastEdited(r)}</span><span style="margin-left:auto;color:var(--muted);font-size:12px">${esc(s.geoNote||'')}</span></div>`;
   $('#panelInner').innerHTML=inner;
   $('#subModal').classList.add('on');
   wirePanel(id);
@@ -817,6 +821,7 @@ function touch(r){ r.updatedBy=IDENTITY?IDENTITY.name:'Unknown'; r.updatedAt=now
 function wirePanel(id){
   const r=recOf(id);
   $('#pclose').onclick=closePanel;
+  const srb=$('#subReport'); if(srb) srb.onclick=async()=>{ const t=srb.textContent; srb.disabled=true; srb.textContent='Preparing report…'; try{ await buildSubReport(id); } finally { srb.disabled=false; srb.textContent=t; } };
   const pct=$('#pClientToggle'); if(pct) pct.onclick=()=>{ toggleClientCommunity(activeClientId,id); openPanel(id); };
   // stars
   $$('#stars button').forEach(b=> b.onclick=()=>{
@@ -1180,6 +1185,44 @@ function renderSubMap(s){
   staticOSMMap([{snap:s}],640,300,{numbered:false}).then(url=>{ const cur=$('#subMap'); if(!cur) return;
     if(url){ subMapCache[s.id]=url; cur.innerHTML=`<img src="${url}" style="display:block;width:100%">`; }
     else { cur.innerHTML='<div style="padding:22px;text-align:center;color:var(--muted);font-size:12.5px">Map unavailable.</div>'; } });
+}
+async function buildSubReport(id){
+  const s=SUBS.find(x=>x.id===id); if(!s)return; const r=recOf(id);
+  const when=new Date().toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'});
+  const mapUrl = await staticOSMMap([{snap:s}],760,360,{numbered:false});
+  const mapBlock = mapUrl ? `<div class="creport-map"><img src="${mapUrl}" style="display:block;width:100%"/><div class="cm-cap">Location of ${esc(s.sub)} · map data © OpenStreetMap contributors.</div></div>` : '';
+  const stat=(k,v)=>`<div class="sr-stat"><div class="sr-k">${k}</div><div class="sr-v">${v}</div></div>`;
+  const c=r.contact||{}; const contact=[c.name,c.phone,c.email].filter(Boolean).join(' · ');
+  const incs=(r.incentives||[]), notes=(r.notes||[]);
+  const noteBlock=(lbl,arr)=>`<div class="creport-notes"><span class="pi-lbl">${lbl}</span>${arr.length?arr.map(it=>`<div class="crnote">• ${esc(it.text)} <span style="color:#888">— ${esc(it.by)}, ${it.at}</span></div>`).join(''):'<div class="crnote" style="color:#888">None logged.</div>'}</div>`;
+  $('#printReport').innerHTML=`
+    <div class="creport-band">
+      <img src="Buyer%202%20Builder%20Logo_Wht.png" alt="Buyer2Builder.com — Your New Home Source"/>
+      <span class="cb-t">Market Watch<br>Subdivision Report</span>
+    </div>
+    <div class="creport-client">
+      <span class="cc-nm">${esc(s.sub)}</span>
+      <span class="cc-ct">${esc(s.builder)} · ${s.group} · ${s.type==='Attached'?'Townhome':'Detached'}</span>
+    </div>
+    <div class="creport-meta">
+      Prepared by ${esc(IDENTITY?IDENTITY.name:'—')} · ${when}${r.rating?' · Your rating '+r.rating.value+'/5':''}<br>
+      ${esc(s.address)}${s.webDomain?' · '+esc(s.webDomain):''}
+    </div>
+    ${mapBlock}
+    <div class="sr-stats">
+      ${stat('Price',money(s.lo)+' – '+money(s.hi))}
+      ${stat('Square feet',(s.minSqft?s.minSqft.toLocaleString():'—')+'–'+(s.maxSqft?s.maxSqft.toLocaleString():'—'))}
+      ${stat('Standing unsold',s.standing??'—')}
+      ${stat('Unsold lots',s.unsold??'—')}
+      ${stat('YTD net sold',s.ytd??'—')}
+      ${stat('Weekly traffic',s.traffic??'—')}
+      ${stat('Total lots',s.totalLot??'—')}
+      ${stat('Open since',s.opened||'—')}
+    </div>
+    ${contact?`<div class="creport-notes"><span class="pi-lbl">Sales contact</span><div class="crnote">${esc(contact)}</div></div>`:''}
+    ${noteBlock('Builder incentives',incs)}
+    ${noteBlock('Site-visit notes',notes)}`;
+  setTimeout(()=>window.print(),80);
 }
 function exportClientCSV(cid){
   const c=clientOf(cid); if(!c)return;

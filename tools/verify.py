@@ -64,6 +64,15 @@ with sync_playwright() as p:
     check("subdivision keeps stats/contact/notes", pg.locator("#subModal #stars").count()==1 and pg.locator("#subModal #cName").count()==1 and pg.locator("#subModal #noteList").count()==1)
     pg.wait_for_timeout(3000)
     check("subdivision map snapshot renders", pg.locator("#subMap img").count()==1)
+    # add a note + incentive, then generate the per-subdivision report
+    pg.fill("#noteInput","Model home smelled of fresh paint; lot 12 backs to wash."); pg.click("#noteAdd"); pg.wait_for_timeout(150)
+    pg.fill("#incInput","$10k flex cash + fridge"); pg.click("#incAdd"); pg.wait_for_timeout(150)
+    check("site-visit note saved", pg.locator("#noteList .item").count()==1)
+    pg.evaluate(f"buildSubReport({pickA!r})"); pg.wait_for_timeout(300)
+    srep = pg.inner_text("#printReport")
+    check("sub report has branding + preparer", "Subdivision Report" in srep and "Prepared by Alex Tester" in srep)
+    check("sub report has map + stats", pg.locator("#printReport .creport-map img, #printReport .creport-map svg").count()>=1 and pg.locator("#printReport .sr-stat").count()>=6)
+    check("sub report includes notes + incentives", "Site-visit notes" in srep and "fresh paint" in srep and "Builder incentives" in srep and "flex cash" in srep)
     pg.click("#pclose"); pg.wait_for_timeout(150)
     check("subdivision modal closes", pg.locator("#subModal.on").count()==0)
 
