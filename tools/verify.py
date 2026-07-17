@@ -40,6 +40,15 @@ with sync_playwright() as p:
         pg.fill("#idInput","Alex Tester"); pg.click("#idGo")
     pg.wait_for_timeout(250)
 
+    # query parser: a square-footage range must filter by sqft, not price
+    pf = pg.evaluate("()=>parseQuery('2000 to 3000 sq ft').filters")
+    check("sqft range parses as sqft, not price", pf.get('sqftMin')==2000 and pf.get('sqftMax')==3000 and 'priceMin' not in pf, str(pf))
+    c1 = pg.evaluate("()=>{applyParsedQuery('2000 to 3000 sq ft'); return filtered().length;}")
+    c2 = pg.evaluate("SUBS.filter(s=>s.maxSqft>=2000 && s.minSqft<=3000).length")
+    check("sqft range count matches overlap", c1==c2 and c1>0, f"{c1} vs {c2}")
+    check("price range still parses as price", pg.evaluate("()=>parseQuery('350 to 400k').filters").get('priceMin')==350000)
+    pg.evaluate("clearAll()"); pg.wait_for_timeout(100)
+
     check("map is real Leaflet + OSM tiles", (pg.click('[data-v="map"]'), pg.wait_for_timeout(1500),
           pg.locator("#mapcanvas.leaflet-container").count()==1 and pg.locator("#mapcanvas img.leaflet-tile").count()>0)[-1])
     pg.click('[data-v="cards"]'); pg.wait_for_timeout(200)
