@@ -249,7 +249,13 @@ svg .pin:hover{stroke:var(--ink);stroke-width:2}
 .comm{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-bottom:7px}
 .comm .c-nm{font-weight:600;color:var(--ink);font-size:13.5px}
 .comm .c-sub{font-size:12px;color:var(--muted)}
-.comm .c-x{margin-left:auto;border:none;background:none;color:var(--danger);font-size:18px;padding:0 4px}
+.comm .c-x{margin-left:auto;border:none;background:none;color:var(--danger);font-size:18px;padding:0 4px;align-self:flex-start}
+.comm{align-items:flex-start}
+.commtag{display:inline-block;font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:20px;margin-right:7px;vertical-align:middle}
+.commtag.miss{background:#fdecea;color:#b23029;border:1px solid #f3c4bf}
+.commtag.upd{background:#fff6e6;color:#9a6410;border:1px solid #f0dca6}
+.commsync{border:1px solid var(--brand);background:#fff;color:var(--brand-d);border-radius:20px;font-size:10.5px;font-weight:700;padding:2px 10px;vertical-align:middle}
+.commsync:hover{background:var(--brand-soft)}
 .pickscroll{max-height:250px;overflow:auto;border:1px solid var(--line);border-radius:10px;margin-top:9px}
 .pickrow{display:flex;align-items:center;gap:10px;padding:8px 11px;border-bottom:1px solid var(--surface2);cursor:pointer;font-size:13px}
 .pickrow:last-child{border-bottom:none}
@@ -582,7 +588,7 @@ function render(){
 function cardHTML(s){
   const r=RECORDS[s.id]||{}, inc=(r.incentives||[]).length, notes=(r.notes||[]).length, rate=r.rating?r.rating.value:0;
   const col=GROUP_COLOR[s.group];
-  const ac=activeClient(), inList=ac?(ac.communities||[]).includes(s.id):false;
+  const ac=activeClient(), inList=clientHas(ac,s.id);
   return `<div class="card" data-open="${s.id}">
     <div class="stripe" style="background:${col}"></div>
     <div class="body">
@@ -722,7 +728,7 @@ function openPanel(id){
        <div class="linkline"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18Z"/></svg>
          <a href="${s.website}" target="_blank" rel="noopener">${s.webDomain}</a><span class="webtype">${s.webType}</span></div>
      </div>
-     ${(()=>{const ac=activeClient(); if(!ac)return ''; const on=(ac.communities||[]).includes(id); return `<div class="sect"><h5>Client profile</h5><button class="savebtn" id="pClientToggle" style="width:100%;background:${on?'var(--good)':'var(--brand)'}">${on?'✓ In '+esc(ac.name)+'’s list — tap to remove':'＋ Add to '+esc(ac.name)+'’s list'}</button></div>`;})()}
+     ${(()=>{const ac=activeClient(); if(!ac)return ''; const on=clientHas(ac,id); return `<div class="sect"><h5>Client profile</h5><button class="savebtn" id="pClientToggle" style="width:100%;background:${on?'var(--good)':'var(--brand)'}">${on?'✓ In '+esc(ac.name)+'’s list — tap to remove':'＋ Add to '+esc(ac.name)+'’s list'}</button></div>`;})()}
      <div class="sect">
        <h5>Your rating</h5>
        <div class="stars" id="stars">${[1,2,3,4,5].map(i=>`<button data-star="${i}" class="${r.rating&&i<=r.rating.value?'lit':''}">★</button>`).join('')}</div>
@@ -837,12 +843,13 @@ function buildPrintReport(){
 }
 $('#printBtn').onclick=()=>{ buildPrintReport(); setTimeout(()=>window.print(),60); };
 
-function prepItemHTML(s){
+function prepItemHTML(s, captured){
   const r=RECORDS[s.id]||{};
   const inc=(r.incentives||[]);
   const c=r.contact||{}; const contact=[c.name,c.phone,c.email].filter(Boolean).join(' · ');
   return `<div class="prep-item">
     <div class="pi-top"><span>${esc(s.sub)} — ${esc(s.builder)}</span><span>${money(s.lo)} – ${money(s.hi)}</span></div>
+    ${captured?`<div class="pi-grid"><span style="color:#888">Saved to profile ${captured}</span></div>`:''}
     <div class="pi-grid">
       <span>${s.type==='Attached'?'Townhome':'Detached'}</span>
       <span>${s.group}</span>
@@ -865,6 +872,28 @@ function saveClients(){ sset("clients",CLIENTS); }
 function clientOf(id){ return CLIENTS.find(c=>c.id===id); }
 function activeClient(){ const c=activeClientId?clientOf(activeClientId):null; return c||null; }
 function setActiveClient(id){ activeClientId=id||null; sset("activeClient",activeClientId); refreshClientBar(); render(); }
+/* Each community a client selects is stored as a FROZEN snapshot of the dataset row
+   at selection time — so pushing a new SUBS dataset never alters a saved client report. */
+function clientHas(c,sid){ return !!(c && (c.communities||[]).some(e=> e && e.id===sid)); }
+function clientEntry(c,sid){ return (c&&c.communities||[]).find(e=> e && e.id===sid); }
+function snapDiffers(snap){ const s=SUBS.find(x=>x.id===snap.id); if(!s)return false;
+  return s.sub!==snap.sub||s.builder!==snap.builder||s.lo!==snap.lo||s.hi!==snap.hi||s.minSqft!==snap.minSqft||s.maxSqft!==snap.maxSqft||s.standing!==snap.standing||s.ytd!==snap.ytd||s.type!==snap.type||s.group!==snap.group||s.address!==snap.address; }
+function migrateClients(){
+  let changed=false;
+  CLIENTS.forEach(c=>{
+    c.communities=(c.communities||[]).map(e=>{
+      if(typeof e==='string'){ changed=true; const s=SUBS.find(x=>x.id===e);
+        return {id:e, snap: s?{...s}:{id:e,sub:e,_missing:true}, addedAt:c.createdAt||nowStr(), addedBy:c.createdBy||null}; }
+      return e;
+    });
+  });
+  if(changed) saveClients();
+}
+function syncCommunity(cid,sid){
+  const c=clientOf(cid); if(!c)return; const e=clientEntry(c,sid); const s=SUBS.find(x=>x.id===sid);
+  if(!e||!s)return; e.snap={...s}; e.addedAt=nowStr();
+  c.updatedBy=IDENTITY?IDENTITY.name:'Unknown'; c.updatedAt=nowStr(); saveClients(); refreshClientPanelDynamic(cid);
+}
 function newClient(name,phone,email){
   const c={id:uid(),name,phone,email,createdBy:IDENTITY?IDENTITY.name:'Unknown',createdAt:nowStr(),updatedBy:null,updatedAt:null,communities:[]};
   CLIENTS.unshift(c); saveClients(); return c;
@@ -872,8 +901,10 @@ function newClient(name,phone,email){
 function toggleClientCommunity(cid,sid){
   const c=clientOf(cid); if(!c)return;
   c.communities=c.communities||[];
-  const i=c.communities.indexOf(sid);
-  if(i>=0)c.communities.splice(i,1); else c.communities.push(sid);
+  const i=c.communities.findIndex(e=>e && e.id===sid);
+  if(i>=0){ c.communities.splice(i,1); }
+  else { const s=SUBS.find(x=>x.id===sid); if(!s)return;
+    c.communities.push({id:sid, snap:{...s}, addedAt:nowStr(), addedBy:IDENTITY?IDENTITY.name:'Unknown'}); }
   c.updatedBy=IDENTITY?IDENTITY.name:'Unknown'; c.updatedAt=nowStr();
   saveClients(); refreshClientBar(); render();
   if(openClientId===cid && $('#clientPanel').classList.contains('on')) refreshClientPanelDynamic(cid);
@@ -913,18 +944,26 @@ $('#clientsClose').onclick=()=>$('#clientsModal').classList.remove('on');
 $('#clientsBtn').onclick=openClientsModal;
 
 /* ---- client panel ---- */
-function commItemHTML(s){
-  return `<div class="comm"><span class="dotcol" style="background:${GROUP_COLOR[s.group]}"></span><div><div class="c-nm">${esc(s.sub)}</div><div class="c-sub">${esc(s.builder)} · ${money(s.lo)}–${money(s.hi)}</div></div><button class="c-x" data-comm-x="${s.id}" title="Remove">×</button></div>`;
+function commItemHTML(e){
+  const s=e.snap||{id:e.id}; const live=SUBS.find(x=>x.id===e.id);
+  const status = !live ? `<span class="commtag miss">Not in latest dataset — kept from snapshot</span>`
+    : snapDiffers(s) ? `<span class="commtag upd">Latest data differs</span><button class="commsync" data-comm-sync="${e.id}">Update to latest</button>` : '';
+  return `<div class="comm"><span class="dotcol" style="background:${GROUP_COLOR[s.group]||'#94a3b8'}"></span>
+    <div style="min-width:0"><div class="c-nm">${esc(s.sub||e.id)}</div>
+      <div class="c-sub">${esc(s.builder||'—')} · ${money(s.lo)}–${money(s.hi)} · <span style="color:var(--muted)">saved ${e.addedAt||'—'}</span></div>
+      ${status?`<div style="margin-top:5px">${status}</div>`:''}
+    </div>
+    <button class="c-x" data-comm-x="${e.id}" title="Remove">×</button></div>`;
 }
 function openClientPanel(id){ openClientId=id; renderClientPanel(id); $('#clientPanel').classList.add('on'); $('#scrim').classList.add('on'); }
 function closeClientPanel(){ $('#clientPanel').classList.remove('on'); openClientId=null; if(!$('#panel').classList.contains('on')) $('#scrim').classList.remove('on'); }
 function renderClientPanel(cid){
   const c=clientOf(cid); if(!c){ closeClientPanel(); return; }
   const n=(c.communities||[]).length;
-  const subs=(c.communities||[]).map(id=>SUBS.find(s=>s.id===id)).filter(Boolean);
-  const commHTML = subs.length ? subs.map(commItemHTML).join('') : `<div style="color:var(--muted);font-size:13px">No communities yet. Add from the list below, or tap “Add to profile” on any community while browsing.</div>`;
+  const entries=c.communities||[];
+  const commHTML = entries.length ? entries.map(commItemHTML).join('') : `<div style="color:var(--muted);font-size:13px">No communities yet. Add from the list below, or tap “Add to profile” on any community while browsing.</div>`;
   const pickHTML = SUBS.slice().sort((a,b)=>a.sub.localeCompare(b.sub)).map(s=>{
-    const on=(c.communities||[]).includes(s.id);
+    const on=clientHas(c,s.id);
     return `<label class="pickrow" data-pick="${s.id}"><input type="checkbox" ${on?'checked':''}><span class="dotcol" style="background:${GROUP_COLOR[s.group]}"></span><span>${esc(s.sub)}</span><span class="pk-sub">${esc(s.builder)}</span></label>`;
   }).join('');
   $('#clientPanelInner').innerHTML=`
@@ -962,13 +1001,14 @@ function renderClientPanel(cid){
 }
 function refreshClientPanelDynamic(cid){
   const c=clientOf(cid); if(!c)return;
-  const subs=(c.communities||[]).map(id=>SUBS.find(s=>s.id===id)).filter(Boolean);
+  const entries=c.communities||[];
   const cl=$('#commList');
   if(cl){
-    cl.innerHTML = subs.length ? subs.map(commItemHTML).join('') : `<div style="color:var(--muted);font-size:13px">No communities yet. Add from the list below, or tap “Add to profile” on any community while browsing.</div>`;
+    cl.innerHTML = entries.length ? entries.map(commItemHTML).join('') : `<div style="color:var(--muted);font-size:13px">No communities yet. Add from the list below, or tap “Add to profile” on any community while browsing.</div>`;
     $$('#commList [data-comm-x]').forEach(b=> b.onclick=()=>toggleClientCommunity(cid,b.getAttribute('data-comm-x')));
+    $$('#commList [data-comm-sync]').forEach(b=> b.onclick=()=>syncCommunity(cid,b.getAttribute('data-comm-sync')));
   }
-  $$('#pickScroll .pickrow').forEach(l=>{ const cb=l.querySelector('input'); if(cb) cb.checked=(c.communities||[]).includes(l.getAttribute('data-pick')); });
+  $$('#pickScroll .pickrow').forEach(l=>{ const cb=l.querySelector('input'); if(cb) cb.checked=clientHas(c,l.getAttribute('data-pick')); });
   const pb=$('#clientPanelInner .pbuilder'); if(pb){ const n=(c.communities||[]).length; pb.textContent='Client profile · '+n+' communit'+(n===1?'y':'ies'); }
 }
 function wireClientPanel(cid){
@@ -981,6 +1021,7 @@ function wireClientPanel(cid){
     refreshClientBar(); renderClientPanel(cid);
   };
   $$('#commList [data-comm-x]').forEach(b=> b.onclick=()=>toggleClientCommunity(cid,b.getAttribute('data-comm-x')));
+  $$('#commList [data-comm-sync]').forEach(b=> b.onclick=()=>syncCommunity(cid,b.getAttribute('data-comm-sync')));
   $$('#pickScroll [data-pick]').forEach(l=> l.onclick=e=>{ e.preventDefault(); toggleClientCommunity(cid,l.getAttribute('data-pick')); });
   $('#pickFilter').oninput=e=>{ const q=e.target.value.toLowerCase(); $$('#pickScroll .pickrow').forEach(row=>{ row.style.display=row.textContent.toLowerCase().includes(q)?'':'none'; }); };
   $('#clReport').onclick=()=>buildClientReport(cid);
@@ -993,8 +1034,8 @@ $('#scrim').onclick=closeOverlays;
 /* ---- client report ---- */
 function buildClientReport(cid){
   const c=clientOf(cid); if(!c)return;
-  const subs=(c.communities||[]).map(id=>SUBS.find(s=>s.id===id)).filter(Boolean);
-  const items = subs.length ? subs.map(prepItemHTML).join('') : `<div style="color:#555;font-size:12px;padding:10px 0">No communities have been added to this profile yet.</div>`;
+  const entries=c.communities||[];
+  const items = entries.length ? entries.map(e=>prepItemHTML(e.snap||{id:e.id}, e.addedAt)).join('') : `<div style="color:#555;font-size:12px;padding:10px 0">No communities have been added to this profile yet.</div>`;
   const when=new Date().toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'});
   const contact=[c.phone,c.email].filter(Boolean).join(' · ');
   $('#printReport').innerHTML=`
@@ -1007,8 +1048,9 @@ function buildClientReport(cid){
       ${contact?`<span class="cc-ct">${esc(contact)}</span>`:''}
     </div>
     <div class="creport-meta">
-      Prepared by ${esc(IDENTITY?IDENTITY.name:'—')} · ${when} · ${subs.length} communit${subs.length===1?'y':'ies'}<br>
-      Profile created by ${esc(c.createdBy||'—')} · ${c.createdAt||'—'}
+      Prepared by ${esc(IDENTITY?IDENTITY.name:'—')} · ${when} · ${entries.length} communit${entries.length===1?'y':'ies'}<br>
+      Profile created by ${esc(c.createdBy||'—')} · ${c.createdAt||'—'}<br>
+      <span style="color:#666">Community details reflect the dataset captured when each was added to this profile.</span>
     </div>
     ${items}`;
   setTimeout(()=>window.print(),80);
@@ -1042,6 +1084,7 @@ $('#q').addEventListener('input',e=>{ clearTimeout(qTimer); qTimer=setTimeout(()
 $('#q').addEventListener('keydown',e=>{ if(e.key==='Enter'){ clearTimeout(qTimer); applyParsedQuery(e.target.value);} });
 
 /* ============ INIT ============ */
+migrateClients();
 if(activeClientId && !clientOf(activeClientId)) activeClientId=null;
 buildRail(); syncControls(); refreshWho(); refreshClientBar(); render();
 document.getElementById('buildStamp').textContent = 'Build '+BUILD+' · '+BUILD_DATE;
