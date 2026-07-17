@@ -231,6 +231,8 @@ svg .pin:hover{stroke:var(--ink);stroke-width:2}
 /* ---------- client profiles ---------- */
 .clientpill{display:inline-flex;align-items:center;gap:8px;background:var(--brand-soft);border:1px solid #c5d9f6;color:var(--brand-d);font-weight:600;font-size:12.5px;padding:4px 5px 4px 12px;border-radius:20px}
 .clientpill b{color:var(--brand-d)}
+.clientpill .cp-filter{border:1px solid #c5d9f6;background:#fff;color:var(--brand-d);border-radius:14px;padding:3px 10px;font-weight:600;font-size:12px}
+.clientpill .cp-filter.on{background:var(--brand);color:#fff;border-color:var(--brand)}
 .clientpill .cp-open{border:none;background:var(--brand);color:#fff;border-radius:14px;padding:3px 11px;font-weight:600;font-size:12px}
 .clientpill .cp-x{border:none;background:#fff;color:var(--brand-d);border-radius:14px;width:22px;height:22px;font-size:15px;line-height:1;padding:0}
 .modalcard.wide{max-width:560px;text-align:left}
@@ -484,7 +486,7 @@ const state = {
   view:"cards", sort:"price-asc",
   type:"all", priceMin:null, priceMax:null, sqftMin:null,
   groups:new Set(), builders:new Set(), hasStanding:false,
-  text:"", chips:[]
+  text:"", chips:[], clientOnly:false
 };
 
 /* ============ HELPERS ============ */
@@ -548,6 +550,7 @@ function filtered(){
     if(state.hasStanding && !(Number(s.standing)>0)) return false;
     return true;
   });
+  if(state.clientOnly){ const ac=activeClient(); if(ac){ const set=new Set((ac.communities||[]).map(e=>e.id)); out=out.filter(s=>set.has(s.id)); } }
   const rt = state.sort;
   const rate=id=>{const r=RECORDS[id]; return r&&r.rating?r.rating.value:0;};
   out.sort((a,b)=>{
@@ -891,7 +894,7 @@ let openClientId = null;
 function saveClients(){ sset("clients",CLIENTS); }
 function clientOf(id){ return CLIENTS.find(c=>c.id===id); }
 function activeClient(){ const c=activeClientId?clientOf(activeClientId):null; return c||null; }
-function setActiveClient(id){ activeClientId=id||null; sset("activeClient",activeClientId); refreshClientBar(); render(); }
+function setActiveClient(id){ activeClientId=id||null; sset("activeClient",activeClientId); if(!activeClientId) state.clientOnly=false; refreshClientBar(); render(); }
 /* Each community a client selects is stored as a FROZEN snapshot of the dataset row
    at selection time — so pushing a new SUBS dataset never alters a saved client report. */
 function clientHas(c,sid){ return !!(c && (c.communities||[]).some(e=> e && e.id===sid)); }
@@ -934,7 +937,8 @@ function refreshClientBar(){
   const c=activeClient();
   if(!c){ el.innerHTML=''; return; }
   const n=(c.communities||[]).length;
-  el.innerHTML=`<span class="clientpill">Client: <b>${esc(c.name)}</b> · ${n} <button class="cp-open" id="cpOpen">Open</button><button class="cp-x" id="cpX" title="Clear active client">×</button></span>`;
+  el.innerHTML=`<span class="clientpill">Client: <b>${esc(c.name)}</b> · ${n} <button class="cp-filter ${state.clientOnly?'on':''}" id="cpFilter" title="Show only this client's communities in cards, table, map and charts">${state.clientOnly?'✓ Only these':'Show only these'}</button><button class="cp-open" id="cpOpen">Open</button><button class="cp-x" id="cpX" title="Clear active client">×</button></span>`;
+  $('#cpFilter').onclick=()=>{ state.clientOnly=!state.clientOnly; refreshClientBar(); render(); };
   $('#cpOpen').onclick=()=>openClientPanel(c.id);
   $('#cpX').onclick=()=>setActiveClient(null);
 }
@@ -1020,7 +1024,7 @@ function renderClientPanel(cid){
        </section>
        <section>
          <h5>Report map preview</h5>
-         <div class="reportmap" id="cmMap">${reportMapSVG(entries)||'<div style="padding:14px;color:var(--muted);font-size:12.5px">Add communities to see them mapped.</div>'}</div>
+         <div class="reportmap" id="cmMap"></div>
        </section>
      </div>
    </div>
@@ -1043,7 +1047,7 @@ function refreshClientPanelDynamic(cid){
   }
   $$('#pickScroll .pickrow').forEach(l=>{ const cb=l.querySelector('input'); if(cb) cb.checked=clientHas(c,l.getAttribute('data-pick')); });
   const cnt=$('#cmCount'); if(cnt) cnt.textContent=entries.length+' communit'+(entries.length===1?'y':'ies');
-  const mp=$('#cmMap'); if(mp) mp.innerHTML=reportMapSVG(entries)||'<div style="padding:14px;color:var(--muted);font-size:12.5px">Add communities to see them mapped.</div>';
+  clearTimeout(mapPreviewTimer); mapPreviewTimer=setTimeout(()=>renderMapPreview(c.communities||[]),350);
 }
 function wireClientPanel(cid){
   const c=clientOf(cid); if(!c)return;
@@ -1057,11 +1061,12 @@ function wireClientPanel(cid){
   const addNote=()=>{ const v=$('#clNoteInput').value.trim(); if(!v)return; c.notes=c.notes||[]; c.notes.unshift({id:uid(),text:v,by:IDENTITY?IDENTITY.name:'Unknown',at:nowStr()}); c.updatedBy=IDENTITY?IDENTITY.name:'Unknown'; c.updatedAt=nowStr(); saveClients(); $('#clNoteInput').value=''; $('#clNoteList').innerHTML=clientNoteItems(c); wireClientNotes(cid); };
   $('#clNoteAdd').onclick=addNote;
   wireClientNotes(cid);
+  renderMapPreview(c.communities||[]);
   $$('#commList [data-comm-x]').forEach(b=> b.onclick=()=>toggleClientCommunity(cid,b.getAttribute('data-comm-x')));
   $$('#commList [data-comm-sync]').forEach(b=> b.onclick=()=>syncCommunity(cid,b.getAttribute('data-comm-sync')));
   $$('#pickScroll [data-pick]').forEach(l=> l.onclick=e=>{ e.preventDefault(); toggleClientCommunity(cid,l.getAttribute('data-pick')); });
   $('#pickFilter').oninput=e=>{ const q=e.target.value.toLowerCase(); $$('#pickScroll .pickrow').forEach(row=>{ row.style.display=row.textContent.toLowerCase().includes(q)?'':'none'; }); };
-  $('#clReport').onclick=()=>buildClientReport(cid);
+  $('#clReport').onclick=async()=>{ const b=$('#clReport'); const t=b.textContent; b.disabled=true; b.textContent='Preparing report…'; try{ await buildClientReport(cid); } finally { b.disabled=false; b.textContent=t; } };
   $('#clCSV').onclick=()=>exportClientCSV(cid);
   $('#clActive').onclick=()=>{ setActiveClient(activeClientId===cid?null:cid); renderClientPanel(cid); };
   $('#clDelete').onclick=()=>{ if(!confirm('Delete this client profile? This cannot be undone.'))return; CLIENTS=CLIENTS.filter(x=>x.id!==cid); if(activeClientId===cid){activeClientId=null;sset('activeClient',null);} saveClients(); closeClientPanel(); refreshClientBar(); render(); };
@@ -1089,6 +1094,54 @@ function reportMapSVG(entries){
     return `<g><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="11" fill="${col}" stroke="#fff" stroke-width="2"/><text x="${x.toFixed(1)}" y="${(y+4).toFixed(1)}" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">${p.i+1}</text></g>`;}).join('');
   return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" style="display:block;width:100%;height:auto;background:#eef2f7">${ctx}${pins}</svg>`;
 }
+/* Real street map for the report/preview: rasterize free OpenStreetMap tiles onto
+   a canvas (tiles send Access-Control-Allow-Origin:*, so the canvas stays exportable),
+   draw numbered pins, return a PNG data URL. No API key. Falls back to reportMapSVG. */
+function mercPx(lat,lng,z){ const s=256*Math.pow(2,z); const x=(lng+180)/360*s; const sl=Math.sin(lat*Math.PI/180); const y=(0.5-Math.log((1+sl)/(1-sl))/(4*Math.PI))*s; return {x,y}; }
+function staticOSMMap(entries, W, H){
+  return new Promise(resolve=>{
+    try{
+      const pts=(entries||[]).map((e,i)=>({i,lat:e.snap&&e.snap.lat,lng:e.snap&&e.snap.lng,col:GROUP_COLOR[e.snap&&e.snap.group]||'#64748b'})).filter(p=>typeof p.lat==='number'&&typeof p.lng==='number');
+      if(!pts.length){ resolve(null); return; }
+      const pad=48;
+      const minLat=Math.min(...pts.map(p=>p.lat)),maxLat=Math.max(...pts.map(p=>p.lat)),minLng=Math.min(...pts.map(p=>p.lng)),maxLng=Math.max(...pts.map(p=>p.lng));
+      const cLat=(minLat+maxLat)/2, cLng=(minLng+maxLng)/2;
+      let z=16;
+      for(; z>=9; z--){ const a=mercPx(minLat,minLng,z), b=mercPx(maxLat,maxLng,z);
+        if(Math.abs(b.x-a.x)<=(W-2*pad) && Math.abs(a.y-b.y)<=(H-2*pad)) break; }
+      if(pts.length===1) z=14;
+      const c=mercPx(cLat,cLng,z), originX=c.x-W/2, originY=c.y-H/2;
+      const canvas=document.createElement('canvas'); canvas.width=W; canvas.height=H;
+      const ctx=canvas.getContext('2d'); ctx.fillStyle='#e8edf2'; ctx.fillRect(0,0,W,H);
+      const maxTile=Math.pow(2,z), jobs=[];
+      for(let tx=Math.floor(originX/256); tx<=Math.floor((originX+W)/256); tx++)
+        for(let ty=Math.floor(originY/256); ty<=Math.floor((originY+H)/256); ty++){
+          if(ty<0||ty>=maxTile) continue;
+          const xx=((tx%maxTile)+maxTile)%maxTile, sub='abc'[((tx%3)+3)%3];
+          jobs.push(new Promise(res=>{ const img=new Image(); img.crossOrigin='anonymous';
+            img.onload=()=>{ try{ctx.drawImage(img, tx*256-originX, ty*256-originY);}catch(e){} res(); };
+            img.onerror=()=>res(); img.src=`https://${sub}.tile.openstreetmap.org/${z}/${xx}/${ty}.png`; }));
+        }
+      Promise.race([Promise.all(jobs), new Promise(res=>setTimeout(res,6000))]).then(()=>{
+        pts.forEach(p=>{ const q=mercPx(p.lat,p.lng,z), x=q.x-originX, y=q.y-originY;
+          ctx.beginPath(); ctx.arc(x,y,11,0,2*Math.PI); ctx.fillStyle=p.col; ctx.fill(); ctx.lineWidth=2.5; ctx.strokeStyle='#fff'; ctx.stroke();
+          ctx.fillStyle='#fff'; ctx.font='700 12px Inter,Arial,sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(String(p.i+1), x, y+0.5); });
+        ctx.font='10px Arial'; const attr='© OpenStreetMap contributors', tw=ctx.measureText(attr).width;
+        ctx.fillStyle='rgba(255,255,255,0.75)'; ctx.fillRect(W-tw-9,H-15,tw+9,15);
+        ctx.fillStyle='#333'; ctx.textAlign='left'; ctx.textBaseline='alphabetic'; ctx.fillText(attr, W-tw-5, H-4);
+        try{ resolve(canvas.toDataURL('image/png')); }catch(e){ resolve(null); }
+      });
+    }catch(e){ resolve(null); }
+  });
+}
+let mapPreviewTimer=null;
+function renderMapPreview(entries){
+  const el=$('#cmMap'); if(!el) return;
+  if(!entries.length){ el.innerHTML='<div style="padding:14px;color:var(--muted);font-size:12.5px">Add communities to see them mapped.</div>'; return; }
+  el.innerHTML='<div style="padding:14px;color:var(--muted);font-size:12.5px">Loading map…</div>';
+  staticOSMMap(entries,760,360).then(url=>{ const cur=$('#cmMap'); if(!cur) return;
+    cur.innerHTML = url ? `<img src="${url}" style="display:block;width:100%">` : (reportMapSVG(entries)||''); });
+}
 function exportClientCSV(cid){
   const c=clientOf(cid); if(!c)return;
   const cols=['#','Subdivision','Builder','Type','Master Plan','Low Price','High Price','Min Sqft','Max Sqft','Standing','YTD Sold','Address','Saved (snapshot date)','Latest dataset status'];
@@ -1107,12 +1160,14 @@ function closeOverlays(){ $('#panel').classList.remove('on'); $('#clientModal').
 $('#scrim').onclick=closeOverlays;
 
 /* ---- client report ---- */
-function buildClientReport(cid){
+async function buildClientReport(cid){
   const c=clientOf(cid); if(!c)return;
   const entries=c.communities||[];
   const items = entries.length ? entries.map((e,i)=>prepItemHTML(e.snap||{id:e.id}, e.addedAt, i+1)).join('') : `<div style="color:#555;font-size:12px;padding:10px 0">No communities have been added to this profile yet.</div>`;
-  const mapSVG = reportMapSVG(entries);
-  const mapBlock = mapSVG ? `<div class="creport-map">${mapSVG}<div class="cm-cap">Numbered pins correspond to the communities listed below · gray dots are other nearby subdivisions for context.</div></div>` : '';
+  let mapBlock='';
+  const mapUrl = await staticOSMMap(entries,760,420);
+  if(mapUrl){ mapBlock=`<div class="creport-map"><img src="${mapUrl}" style="display:block;width:100%"/><div class="cm-cap">Numbered pins correspond to the communities listed below · map data © OpenStreetMap contributors.</div></div>`; }
+  else { const mapSVG=reportMapSVG(entries); if(mapSVG) mapBlock=`<div class="creport-map">${mapSVG}<div class="cm-cap">Numbered pins correspond to the communities listed below · gray dots are other nearby subdivisions for context.</div></div>`; }
   const notesBlock = (c.notes&&c.notes.length) ? `<div class="creport-notes"><span class="pi-lbl">Client notes</span>${c.notes.map(nt=>`<div class="crnote">• ${esc(nt.text)} <span style="color:#888">— ${esc(nt.by)}, ${nt.at}</span></div>`).join('')}</div>` : '';
   const when=new Date().toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'});
   const contact=[c.phone,c.email].filter(Boolean).join(' · ');

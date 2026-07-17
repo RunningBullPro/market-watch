@@ -2,8 +2,9 @@
 """End-to-end browser verification for Market Watch (index.html).
 
 Serves the repo over http (localStorage needs http, not file://), drives the app
-in headless Chromium via Playwright, and asserts the client-profile + dataset-
-snapshot behavior. Screenshots are written to a temp dir (path printed at the end).
+in headless Chromium via Playwright, and asserts the client-profile, dataset-
+snapshot, client-filter, and report-map behavior. Screenshots go to a temp dir
+(path printed at the end).
 
 Setup (one time):
     pip install playwright
@@ -18,9 +19,7 @@ from playwright.sync_api import sync_playwright
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SHOT = tempfile.mkdtemp(prefix="mw-verify-")
-os.chdir(REPO)
-PORT = 8137
-
+os.chdir(REPO); PORT = 8137
 httpd = socketserver.TCPServer(("127.0.0.1", PORT), functools.partial(http.server.SimpleHTTPRequestHandler))
 threading.Thread(target=httpd.serve_forever, daemon=True).start()
 
@@ -37,12 +36,11 @@ with sync_playwright() as p:
     pg.on("pageerror", lambda e: errors.append(f"pageerror: {e}"))
     pg.add_init_script("window.print = () => { window.__printed=(window.__printed||0)+1; };")
     pg.goto(f"http://127.0.0.1:{PORT}/index.html"); pg.wait_for_load_state("networkidle")
-
     if pg.locator("#idModal.on").count():
         pg.fill("#idInput","Alex Tester"); pg.click("#idGo")
     pg.wait_for_timeout(250)
 
-    check("map is real Leaflet", (pg.click('[data-v="map"]'), pg.wait_for_timeout(1500),
+    check("map is real Leaflet + OSM tiles", (pg.click('[data-v="map"]'), pg.wait_for_timeout(1500),
           pg.locator("#mapcanvas.leaflet-container").count()==1 and pg.locator("#mapcanvas img.leaflet-tile").count()>0)[-1])
     pg.click('[data-v="cards"]'); pg.wait_for_timeout(200)
 
@@ -55,20 +53,29 @@ with sync_playwright() as p:
     pg.click("#ncCreate"); pg.wait_for_timeout(300)
     check("client opens as centered modal", pg.locator("#clientModal.on .cmodal-card").count()==1)
     cid = pg.evaluate("activeClientId")
-
     pg.fill("#clNoteInput","Wants 3-car garage, under 500k, ready by spring."); pg.click("#clNoteAdd"); pg.wait_for_timeout(200)
     check("client note added", pg.locator("#clNoteList .item").count()==1)
 
-    pg.click(f'.pickrow[data-pick="{pickA}"]'); pg.wait_for_timeout(250)
-    check("report map preview renders", pg.locator("#cmMap svg").count()==1)
-
+    pg.click(f'.pickrow[data-pick="{pickA}"]'); pg.wait_for_timeout(150)
     pg.click("#clpclose"); pg.wait_for_timeout(150)
     B = next(x for x in cardIds if x != pickA)
     pg.click(f'.card [data-client-add="{B}"]'); pg.wait_for_timeout(200)
     C = next(x for x in ids if x not in (pickA,B))
     pg.evaluate(f"openPanel({C!r})"); pg.wait_for_timeout(150); pg.click("#pClientToggle"); pg.wait_for_timeout(150); pg.click("#pclose"); pg.wait_for_timeout(120)
+
+    # client-only filter refines all views
+    pg.click("#cpFilter"); pg.wait_for_timeout(250)
+    check("client filter refines count to 3", pg.inner_text("#count").strip()=="3", pg.inner_text("#count"))
+    pg.click('[data-v="map"]'); pg.wait_for_timeout(1600)
+    check("map shows only client's 3 pins", pg.locator("#mapcanvas path.leaflet-interactive").count()==3)
+    pg.click('[data-v="cards"]'); pg.wait_for_timeout(120)
+    pg.click("#cpFilter"); pg.wait_for_timeout(200)
+    check("client filter off -> all 61", pg.inner_text("#count").strip()=="61")
+
     pg.click("#cpOpen"); pg.wait_for_timeout(300)
     check("profile has 3 communities", pg.locator("#commList .comm").count()==3)
+    pg.wait_for_timeout(3000)
+    check("modal shows real map preview", pg.locator("#cmMap img, #cmMap svg").count()>=1)
     pg.screenshot(path=os.path.join(SHOT,"modal.png"))
 
     snapLo = pg.evaluate(f"clientOf({cid!r}).communities.find(e=>e.id==={pickA!r}).snap.lo")
@@ -85,19 +92,19 @@ with sync_playwright() as p:
     csv = open(di.value.path(), encoding="utf-8").read()
     check("client CSV has snapshot rows", "Subdivision" in csv and subA in csv and len([l for l in csv.strip().splitlines() if l])==4)
 
-    pg.evaluate(f"buildClientReport({cid!r})"); pg.wait_for_timeout(200)
+    pg.evaluate(f"buildClientReport({cid!r})"); pg.wait_for_timeout(300)
     rep = pg.inner_text("#printReport")
     check("report shows snapshot price, not new", ("$"+format(snapLo,",")) in rep and ("$"+format(newLo,",")) not in rep)
     check("report has client name + preparer", "Jordan Fisher" in rep and "Prepared by Alex Tester" in rep)
-    check("report has schematic map + numbered items + notes",
-          pg.locator("#printReport .creport-map svg").count()==1 and pg.locator("#printReport .pi-num").count()==3
+    check("report has a map + numbered items + notes",
+          pg.locator("#printReport .creport-map img, #printReport .creport-map svg").count()>=1
+          and pg.locator("#printReport .pi-num").count()==3
           and pg.locator("#printReport .creport-notes").count()==1 and "3-car garage" in rep)
     check("main card reflects new live price", pg.evaluate(f"document.body.innerHTML.includes({('$'+format(newLo,',')) !r})"))
 
     pg.reload(); pg.wait_for_load_state("networkidle"); pg.wait_for_timeout(400)
     check("client + notes + communities persist across reload",
           pg.evaluate(f"!!clientOf({cid!r}) && (clientOf({cid!r}).notes||[]).length===1 && (clientOf({cid!r}).communities||[]).length===3"))
-
     browser.close()
 
 httpd.shutdown()
