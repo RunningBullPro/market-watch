@@ -228,11 +228,44 @@ svg .pin:hover{stroke:var(--ink);stroke-width:2}
 .footer{max-width:1440px;margin:0 auto;padding:8px 20px 40px;color:var(--muted);font-size:12px;display:flex;gap:14px;flex-wrap:wrap;align-items:center}
 .footer .dotsep{width:3px;height:3px;border-radius:50%;background:var(--line)}
 
+/* ---------- client profiles ---------- */
+.clientpill{display:inline-flex;align-items:center;gap:8px;background:var(--brand-soft);border:1px solid #c5d9f6;color:var(--brand-d);font-weight:600;font-size:12.5px;padding:4px 5px 4px 12px;border-radius:20px}
+.clientpill b{color:var(--brand-d)}
+.clientpill .cp-open{border:none;background:var(--brand);color:#fff;border-radius:14px;padding:3px 11px;font-weight:600;font-size:12px}
+.clientpill .cp-x{border:none;background:#fff;color:var(--brand-d);border-radius:14px;width:22px;height:22px;font-size:15px;line-height:1;padding:0}
+.modalcard.wide{max-width:560px;text-align:left}
+.modalcard.wide .mk{text-align:left}
+.cl-list{margin-top:10px;max-height:320px;overflow:auto;display:flex;flex-direction:column;gap:8px}
+.cl-row{border:1px solid var(--line);border-radius:11px;padding:10px 12px;display:flex;align-items:center;gap:10px;cursor:pointer}
+.cl-row:hover{border-color:var(--brand);background:var(--surface2)}
+.cl-row.active{border-color:var(--brand);background:var(--brand-soft)}
+.cl-row .cl-nm{font-weight:700;color:var(--ink)}
+.cl-row .cl-meta{font-size:12px;color:var(--muted);margin-top:1px}
+.cl-cnt{margin-left:auto;font-size:12px;font-weight:700;color:var(--brand-d);background:var(--brand-soft);border:1px solid #c5d9f6;border-radius:20px;padding:2px 10px;white-space:nowrap}
+.cl-del{border:none;background:none;color:var(--danger);font-size:19px;line-height:1;padding:2px 6px}
+.rowbtns{display:flex;gap:10px;align-items:center;margin-top:16px}
+.ghostbtn{background:var(--surface2);border:1px solid var(--line);border-radius:9px;padding:9px 14px;font-weight:600;font-size:13px;color:var(--ink2)}
+.ghostbtn:hover{border-color:var(--brand);color:var(--brand-d)}
+.comm{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-bottom:7px}
+.comm .c-nm{font-weight:600;color:var(--ink);font-size:13.5px}
+.comm .c-sub{font-size:12px;color:var(--muted)}
+.comm .c-x{margin-left:auto;border:none;background:none;color:var(--danger);font-size:18px;padding:0 4px}
+.pickscroll{max-height:250px;overflow:auto;border:1px solid var(--line);border-radius:10px;margin-top:9px}
+.pickrow{display:flex;align-items:center;gap:10px;padding:8px 11px;border-bottom:1px solid var(--surface2);cursor:pointer;font-size:13px}
+.pickrow:last-child{border-bottom:none}
+.pickrow:hover{background:var(--surface2)}
+.pickrow input{width:16px;height:16px;accent-color:var(--brand)}
+.pickrow .pk-sub{color:var(--muted);margin-left:auto;font-size:11.5px}
+.dotcol{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.card .clienttoggle{width:100%;margin-top:12px;border:1px dashed var(--line);background:var(--surface2);border-radius:9px;padding:8px;font-weight:700;font-size:12px;color:var(--brand-d)}
+.card .clienttoggle.on{background:var(--brand-soft);border-style:solid;border-color:var(--brand)}
+.card .clienttoggle:hover{border-color:var(--brand)}
+
 /* ---------- print report ---------- */
 #printReport{display:none}
 @media print{
   @page{margin:14mm}
-  .topbar,.chiprow,.rail,.tabs,.sortbar,.panel,.scrim,.footer,.storewarn,#results{display:none !important}
+  .topbar,.chiprow,.rail,.tabs,.sortbar,.panel,.scrim,.modal,.footer,.storewarn,#results{display:none !important}
   body{background:#fff;font-size:11px}
   .wrap{display:block;padding:0;max-width:none}
   #printReport{display:block}
@@ -246,6 +279,13 @@ svg .pin:hover{stroke:var(--ink);stroke-width:2}
   .prep-item .pi-grid{display:flex;flex-wrap:wrap;gap:2px 18px;margin-top:5px;color:#333}
   .prep-item .pi-inc{background:#eef8f2;border:1px solid #cde9db;border-radius:6px;padding:6px 9px;margin-top:7px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
   .prep-item .pi-lbl{font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:#555}
+  .creport-band{background:var(--ink);color:#fff;padding:12px 16px;border-radius:10px;display:flex;align-items:center;gap:14px}
+  .creport-band img{height:30px;width:auto}
+  .creport-band .cb-t{margin-left:auto;text-align:right;font-size:10px;line-height:1.35;letter-spacing:.14em;text-transform:uppercase;color:#9fb2c9;font-weight:700}
+  .creport-client{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 22px;margin:14px 0 2px}
+  .creport-client .cc-nm{font-family:'Fraunces';font-size:20px;font-weight:700;color:#000}
+  .creport-client .cc-ct{font-size:12px;color:#333}
+  .creport-meta{font-size:10.5px;color:#333;margin:4px 0 14px;border-bottom:2px solid var(--ink);padding-bottom:10px;line-height:1.55}
   *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
 </style>
@@ -269,6 +309,7 @@ svg .pin:hover{stroke:var(--ink);stroke-width:2}
     <input id="q" placeholder='Ask: "townhomes 350 to 400k"  ·  "detached under 500k in Cadence"  ·  "Lennar available"' autocomplete="off" />
   </div>
   <div class="topbtns">
+    <button class="tbtn" id="clientsBtn" title="Client profiles"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Clients</button>
     <button class="tbtn" id="exportBtn" title="Download current results as CSV"><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>Export</button>
     <button class="tbtn primary" id="printBtn"><svg viewBox="0 0 24 24"><path d="M6 9V3h12v6"/><path d="M6 18H4a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8" rx="1"/></svg>Print report</button>
     <div class="who" id="whoBtn"><span class="av" id="whoAv">?</span><span class="nm" id="whoNm">Sign in</span></div>
@@ -279,6 +320,7 @@ svg .pin:hover{stroke:var(--ink);stroke-width:2}
   <span class="lead">Filters</span>
   <div id="chips" style="display:flex;gap:8px;flex-wrap:wrap"></div>
   <button class="linkbtn" id="clearBtn" style="display:none">Clear all</button>
+  <span id="clientBar"></span>
   <span class="countpill"><b id="count">0</b> of 61 subdivisions</span>
 </div>
 
@@ -353,6 +395,27 @@ svg .pin:hover{stroke:var(--ink);stroke-width:2}
 <!-- detail panel -->
 <div class="scrim" id="scrim"></div>
 <div class="panel" id="panel"><div id="panelInner"></div></div>
+
+<!-- client profile panel -->
+<div class="panel" id="clientPanel"><div id="clientPanelInner"></div></div>
+
+<!-- clients modal -->
+<div class="modal" id="clientsModal">
+  <div class="modalcard wide">
+    <div class="mk">Client profiles</div>
+    <p style="text-align:left;margin:8px 0 16px">Create a profile for a prospective buyer, curate communities for them, then generate a branded report to print or share as a PDF.</p>
+    <div class="field"><label>Client name</label><input id="ncName" placeholder="e.g. Jordan Fisher" autocomplete="off"></div>
+    <div style="display:flex;gap:10px">
+      <div class="field" style="flex:1"><label>Phone</label><input id="ncPhone" placeholder="(702) 000-0000" autocomplete="off"></div>
+      <div class="field" style="flex:1"><label>Email</label><input id="ncEmail" placeholder="name@email.com" autocomplete="off"></div>
+    </div>
+    <div class="rowbtns"><button class="savebtn" id="ncCreate">Create profile</button><button class="ghostbtn" id="clientsClose" style="margin-left:auto">Close</button></div>
+    <div style="border-top:1px solid var(--line);margin-top:18px;padding-top:14px">
+      <label style="font-size:11px;font-weight:700;color:var(--ink2);letter-spacing:.05em;text-transform:uppercase">Existing profiles</label>
+      <div class="cl-list" id="clList"></div>
+    </div>
+  </div>
+</div>
 
 <!-- print report target -->
 <div id="printReport"></div>
@@ -512,12 +575,14 @@ function render(){
   else host.innerHTML=chartsHTML(rows);
   // wire clicks
   $$('[data-open]').forEach(el=> el.onclick=()=>openPanel(el.getAttribute('data-open')) );
+  $$('[data-client-add]').forEach(b=> b.onclick=e=>{ e.stopPropagation(); toggleClientCommunity(activeClientId, b.getAttribute('data-client-add')); });
   if(state.view==='table') wireTableSort();
 }
 
 function cardHTML(s){
   const r=RECORDS[s.id]||{}, inc=(r.incentives||[]).length, notes=(r.notes||[]).length, rate=r.rating?r.rating.value:0;
   const col=GROUP_COLOR[s.group];
+  const ac=activeClient(), inList=ac?(ac.communities||[]).includes(s.id):false;
   return `<div class="card" data-open="${s.id}">
     <div class="stripe" style="background:${col}"></div>
     <div class="body">
@@ -535,6 +600,7 @@ function cardHTML(s){
         ${notes?`<span class="tag vis">✎ ${notes} note${notes>1?'s':''}</span>`:''}
         ${s.mp?`<span class="tag mp">${s.mp}</span>`:''}
       </div>
+      ${ac?`<button class="clienttoggle ${inList?'on':''}" data-client-add="${s.id}">${inList?'✓ In '+esc(ac.name)+'’s list':'＋ Add to '+esc(ac.name)+'’s list'}</button>`:''}
     </div></div>`;
 }
 
@@ -656,6 +722,7 @@ function openPanel(id){
        <div class="linkline"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18Z"/></svg>
          <a href="${s.website}" target="_blank" rel="noopener">${s.webDomain}</a><span class="webtype">${s.webType}</span></div>
      </div>
+     ${(()=>{const ac=activeClient(); if(!ac)return ''; const on=(ac.communities||[]).includes(id); return `<div class="sect"><h5>Client profile</h5><button class="savebtn" id="pClientToggle" style="width:100%;background:${on?'var(--good)':'var(--brand)'}">${on?'✓ In '+esc(ac.name)+'’s list — tap to remove':'＋ Add to '+esc(ac.name)+'’s list'}</button></div>`;})()}
      <div class="sect">
        <h5>Your rating</h5>
        <div class="stars" id="stars">${[1,2,3,4,5].map(i=>`<button data-star="${i}" class="${r.rating&&i<=r.rating.value?'lit':''}">★</button>`).join('')}</div>
@@ -693,6 +760,7 @@ function touch(r){ r.updatedBy=IDENTITY?IDENTITY.name:'Unknown'; r.updatedAt=now
 function wirePanel(id){
   const r=recOf(id);
   $('#pclose').onclick=closePanel;
+  const pct=$('#pClientToggle'); if(pct) pct.onclick=()=>{ toggleClientCommunity(activeClientId,id); openPanel(id); };
   // stars
   $$('#stars button').forEach(b=> b.onclick=()=>{
     const v=+b.getAttribute('data-star');
@@ -759,23 +827,7 @@ function buildPrintReport(){
   const rows=filtered();
   const chips=[...$$('#chips .chip')].map(c=>c.textContent.replace('×','').trim());
   const qsum = chips.length? chips.map(c=>`<span class="chip">${c}</span>`).join(' ') : '<span style="color:#555">All 61 subdivisions</span>';
-  const items=rows.map(s=>{const r=RECORDS[s.id]||{};
-    const inc=(r.incentives||[]);
-    const c=r.contact||{}; const contact=[c.name,c.phone,c.email].filter(Boolean).join(' · ');
-    return `<div class="prep-item">
-      <div class="pi-top"><span>${s.sub} — ${s.builder}</span><span>${money(s.lo)} – ${money(s.hi)}</span></div>
-      <div class="pi-grid">
-        <span>${s.type==='Attached'?'Townhome':'Detached'}</span>
-        <span>${s.group}</span>
-        <span>${s.minSqft?s.minSqft.toLocaleString():'—'}–${s.maxSqft?s.maxSqft.toLocaleString():'—'} sq ft</span>
-        <span>Standing ${s.standing??'—'}</span>
-        <span>YTD ${s.ytd??'—'}</span>
-        ${r.rating?`<span>Rated ${r.rating.value}/5</span>`:''}
-      </div>
-      <div class="pi-grid"><span>${s.address}</span></div>
-      ${contact?`<div class="pi-grid"><span><span class="pi-lbl">Contact</span> ${contact}</span></div>`:''}
-      ${inc.length?`<div class="pi-inc"><span class="pi-lbl">Incentives</span><br>${inc.map(i=>'• '+esc(i.text)+' <span style=\"color:#777\">('+i.by+')</span>').join('<br>')}</div>`:''}
-    </div>`;}).join('');
+  const items=rows.map(prepItemHTML).join('');
   $('#printReport').innerHTML=`
     <div class="prep-head">
       <div class="prep-title">Henderson New-Home Watch</div>
@@ -784,6 +836,183 @@ function buildPrintReport(){
     </div>${items}`;
 }
 $('#printBtn').onclick=()=>{ buildPrintReport(); setTimeout(()=>window.print(),60); };
+
+function prepItemHTML(s){
+  const r=RECORDS[s.id]||{};
+  const inc=(r.incentives||[]);
+  const c=r.contact||{}; const contact=[c.name,c.phone,c.email].filter(Boolean).join(' · ');
+  return `<div class="prep-item">
+    <div class="pi-top"><span>${esc(s.sub)} — ${esc(s.builder)}</span><span>${money(s.lo)} – ${money(s.hi)}</span></div>
+    <div class="pi-grid">
+      <span>${s.type==='Attached'?'Townhome':'Detached'}</span>
+      <span>${s.group}</span>
+      <span>${s.minSqft?s.minSqft.toLocaleString():'—'}–${s.maxSqft?s.maxSqft.toLocaleString():'—'} sq ft</span>
+      <span>Standing ${s.standing??'—'}</span>
+      <span>YTD ${s.ytd??'—'}</span>
+      ${r.rating?`<span>Rated ${r.rating.value}/5</span>`:''}
+    </div>
+    <div class="pi-grid"><span>${esc(s.address)}</span></div>
+    ${contact?`<div class="pi-grid"><span><span class="pi-lbl">Contact</span> ${esc(contact)}</span></div>`:''}
+    ${inc.length?`<div class="pi-inc"><span class="pi-lbl">Incentives</span><br>${inc.map(i=>'• '+esc(i.text)+' <span style="color:#777">('+esc(i.by)+')</span>').join('<br>')}</div>`:''}
+  </div>`;
+}
+
+/* ============ CLIENT PROFILES ============ */
+let CLIENTS = sget("clients",[]);
+let activeClientId = sget("activeClient",null);
+let openClientId = null;
+function saveClients(){ sset("clients",CLIENTS); }
+function clientOf(id){ return CLIENTS.find(c=>c.id===id); }
+function activeClient(){ const c=activeClientId?clientOf(activeClientId):null; return c||null; }
+function setActiveClient(id){ activeClientId=id||null; sset("activeClient",activeClientId); refreshClientBar(); render(); }
+function newClient(name,phone,email){
+  const c={id:uid(),name,phone,email,createdBy:IDENTITY?IDENTITY.name:'Unknown',createdAt:nowStr(),updatedBy:null,updatedAt:null,communities:[]};
+  CLIENTS.unshift(c); saveClients(); return c;
+}
+function toggleClientCommunity(cid,sid){
+  const c=clientOf(cid); if(!c)return;
+  c.communities=c.communities||[];
+  const i=c.communities.indexOf(sid);
+  if(i>=0)c.communities.splice(i,1); else c.communities.push(sid);
+  c.updatedBy=IDENTITY?IDENTITY.name:'Unknown'; c.updatedAt=nowStr();
+  saveClients(); refreshClientBar(); render();
+  if(openClientId===cid && $('#clientPanel').classList.contains('on')) refreshClientPanelDynamic(cid);
+}
+function refreshClientBar(){
+  const el=$('#clientBar'); if(!el)return;
+  const c=activeClient();
+  if(!c){ el.innerHTML=''; return; }
+  const n=(c.communities||[]).length;
+  el.innerHTML=`<span class="clientpill">Client: <b>${esc(c.name)}</b> · ${n} <button class="cp-open" id="cpOpen">Open</button><button class="cp-x" id="cpX" title="Clear active client">×</button></span>`;
+  $('#cpOpen').onclick=()=>openClientPanel(c.id);
+  $('#cpX').onclick=()=>setActiveClient(null);
+}
+
+/* ---- clients modal ---- */
+function openClientsModal(){ renderClientList(); $('#clientsModal').classList.add('on'); setTimeout(()=>$('#ncName').focus(),50); }
+function renderClientList(){
+  const el=$('#clList');
+  el.innerHTML = CLIENTS.length ? CLIENTS.map(c=>{
+    const contact=[c.phone,c.email].filter(Boolean).map(esc).join(' · ')||'No contact info';
+    return `<div class="cl-row ${activeClientId===c.id?'active':''}" data-client="${c.id}">
+      <div><div class="cl-nm">${esc(c.name)}</div><div class="cl-meta">${contact} · by ${esc(c.createdBy||'—')} ${c.createdAt||''}</div></div>
+      <span class="cl-cnt">${(c.communities||[]).length} comm.</span>
+      <button class="cl-del" data-client-del="${c.id}" title="Delete profile">×</button>
+    </div>`;}).join('') : `<div style="color:var(--muted);font-size:13px;padding:10px 0">No client profiles yet. Create one above.</div>`;
+  $$('#clList [data-client]').forEach(r=> r.onclick=e=>{ if(e.target.closest('[data-client-del]'))return; const id=r.getAttribute('data-client'); setActiveClient(id); $('#clientsModal').classList.remove('on'); openClientPanel(id); });
+  $$('#clList [data-client-del]').forEach(b=> b.onclick=e=>{ e.stopPropagation(); const id=b.getAttribute('data-client-del'); if(!confirm('Delete this client profile? This cannot be undone.'))return; CLIENTS=CLIENTS.filter(x=>x.id!==id); if(activeClientId===id){activeClientId=null;sset('activeClient',null);} saveClients(); renderClientList(); refreshClientBar(); render(); });
+}
+$('#ncCreate').onclick=()=>{
+  const nm=$('#ncName').value.trim(); if(!nm){$('#ncName').focus();return;}
+  const c=newClient(nm,$('#ncPhone').value.trim(),$('#ncEmail').value.trim());
+  $('#ncName').value='';$('#ncPhone').value='';$('#ncEmail').value='';
+  setActiveClient(c.id); $('#clientsModal').classList.remove('on'); openClientPanel(c.id);
+};
+$('#ncName').addEventListener('keydown',e=>{ if(e.key==='Enter')$('#ncCreate').click(); });
+$('#clientsClose').onclick=()=>$('#clientsModal').classList.remove('on');
+$('#clientsBtn').onclick=openClientsModal;
+
+/* ---- client panel ---- */
+function commItemHTML(s){
+  return `<div class="comm"><span class="dotcol" style="background:${GROUP_COLOR[s.group]}"></span><div><div class="c-nm">${esc(s.sub)}</div><div class="c-sub">${esc(s.builder)} · ${money(s.lo)}–${money(s.hi)}</div></div><button class="c-x" data-comm-x="${s.id}" title="Remove">×</button></div>`;
+}
+function openClientPanel(id){ openClientId=id; renderClientPanel(id); $('#clientPanel').classList.add('on'); $('#scrim').classList.add('on'); }
+function closeClientPanel(){ $('#clientPanel').classList.remove('on'); openClientId=null; if(!$('#panel').classList.contains('on')) $('#scrim').classList.remove('on'); }
+function renderClientPanel(cid){
+  const c=clientOf(cid); if(!c){ closeClientPanel(); return; }
+  const n=(c.communities||[]).length;
+  const subs=(c.communities||[]).map(id=>SUBS.find(s=>s.id===id)).filter(Boolean);
+  const commHTML = subs.length ? subs.map(commItemHTML).join('') : `<div style="color:var(--muted);font-size:13px">No communities yet. Add from the list below, or tap “Add to profile” on any community while browsing.</div>`;
+  const pickHTML = SUBS.slice().sort((a,b)=>a.sub.localeCompare(b.sub)).map(s=>{
+    const on=(c.communities||[]).includes(s.id);
+    return `<label class="pickrow" data-pick="${s.id}"><input type="checkbox" ${on?'checked':''}><span class="dotcol" style="background:${GROUP_COLOR[s.group]}"></span><span>${esc(s.sub)}</span><span class="pk-sub">${esc(s.builder)}</span></label>`;
+  }).join('');
+  $('#clientPanelInner').innerHTML=`
+   <div class="phead" style="border-top:5px solid var(--brand)">
+     <button class="pclose" id="clpclose">×</button>
+     <div class="pname">${esc(c.name)}</div>
+     <div class="pbuilder">Client profile · ${n} communit${n===1?'y':'ies'}</div>
+   </div>
+   <div class="pbody">
+     <div class="sect">
+       <div class="field"><label>Client name</label><input id="clName" value="${(c.name||'').replace(/"/g,'&quot;')}"></div>
+       <div class="field"><label>Phone</label><input id="clPhone" value="${(c.phone||'').replace(/"/g,'&quot;')}"></div>
+       <div class="field"><label>Email</label><input id="clEmail" value="${(c.email||'').replace(/"/g,'&quot;')}"></div>
+       <div style="display:flex;align-items:center;gap:12px"><button class="savebtn" id="clSave">Save details</button><span class="savedhint" id="clHint">Saved ✓</span></div>
+     </div>
+     <div class="sect">
+       <h5>Communities in this profile</h5>
+       <div id="commList">${commHTML}</div>
+     </div>
+     <div class="sect">
+       <h5>Add communities</h5>
+       <input id="pickFilter" placeholder="Search communities or builders…" style="width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:9px;background:var(--surface2)">
+       <div class="pickscroll" id="pickScroll">${pickHTML}</div>
+     </div>
+     <div class="sect">
+       <button class="savebtn" id="clReport" style="width:100%;background:var(--ink)">Generate report (print / PDF)</button>
+       <div class="rowbtns">
+         <button class="ghostbtn" id="clActive">${activeClientId===cid?'✓ Active for selecting':'Set active for selecting'}</button>
+         <button class="ghostbtn" id="clDelete" style="color:var(--danger);margin-left:auto">Delete profile</button>
+       </div>
+     </div>
+   </div>
+   <div class="pfoot"><span>Created by ${esc(c.createdBy||'—')} · ${c.createdAt||'—'}</span><span>${c.updatedAt?('Updated '+c.updatedAt):''}</span></div>`;
+  wireClientPanel(cid);
+}
+function refreshClientPanelDynamic(cid){
+  const c=clientOf(cid); if(!c)return;
+  const subs=(c.communities||[]).map(id=>SUBS.find(s=>s.id===id)).filter(Boolean);
+  const cl=$('#commList');
+  if(cl){
+    cl.innerHTML = subs.length ? subs.map(commItemHTML).join('') : `<div style="color:var(--muted);font-size:13px">No communities yet. Add from the list below, or tap “Add to profile” on any community while browsing.</div>`;
+    $$('#commList [data-comm-x]').forEach(b=> b.onclick=()=>toggleClientCommunity(cid,b.getAttribute('data-comm-x')));
+  }
+  $$('#pickScroll .pickrow').forEach(l=>{ const cb=l.querySelector('input'); if(cb) cb.checked=(c.communities||[]).includes(l.getAttribute('data-pick')); });
+  const pb=$('#clientPanelInner .pbuilder'); if(pb){ const n=(c.communities||[]).length; pb.textContent='Client profile · '+n+' communit'+(n===1?'y':'ies'); }
+}
+function wireClientPanel(cid){
+  const c=clientOf(cid); if(!c)return;
+  $('#clpclose').onclick=closeClientPanel;
+  $('#clSave').onclick=()=>{
+    c.name=$('#clName').value.trim()||c.name; c.phone=$('#clPhone').value.trim(); c.email=$('#clEmail').value.trim();
+    c.updatedBy=IDENTITY?IDENTITY.name:'Unknown'; c.updatedAt=nowStr(); saveClients();
+    const h=$('#clHint'); h.classList.add('on'); setTimeout(()=>h.classList.remove('on'),1500);
+    refreshClientBar(); renderClientPanel(cid);
+  };
+  $$('#commList [data-comm-x]').forEach(b=> b.onclick=()=>toggleClientCommunity(cid,b.getAttribute('data-comm-x')));
+  $$('#pickScroll [data-pick]').forEach(l=> l.onclick=e=>{ e.preventDefault(); toggleClientCommunity(cid,l.getAttribute('data-pick')); });
+  $('#pickFilter').oninput=e=>{ const q=e.target.value.toLowerCase(); $$('#pickScroll .pickrow').forEach(row=>{ row.style.display=row.textContent.toLowerCase().includes(q)?'':'none'; }); };
+  $('#clReport').onclick=()=>buildClientReport(cid);
+  $('#clActive').onclick=()=>{ setActiveClient(activeClientId===cid?null:cid); renderClientPanel(cid); };
+  $('#clDelete').onclick=()=>{ if(!confirm('Delete this client profile? This cannot be undone.'))return; CLIENTS=CLIENTS.filter(x=>x.id!==cid); if(activeClientId===cid){activeClientId=null;sset('activeClient',null);} saveClients(); closeClientPanel(); refreshClientBar(); render(); };
+}
+function closeOverlays(){ $('#panel').classList.remove('on'); $('#clientPanel').classList.remove('on'); $('#scrim').classList.remove('on'); openId=null; openClientId=null; }
+$('#scrim').onclick=closeOverlays;
+
+/* ---- client report ---- */
+function buildClientReport(cid){
+  const c=clientOf(cid); if(!c)return;
+  const subs=(c.communities||[]).map(id=>SUBS.find(s=>s.id===id)).filter(Boolean);
+  const items = subs.length ? subs.map(prepItemHTML).join('') : `<div style="color:#555;font-size:12px;padding:10px 0">No communities have been added to this profile yet.</div>`;
+  const when=new Date().toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'});
+  const contact=[c.phone,c.email].filter(Boolean).join(' · ');
+  $('#printReport').innerHTML=`
+    <div class="creport-band">
+      <img src="Buyer%202%20Builder%20Logo_Wht.png" alt="Buyer2Builder.com — Your New Home Source"/>
+      <span class="cb-t">Market Watch<br>Community Report</span>
+    </div>
+    <div class="creport-client">
+      <span class="cc-nm">${esc(c.name)}</span>
+      ${contact?`<span class="cc-ct">${esc(contact)}</span>`:''}
+    </div>
+    <div class="creport-meta">
+      Prepared by ${esc(IDENTITY?IDENTITY.name:'—')} · ${when} · ${subs.length} communit${subs.length===1?'y':'ies'}<br>
+      Profile created by ${esc(c.createdBy||'—')} · ${c.createdAt||'—'}
+    </div>
+    ${items}`;
+  setTimeout(()=>window.print(),80);
+}
 
 /* ============ CONTROLS SYNC + WIRING ============ */
 function buildRail(){
@@ -813,7 +1042,8 @@ $('#q').addEventListener('input',e=>{ clearTimeout(qTimer); qTimer=setTimeout(()
 $('#q').addEventListener('keydown',e=>{ if(e.key==='Enter'){ clearTimeout(qTimer); applyParsedQuery(e.target.value);} });
 
 /* ============ INIT ============ */
-buildRail(); syncControls(); refreshWho(); render();
+if(activeClientId && !clientOf(activeClientId)) activeClientId=null;
+buildRail(); syncControls(); refreshWho(); refreshClientBar(); render();
 document.getElementById('buildStamp').textContent = 'Build '+BUILD+' · '+BUILD_DATE;
 if(!IDENTITY){ openIdModal(); }
 </script>
