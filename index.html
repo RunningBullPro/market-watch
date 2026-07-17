@@ -7,6 +7,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
 :root{
   --ink:#14263a; --ink2:#3a4a60; --muted:#6b7a8d;
@@ -145,6 +147,9 @@ td .nm{font-weight:600;color:var(--ink)}
 .maplegend{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:12px;font-size:12.5px;font-weight:600;color:var(--ink2)}
 .maplegend span{display:inline-flex;align-items:center;gap:6px}
 .maplegend .dot{width:10px;height:10px;border-radius:50%}
+#mapcanvas{position:relative;z-index:0;height:clamp(380px,62vh,640px);width:100%;border-radius:10px;overflow:hidden;border:1px solid var(--line)}
+#mapcanvas.leaflet-container{background:#eef2f7;font-family:inherit}
+.leaflet-tooltip{font-weight:600;font-size:12px;color:var(--ink);border-radius:6px}
 svg .pin{cursor:pointer;transition:.1s}
 svg .pin:hover{stroke:var(--ink);stroke-width:2}
 .arealbl{font-family:'Inter';font-weight:700;font-size:12px;fill:#9aa9bb;letter-spacing:.02em}
@@ -498,11 +503,12 @@ function render(){
   const rows=filtered();
   $('#count').textContent=rows.length;
   const host=$('#results');
+  if(leafletMap){ try{leafletMap.remove();}catch(e){} leafletMap=null; }
   $('#sortbar').style.display=(state.view==='cards'||state.view==='table')?'flex':'none';
   if(rows.length===0){ host.innerHTML=`<div class="empty"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg><b>No subdivisions match</b>Try widening the price range or clearing a filter.</div>`; return; }
   if(state.view==='cards') host.innerHTML=`<div class="cards">${rows.map(cardHTML).join('')}</div>`;
   else if(state.view==='table') host.innerHTML=tableHTML(rows);
-  else if(state.view==='map') host.innerHTML=mapHTML(rows);
+  else if(state.view==='map'){ host.innerHTML=mapHTML(rows); initMap(rows); }
   else host.innerHTML=chartsHTML(rows);
   // wire clicks
   $$('[data-open]').forEach(el=> el.onclick=()=>openPanel(el.getAttribute('data-open')) );
@@ -561,26 +567,34 @@ function wireTableSort(){
 
 /* ---- map (schematic SVG, no tiles) ---- */
 function mapHTML(rows){
-  const W=820,H=560,pad=54;
-  const lats=SUBS.map(s=>s.lat),lngs=SUBS.map(s=>s.lng);
-  const minLat=Math.min(...lats),maxLat=Math.max(...lats),minLng=Math.min(...lngs),maxLng=Math.max(...lngs);
-  const px=lng=> pad+(lng-minLng)/(maxLng-minLng)*(W-2*pad);
-  const py=lat=> pad+(maxLat-lat)/(maxLat-minLat)*(H-2*pad);
-  // jitter identical coords
-  const seen={};
-  const pts=rows.map(s=>{const key=s.lat.toFixed(4)+','+s.lng.toFixed(4);seen[key]=(seen[key]||0)+1;
-    const i=seen[key]-1; const ang=i*2.4, rad=i?7:0;
-    return {s, x:px(s.lng)+Math.cos(ang)*rad, y:py(s.lat)+Math.sin(ang)*rad};});
-  // area labels at group centroids
-  const cents={};
-  GROUPS.forEach(g=>{const gs=SUBS.filter(s=>s.group===g); if(!gs.length)return;
-    cents[g]={x:px(gs.reduce((a,s)=>a+s.lng,0)/gs.length), y:py(gs.reduce((a,s)=>a+s.lat,0)/gs.length)};});
   const legend=GROUPS.map(g=>`<span><span class="dot" style="background:${GROUP_COLOR[g]}"></span>${g}</span>`).join('');
-  const areaLbls=Object.entries(cents).map(([g,c])=>`<text class="arealbl" x="${c.x}" y="${g==='Cadence'?c.y-40:c.y-46}" text-anchor="middle">${g.toUpperCase()}</text>`).join('');
-  const pins=pts.map(p=>`<circle class="pin" cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="7" fill="${GROUP_COLOR[p.s.group]}" fill-opacity="0.85" stroke="#fff" stroke-width="1.5" data-open="${p.s.id}"><title>${p.s.sub} — ${p.s.builder} · ${money(p.s.lo)}</title></circle>`).join('');
-  return `<div class="mapwrap"><div class="maplegend">${legend}<span style="margin-left:auto;color:var(--muted);font-weight:500">Schematic layout — click a pin for detail</span></div>
-    <svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;background:linear-gradient(180deg,#f2f6fb,#eef2f7);border-radius:10px">
-    ${areaLbls}${pins}</svg></div>`;
+  return `<div class="mapwrap"><div class="maplegend">${legend}<span style="margin-left:auto;color:var(--muted);font-weight:500">Live map — scroll or use + / − to zoom, drag to pan · click a pin for detail</span></div>
+    <div id="mapcanvas"></div></div>`;
+}
+
+let leafletMap=null;
+function initMap(rows){
+  const el=document.getElementById('mapcanvas');
+  if(!el || typeof L==='undefined') return;
+  leafletMap=L.map(el,{scrollWheelZoom:true,zoomControl:true});
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+    maxZoom:19, attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  }).addTo(leafletMap);
+  // spread out pins that share an exact coordinate so they stay clickable
+  const seen={}, markers=[];
+  rows.forEach(s=>{
+    if(typeof s.lat!=='number' || typeof s.lng!=='number') return;
+    const key=s.lat.toFixed(5)+','+s.lng.toFixed(5); seen[key]=(seen[key]||0)+1;
+    const i=seen[key]-1, r=i?0.00045*Math.ceil(i/6):0, ang=i*2.4;
+    const lat=s.lat+Math.sin(ang)*r, lng=s.lng+Math.cos(ang)*r;
+    const m=L.circleMarker([lat,lng],{radius:7,color:'#fff',weight:1.5,fillColor:GROUP_COLOR[s.group],fillOpacity:0.9});
+    m.bindTooltip(`${s.sub} — ${s.builder} · ${money(s.lo)}`);
+    m.on('click',()=>openPanel(s.id));
+    m.addTo(leafletMap); markers.push(m);
+  });
+  if(markers.length){ leafletMap.fitBounds(L.featureGroup(markers).getBounds().pad(0.15)); }
+  else { leafletMap.setView([36.03,-114.98],11); }
+  setTimeout(()=>{ if(leafletMap) leafletMap.invalidateSize(); },60);
 }
 
 /* ---- charts ---- */
