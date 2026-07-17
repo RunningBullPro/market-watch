@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Market Watch — Henderson New-Home Intelligence · Buyer2Builder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#14263a; --ink2:#3a4a60; --muted:#6b7a8d;
+  --paper:#eaeef3; --surface:#ffffff; --surface2:#f5f7fa; --line:#d8e0e9;
+  --brand:#1d5fd0; --brand-d:#154aa6; --brand-soft:#e7f0fd;
+  --cadence:#2e6bd6; --llv:#0f9b6c; --insp:#e08a1e; --standalone:#64748b;
+  --star:#f5a524; --good:#0f9b6c; --good-soft:#e4f6ee; --danger:#c2413a;
+  --shadow:0 1px 2px rgba(20,38,58,.06),0 8px 24px rgba(20,38,58,.08);
+  --radius:14px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  background:var(--paper); color:var(--ink);
+  font-size:14px; line-height:1.45; -webkit-font-smoothing:antialiased;
+}
+button{font-family:inherit;cursor:pointer}
+input,select,textarea{font-family:inherit;font-size:14px}
+a{color:var(--brand);text-decoration:none}
+a:hover{text-decoration:underline}
+.tnum{font-variant-numeric:tabular-nums}
+.mono{font-variant-numeric:tabular-nums}
+.eyebrow{font-family:'Inter';font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+
+/* ---------- top bar ---------- */
+.topbar{
+  position:sticky;top:0;z-index:40;background:var(--ink);color:#fff;
+  display:flex;align-items:center;gap:16px;padding:12px 20px;flex-wrap:wrap;
+}
+.brand{display:flex;align-items:baseline;gap:10px;white-space:nowrap}
+.brand .mark{font-family:'Fraunces';font-weight:600;font-size:20px;letter-spacing:.01em;color:#fff}
+.brand .sub{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#9fb2c9;font-weight:600}
+.qwrap{flex:1;min-width:260px;position:relative;display:flex;align-items:center}
+.qwrap svg{position:absolute;left:14px;width:18px;height:18px;stroke:#8ea3bd;pointer-events:none}
+#q{
+  width:100%;padding:11px 14px 11px 42px;border-radius:11px;border:1px solid #2c405a;
+  background:#0e1c2c;color:#fff;outline:none;font-size:15px;
+}
+#q::placeholder{color:#7d92ac}
+#q:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(29,95,208,.35)}
+.topbtns{display:flex;align-items:center;gap:8px}
+.tbtn{
+  background:#22384f;color:#dfe8f2;border:1px solid #33506e;border-radius:9px;
+  padding:9px 13px;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:7px;
+}
+.tbtn:hover{background:#2c445f}
+.tbtn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+.tbtn.primary:hover{background:var(--brand-d)}
+.tbtn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2}
+.who{display:flex;align-items:center;gap:8px;cursor:pointer;padding:5px 10px 5px 6px;border-radius:20px;background:#22384f;border:1px solid #33506e}
+.who:hover{background:#2c445f}
+.who .av{width:26px;height:26px;border-radius:50%;background:var(--brand);color:#fff;display:grid;place-items:center;font-weight:700;font-size:12px}
+.who .nm{font-size:12.5px;color:#dfe8f2;font-weight:600;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ---------- query chips row ---------- */
+.chiprow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 20px;background:var(--surface);border-bottom:1px solid var(--line)}
+.chiprow .lead{font-size:12px;color:var(--muted);font-weight:600}
+.chip{display:inline-flex;align-items:center;gap:6px;background:var(--brand-soft);color:var(--brand-d);border:1px solid #cadffb;border-radius:20px;padding:4px 11px;font-size:12.5px;font-weight:600}
+.chip button{border:none;background:none;color:var(--brand-d);opacity:.6;font-size:14px;line-height:1;padding:0}
+.chip button:hover{opacity:1}
+.countpill{margin-left:auto;font-size:13px;color:var(--ink2);font-weight:600}
+.countpill b{color:var(--ink)}
+.linkbtn{background:none;border:none;color:var(--brand);font-weight:600;font-size:12.5px;padding:0}
+
+/* ---------- layout ---------- */
+.wrap{display:grid;grid-template-columns:264px 1fr;gap:20px;max-width:1440px;margin:0 auto;padding:20px}
+@media(max-width:900px){.wrap{grid-template-columns:1fr;padding:14px}}
+.rail{position:sticky;top:82px;align-self:start;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);max-height:calc(100vh - 104px);overflow:auto}
+@media(max-width:900px){.rail{position:static;max-height:none}}
+.rail h3{margin:0 0 12px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.fgroup{margin-bottom:20px}
+.fgroup:last-child{margin-bottom:4px}
+.seg{display:flex;background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:3px;gap:2px}
+.seg button{flex:1;border:none;background:none;padding:7px 4px;border-radius:7px;font-size:12.5px;font-weight:600;color:var(--ink2)}
+.seg button.on{background:var(--ink);color:#fff}
+.rangerow{display:flex;gap:8px;align-items:center}
+.rangerow input{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:9px;background:var(--surface2);color:var(--ink)}
+.rangerow span{color:var(--muted);font-size:12px}
+.checkline{display:flex;align-items:center;gap:9px;padding:6px 0;font-size:13.5px;cursor:pointer}
+.checkline input{width:16px;height:16px;accent-color:var(--brand)}
+.checkline .dot{width:9px;height:9px;border-radius:50%;flex:none}
+.toggle{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:13.5px;font-weight:600}
+.switch{position:relative;width:40px;height:22px;background:var(--line);border-radius:20px;transition:.15s;flex:none}
+.switch.on{background:var(--good)}
+.switch::after{content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;background:#fff;border-radius:50%;transition:.15s;box-shadow:0 1px 2px rgba(0,0,0,.2)}
+.switch.on::after{left:20px}
+
+/* ---------- main ---------- */
+.main{min-width:0}
+.tabs{display:flex;gap:4px;background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:4px;margin-bottom:16px;box-shadow:var(--shadow);width:fit-content}
+.tabs button{border:none;background:none;padding:8px 15px;border-radius:8px;font-size:13.5px;font-weight:600;color:var(--ink2);display:inline-flex;align-items:center;gap:7px}
+.tabs button.on{background:var(--brand);color:#fff}
+.tabs button svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2}
+.sortbar{display:flex;align-items:center;gap:10px;margin-bottom:14px;font-size:13px;color:var(--muted)}
+.sortbar select{padding:7px 10px;border:1px solid var(--line);border-radius:9px;background:var(--surface);color:var(--ink);font-weight:600}
+
+/* cards */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;cursor:pointer;transition:transform .12s,box-shadow .12s;position:relative}
+.card:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(20,38,58,.14)}
+.card .stripe{height:5px}
+.card .body{padding:15px 16px 16px}
+.card .top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.card .name{font-weight:700;font-size:15.5px;line-height:1.25;color:var(--ink)}
+.card .builder{font-size:12.5px;color:var(--muted);margin-top:2px}
+.badge{font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;white-space:nowrap}
+.badge.det{background:#eef4ff;color:#2a53a8}
+.badge.att{background:#fff1e2;color:#a5621a}
+.card .price{font-size:18px;font-weight:700;margin:11px 0 3px;letter-spacing:-.01em}
+.card .meta{font-size:12.5px;color:var(--ink2);display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:8px}
+.card .meta b{color:var(--ink);font-weight:600}
+.card .tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.tag{font-size:11px;font-weight:600;padding:3px 8px;border-radius:6px;display:inline-flex;align-items:center;gap:5px}
+.tag.mp{background:var(--surface2);color:var(--ink2);border:1px solid var(--line)}
+.tag.inc{background:var(--good-soft);color:#0b7350}
+.tag.vis{background:#eef1f6;color:var(--ink2)}
+.tag.rate{background:#fff6e6;color:#9a6410}
+.card .gtag{position:absolute;top:12px;right:12px}
+
+/* table */
+.tablewrap{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:auto}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+th{position:sticky;top:0;background:var(--surface2);font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);font-weight:700;cursor:pointer;z-index:2}
+th:hover{color:var(--ink)}
+tbody tr{cursor:pointer}
+tbody tr:hover{background:var(--brand-soft)}
+td .nm{font-weight:600;color:var(--ink)}
+.cellbadge{font-size:10.5px;font-weight:700;padding:2px 6px;border-radius:5px}
+
+/* map */
+.mapwrap,.chartwrap{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
+.maplegend{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:12px;font-size:12.5px;font-weight:600;color:var(--ink2)}
+.maplegend span{display:inline-flex;align-items:center;gap:6px}
+.maplegend .dot{width:10px;height:10px;border-radius:50%}
+svg .pin{cursor:pointer;transition:.1s}
+svg .pin:hover{stroke:var(--ink);stroke-width:2}
+.arealbl{font-family:'Inter';font-weight:700;font-size:12px;fill:#9aa9bb;letter-spacing:.02em}
+
+/* charts */
+.chartgrid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media(max-width:760px){.chartgrid{grid-template-columns:1fr}}
+.chartcard{background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:16px}
+.chartcard h4{margin:0 0 12px;font-size:13px;color:var(--ink);font-weight:700}
+.bar{fill:var(--brand)}
+.barlbl{font-size:11px;fill:var(--ink2);font-weight:600}
+.barval{font-size:11px;fill:var(--muted);font-weight:600}
+
+.empty{text-align:center;padding:60px 20px;color:var(--muted)}
+.empty svg{width:38px;height:38px;stroke:var(--line);fill:none;stroke-width:1.5;margin-bottom:10px}
+.empty b{color:var(--ink2);display:block;font-size:15px;margin-bottom:4px}
+
+/* ---------- detail panel ---------- */
+.scrim{position:fixed;inset:0;background:rgba(20,38,58,.4);z-index:60;opacity:0;pointer-events:none;transition:.15s}
+.scrim.on{opacity:1;pointer-events:auto}
+.panel{position:fixed;top:0;right:0;height:100%;width:480px;max-width:92vw;background:var(--surface);z-index:70;box-shadow:-8px 0 40px rgba(20,38,58,.2);transform:translateX(100%);transition:transform .2s ease;display:flex;flex-direction:column}
+.panel.on{transform:translateX(0)}
+.panel .phead{padding:18px 20px;border-bottom:1px solid var(--line);position:relative}
+.panel .pclose{position:absolute;top:16px;right:16px;border:none;background:var(--surface2);border-radius:8px;width:32px;height:32px;font-size:18px;color:var(--ink2)}
+.panel .pname{font-family:'Fraunces';font-weight:600;font-size:23px;line-height:1.15;color:var(--ink);padding-right:36px}
+.panel .pbuilder{color:var(--muted);font-size:13.5px;margin-top:4px}
+.panel .pbody{padding:6px 20px 30px;overflow:auto;flex:1}
+.sect{padding:16px 0;border-bottom:1px solid var(--line)}
+.sect:last-child{border-bottom:none}
+.sect h5{margin:0 0 12px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700;display:flex;align-items:center;gap:8px}
+.snapgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px 16px}
+.snap{}
+.snap .k{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.snap .v{font-size:15px;font-weight:700;color:var(--ink);margin-top:1px}
+.linkline{display:flex;align-items:center;gap:9px;padding:8px 0;font-size:13.5px}
+.linkline svg{width:16px;height:16px;stroke:var(--muted);fill:none;stroke-width:2;flex:none}
+.webtype{font-size:11px;color:var(--muted);margin-left:auto;font-weight:600}
+.stars{display:flex;gap:4px}
+.stars button{border:none;background:none;padding:0;font-size:26px;line-height:1;color:#dbe2ea}
+.stars button.lit{color:var(--star)}
+.field{margin-bottom:10px}
+.field label{display:block;font-size:11.5px;font-weight:600;color:var(--ink2);margin-bottom:4px}
+.field input,.field textarea{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:9px;background:var(--surface2);color:var(--ink)}
+.field input:focus,.field textarea:focus,.addrow input:focus,.addrow textarea:focus{outline:none;border-color:var(--brand);background:#fff;box-shadow:0 0 0 3px rgba(29,95,208,.12)}
+.savedhint{font-size:11.5px;color:var(--good);font-weight:600;opacity:0;transition:.2s}
+.savedhint.on{opacity:1}
+.itemlist{display:flex;flex-direction:column;gap:9px;margin-bottom:12px}
+.item{background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;position:relative}
+.item.inc{background:var(--good-soft);border-color:#c7ebda}
+.item .txt{font-size:13.5px;color:var(--ink);white-space:pre-wrap}
+.item .by{font-size:11px;color:var(--muted);margin-top:6px}
+.item .del{position:absolute;top:8px;right:8px;border:none;background:none;color:var(--muted);font-size:15px;line-height:1}
+.item .del:hover{color:var(--danger)}
+.addrow{display:flex;gap:8px;align-items:flex-start}
+.addrow textarea,.addrow input{flex:1;padding:9px 11px;border:1px solid var(--line);border-radius:9px;background:var(--surface2);resize:vertical}
+.addbtn{background:var(--ink);color:#fff;border:none;border-radius:9px;padding:9px 14px;font-weight:600;font-size:13px;white-space:nowrap}
+.addbtn:hover{background:#22384f}
+.addbtn.inc{background:var(--good)}
+.savebtn{background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 16px;font-weight:600;font-size:13px}
+.savebtn:hover{background:var(--brand-d)}
+.pfoot{padding:10px 20px;border-top:1px solid var(--line);font-size:12px;color:var(--muted);display:flex;justify-content:space-between;align-items:center}
+
+/* ---------- identity modal ---------- */
+.modal{position:fixed;inset:0;background:rgba(20,38,58,.55);z-index:90;display:none;place-items:center;padding:20px}
+.modal.on{display:grid}
+.modalcard{background:#fff;border-radius:18px;max-width:400px;width:100%;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,.3);text-align:center}
+.modalcard .mk{font-family:'Fraunces';font-weight:600;font-size:22px;color:var(--ink)}
+.modalcard p{color:var(--muted);font-size:13.5px;margin:8px 0 18px}
+.modalcard input{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:11px;text-align:center;font-size:16px;font-weight:600;margin-bottom:14px}
+.modalcard input:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(29,95,208,.15)}
+.modalcard .go{width:100%;background:var(--brand);color:#fff;border:none;border-radius:11px;padding:12px;font-weight:700;font-size:15px}
+.modalcard .go:hover{background:var(--brand-d)}
+.storewarn{background:#fff6e6;border:1px solid #f3d99a;color:#8a5a12;font-size:12px;padding:8px 12px;border-radius:9px;margin:20px;display:none}
+.storewarn.on{display:block}
+
+.footer{max-width:1440px;margin:0 auto;padding:8px 20px 40px;color:var(--muted);font-size:12px;display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.footer .dotsep{width:3px;height:3px;border-radius:50%;background:var(--line)}
+
+/* ---------- print report ---------- */
+#printReport{display:none}
+@media print{
+  @page{margin:14mm}
+  .topbar,.chiprow,.rail,.tabs,.sortbar,.panel,.scrim,.footer,.storewarn,#results{display:none !important}
+  body{background:#fff;font-size:11px}
+  .wrap{display:block;padding:0;max-width:none}
+  #printReport{display:block}
+  .prep-head{border-bottom:2px solid var(--ink);padding-bottom:10px;margin-bottom:14px}
+  .prep-title{font-family:'Fraunces';font-size:22px;font-weight:700;color:#000}
+  .prep-sub{font-size:11px;color:#333;margin-top:3px}
+  .prep-query{font-size:11px;margin-top:8px}
+  .prep-query .chip{background:#eef;border:1px solid #ccd;color:#224;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .prep-item{border:1px solid #ccc;border-radius:8px;padding:10px 12px;margin-bottom:9px;page-break-inside:avoid}
+  .prep-item .pi-top{display:flex;justify-content:space-between;font-weight:700;font-size:13px}
+  .prep-item .pi-grid{display:flex;flex-wrap:wrap;gap:2px 18px;margin-top:5px;color:#333}
+  .prep-item .pi-inc{background:#eef8f2;border:1px solid #cde9db;border-radius:6px;padding:6px 9px;margin-top:7px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .prep-item .pi-lbl{font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:#555}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+
+<!-- identity modal -->
+<div class="modal" id="idModal">
+  <div class="modalcard">
+    <div class="mk">Market Watch</div>
+    <p>Your name stamps the notes and incentives you add, so the team knows who logged what.</p>
+    <input id="idInput" placeholder="Your name" autocomplete="name" />
+    <button class="go" id="idGo">Start</button>
+  </div>
+</div>
+
+<div class="topbar">
+  <div class="brand"><span class="mark">Buyer2Builder</span><span class="sub">Market Watch</span></div>
+  <div class="qwrap">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>
+    <input id="q" placeholder='Ask: "townhomes 350 to 400k"  ·  "detached under 500k in Cadence"  ·  "Lennar available"' autocomplete="off" />
+  </div>
+  <div class="topbtns">
+    <button class="tbtn" id="exportBtn" title="Download current results as CSV"><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>Export</button>
+    <button class="tbtn primary" id="printBtn"><svg viewBox="0 0 24 24"><path d="M6 9V3h12v6"/><path d="M6 18H4a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8" rx="1"/></svg>Print report</button>
+    <div class="who" id="whoBtn"><span class="av" id="whoAv">?</span><span class="nm" id="whoNm">Sign in</span></div>
+  </div>
+</div>
+
+<div class="chiprow" id="chiprow">
+  <span class="lead">Filters</span>
+  <div id="chips" style="display:flex;gap:8px;flex-wrap:wrap"></div>
+  <button class="linkbtn" id="clearBtn" style="display:none">Clear all</button>
+  <span class="countpill"><b id="count">0</b> of 61 subdivisions</span>
+</div>
+
+<div class="wrap">
+  <aside class="rail">
+    <h3>Refine</h3>
+    <div class="fgroup">
+      <label class="eyebrow" style="display:block;margin-bottom:7px">Home type</label>
+      <div class="seg" id="segType">
+        <button data-v="all" class="on">All</button>
+        <button data-v="Detached">Detached</button>
+        <button data-v="Attached">Townhome</button>
+      </div>
+    </div>
+    <div class="fgroup">
+      <label class="eyebrow" style="display:block;margin-bottom:7px">Price range</label>
+      <div class="rangerow">
+        <input type="number" id="priceMin" placeholder="Min $" step="10000" />
+        <span>–</span>
+        <input type="number" id="priceMax" placeholder="Max $" step="10000" />
+      </div>
+    </div>
+    <div class="fgroup">
+      <label class="eyebrow" style="display:block;margin-bottom:7px">Min. square feet</label>
+      <div class="rangerow"><input type="number" id="sqftMin" placeholder="e.g. 2000" step="100" /></div>
+    </div>
+    <div class="fgroup">
+      <label class="eyebrow" style="display:block;margin-bottom:9px">Master plan</label>
+      <div id="groupChecks"></div>
+    </div>
+    <div class="fgroup">
+      <label class="eyebrow" style="display:block;margin-bottom:9px">Builder</label>
+      <div id="builderChecks" style="max-height:190px;overflow:auto"></div>
+    </div>
+    <div class="fgroup">
+      <div class="toggle"><span>Has standing inventory</span><div class="switch" id="invSwitch"></div></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="tabs" id="tabs">
+      <button data-v="cards" class="on"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Cards</button>
+      <button data-v="table"><svg viewBox="0 0 24 24"><path d="M3 5h18M3 12h18M3 19h18"/></svg>Table</button>
+      <button data-v="map"><svg viewBox="0 0 24 24"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2Z"/><path d="M9 4v14M15 6v14"/></svg>Map</button>
+      <button data-v="charts"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Charts</button>
+    </div>
+    <div class="sortbar" id="sortbar">
+      <span>Sort</span>
+      <select id="sortSel">
+        <option value="price-asc">Price · low to high</option>
+        <option value="price-desc">Price · high to low</option>
+        <option value="sqft-desc">Largest sq ft</option>
+        <option value="standing-desc">Most standing inventory</option>
+        <option value="rating-desc">Highest rated</option>
+        <option value="name-asc">Name A–Z</option>
+        <option value="builder-asc">Builder A–Z</option>
+      </select>
+    </div>
+    <div id="results"></div>
+  </main>
+</div>
+
+<div class="storewarn" id="storeWarn">Preview mode: changes you make here won't be saved. Once this file is hosted on your site, notes, incentives, and ratings will persist in the browser.</div>
+
+<div class="footer">
+  <span>Data: Home Builders Research — Weekly Traffic &amp; Sales Watch, week ending 07/12/2026</span>
+  <span class="dotsep"></span><span>61 Henderson subdivisions</span>
+  <span class="dotsep"></span><span>v1 · saved in this browser · team sync via Supabase next</span>
+</div>
+
+<!-- detail panel -->
+<div class="scrim" id="scrim"></div>
+<div class="panel" id="panel"><div id="panelInner"></div></div>
+
+<!-- print report target -->
+<div id="printReport"></div>
+
+<script>
+/* ============ DATA ============ */
+const SUBS = [{"id": "aria-crossing-2", "builder": "Beazer Homes", "sub": "Aria Crossing", "mp": "Cadence", "group": "Cadence", "type": "Detached", "lo": 504990, "hi": 597990, "minSqft": 1769, "maxSqft": 2542, "standing": 6, "unsold": 6, "ytd": 8, "traffic": 15, "totalLot": 61, "opened": "12/29/2024", "address": "333 Taylor St, Henderson, NV 89015", "lat": 36.049758, "lng": -114.989783, "mapUrl": "https://www.google.com/maps/search/?api=1&query=36.0497578,-114.9897826&query_place_id=ChIJQQE1nbfXyIARQLmHjkH9mRg", "website": "https://www.beazer.com/las-vegas-nv/aria-crossing", "webDomain": "beazer.com", "webType": "Community page", "geoNote": "Sales office"}, {"id": "cantata-point-3", "builder": "Beazer Homes", "sub": "Cantata Point", "mp": "Cadence", "group": "Cadence", "type": "Attached", "lo": 362990, "hi": 479990, "minSqft": 1330, "maxSqft": 2256, "standing": 8, "unsold": 20, "ytd": 24, "traffic": 8, "totalLot": 178, "opened": "10/13/2024", "address": "334 Ukelele Pl, Henderson, NV 89015", "lat": 36.050066, "lng": -114.99026, "mapUrl": "https://www.google.com/maps/search/?api=1&query=36.0500659,-114.9902597&query_place_id=ChIJy2J0HE7XyIARAwy7jlIDluI", "website": "https://www.beazer.com/las-vegas-nv/cantata-point", "webDomain": "beazer.com", "webType": "Community page", "geoNote": "Sales office"}, {"id": "montview-estates-9", "builder": "Beazer Homes", "sub": "Montview Estates", "mp": "", "group": "Standalone", "type": "Detached", "lo": 499990, "hi": 524990, "minSqft": 1551, "maxSqft": 2735, "standing": 2, "unsold": 1, "ytd": 3, "traffic": 6, "totalLot": 16, "opened": "05/04/2025", "address": "1029 Venice Ave, Henderson, NV 89015", "lat": 36.032813, "lng": -114.948929, "mapUrl": "https://www.google.com/maps/search/?api=1&query=36.0328129,-114.9489291&query_place_id=ChIJ6UNvAivXyIARA6vzyA09PKU", "website": "https://www.beazer.com/las-vegas-nv/montview-estates", "webDomain": "beazer.com", "webType": "Community page", "geoNote": "Sales office"}, {"id": "verona-by-beazer-11", "builder": "Beazer Homes", "sub": "Verona By Beazer", "mp": "Lake Las Vegas", "group": "Lake Las Vegas", "type": "Detached", "lo": 499990, "hi": 568990, "minSqft": 2252, "maxSqft": 2942, "standing": 4, "unsold": 4, "ytd": 3, "traffic": 0, "totalLot": 56, "opened": "05/09/2026", "address": "120 Via Magrini, Henderson, NV 89011", "lat": 36.088148, "lng": -114.916326, "mapUrl": "https://www.google.com/maps/search/?api=1&query=36.0881476,-114.9163259&query_place_id=ChIJmVjeaCLXyIAR9R6P5EPJRFA", "website": "https://www.beazer.com/las-vegas-NV/henderson/verona", "webDomain": "beazer.com", "webType": "Community page", "geoNote": "Sales office (Lake Las Vegas)"}, {"id": "alderidge-th-13", "builder": "Century Communities", "sub": "Alderidge TH", "mp": "Cadence", "group": "Cadence", "type": "Attached", "lo": 336990, "hi": 361990, "minSqft": 1405, "maxSqft": 1479, "standing": 3, "unsold": 4, "ytd": 17, "traffic": 4, "totalLot": 122, "opened": "08/13/2023", "address": "248 Freeport View Pl, Henderson, NV 89011", "lat": 36.071379, "lng": -114.982021, "mapUrl": "https://www.google.com/maps/search/?api=1&query=36.0713792,-114.9820206&query_place_id=ChIJ8TU7SNrRyIARzjniw_epLN0", "website": "https://cadencenv.com/century-communities/", "webDomain": "cadencenv.com", "webType": "Builder / master-plan page", "geoNote": "Sales office"}, {"id": "modena-i-17", "builder": "Century Communities", "sub": "Modena I", "mp": "Cadence", "group": "Cadence", "type": "Detached", "lo": 447990, "hi": 475990, "minSqft": 1675, "maxSqft": 2114, "standing": 2, "unsold": 11, "ytd": 31, "traffic": 6, "totalLot": 205, "opened": "08/13/2023", "address": "872 Arbor Spring St, Henderson, NV 89011", "lat": 36.074384, "lng": -114.982154, "mapUrl": "https://www.google.com/maps/search/?api=1&query=36.0743835,-114.982154&query_place_id=ChIJDcRoAGTXyIARvGkEGxfVdtg", "website": "https://cadencenv.com/century-communities/", "webDomain": "cadencenv.com", "webType": "Builder / master-plan page", "geoNote": "Sales office"}, {"id": "modena-ii-18", "builder": "Century Communities", "sub": "Modena II", "mp": "Cadence", "group": "Cadence", "type": "Detached", "lo": 442990, "hi": 462990, "minSqft": 1792, "maxSqft": 2119, "standing": 2, "unsold": 7, "ytd": 26, "traffic": 5, "totalLot": 196, "opened": "08/27/2023", "address": "872 Arbor Spring St, Henderson, NV 89011", "lat": 36.074384, "lng": -114.982154, "mapUrl": "https://www.google.com/maps/search/?api=1&query=36.0743835,-114.982154&query_place_id=ChIJDcRoAGTXyIARvGkEGxfVdtg", "website": "https://cadencenv.com/century-communities/", "webDomain": "cadencenv.com", "webType": "Builder / master-plan page", "geoNote": "Shared Modena sales center"}, {"id": "the-bluffs-i-24", "builder": "Century Communities", "sub": "The Bluffs I", "mp": "Lake Las Vegas", "group": "Lake Las Vegas", "type": "Detached", "lo": 465990, "hi": 485990, "minSqft": 1663, "maxSqft": 1831, "standing": 7, "unsold": 12, "ytd": 18, "traffic": 4, "totalLot": 107, "opened": "01/29/2023", "address": "128 Barkset Way, Henderson, NV 89011", "lat": 36.09745, "lng": -114.912979, "mapUrl": "https://www.google.com/maps/search/?api=1&query=36.09745,-114.912979&query_place_id=ChIJC6ZJYfTVyIARzHNE17FmZGo", "website": "https://www.newhomesource.com/builder/century-communities/locations/23109", "webDomain": "newhomesource.com", "webType": "Builder / master-plan page", "geoNote": "Sales office (Lake Las Vegas)"}, {"id": "the-bluffs-ii-25", "builder": "Century Communities", "sub": "The Bluffs II", "mp": "Lake Las Vegas", "group": "Lake Las Vegas", "type": "Detached", "lo": 512990, "hi": 542990, "minSqft": 1863, "maxSqft": 2301, "standing": 1, "unsold": 3, "ytd": 11, "traffic": 4, "totalLot": 97, "opened": "01/08/2023", "address": "128 Barkset Way, Henderson, NV 89011", "lat": 36.09745, "lng": -114.912979, "mapUrl": "https://www.google.com/maps/search/?api=1&query=36.09745,-114.912979&query_place_id=ChIJC6ZJYfTVyIARzHNE17FmZGo", "website": "https://www.newhomesource.com/builder/century-communities/locations/23109", "webDomain": "newhomesource.com", "webType": "Builder / master-plan page", "geoNote": "Shared Bluffs sales center"}, {"id": "the-townes-at-union-village-26", "builder": "Century Communities", "sub": "The Townes At Union Village", "mp": "", "group": "Standalone", "type": "Attached", "lo": 335990, "hi": 352990, "minSqft": 1405, "maxSqft": 1479, "standing": 0, "unsold": 3, "ytd": 19, "traffic": 5, "totalLot": 87, "opened": "09/30/2024", "address": "1001 Gearus Pl, Henderson, NV 89011", "lat": 36.073861, "lng": -115.027722, "mapUrl": "https://www.google.com/maps/search/?api=1&query=36.073861,-115.027722&query_place_id=ChIJc8BXvevRyIARMm47JMuaALU", "website": "https://www.centurycommunities.com/find-your-new-home/nevada/las-vegas-metro/henderson-nv/union-village/", "webDomain": "centurycommunities.com", "webType": "Community page", "geoNote": "Sales office (Union Village)"}, {"id": "symmetry-bay-42", "builder": "D.R. Horton", "sub": "Symmetry Bay", "mp": "Cadence", "group": "Cadence", "type": "Detached", "lo": 429303, "hi": 472990, "minSqft": 1715, "maxSqft": 1865, "standing": 1, "unsold": 116, "ytd": 48, "traffic": 18, "totalLot": 366, "opened": "03/31/2023", "address": "523 Canary Song Dr, Henderson, NV 89011", "lat": 36.083012, "lng": -115.008735, "mapUrl": "https://www.google.com/maps/search/?api=1&query=36.083012,-115.008735&query_place_id=ChIJqatt1wPXyIAR3IWeUJ_F7Kk", "website": "https://www.drhorton.com/nevada/las-vegas/henderson/symmetry-bay-at-cadence", "webDomain": "drhorton.com", "webType": "Community page", "geoNote": "Sales office"}, {"id": "symmetry-falls-43", "builder": "D.R. Horton", "sub": "Symmetry Falls", "mp": "Cadence", "group": "Cadence", "type": "Detached", "lo": 505990, "hi": 563990, "minSqft": 2433, "maxSqft": 3000, "standing": 1, "unsold": 69, "ytd": 41, "traffic": 10, "totalLot": 278, "opened": "03/31/2023", "address": "1031 Gentle Swan St, Henderson, NV 89011", "lat": 36.0788, "lng": -115.009266, "mapUrl": "https://www.google.com/maps/search/?api=1&query=36.0788,-115.009266&query_place_id=ChIJo8_HNBnRyIARnx5nR4z7DmQ", "website": "https://www.drhorton.com/nevada/las-vegas/henderson/symmetry-falls-at-cadence", "webDomain": "drhorton.com", "webType": "Community page", "geoNote": "Sales office"}, {"id": "symmetry-manor-44", "builder": "D.R. Horton", "sub": "Symmetry Manor", "mp": "Cadence", "group": "Cadence", "type": "Detached", "lo": 596990, "hi": 692990, "minSqft": 2300, "maxSqft": 2754, "standing": 0, "unsold": 12, "ytd": 35, "traffic": 27, "totalLot": 96, "opened": "01/31/2025", "address": "1040 Gentle Swan St, Henderson, NV 89011", "lat": 36.07884, "lng": -115.0086, "mapUrl": "https://www.google.com/maps/search/?api=1&query=36.07884,-115.0086&query_place_id=ChIJq-CTvoXRyIARd-_AWgbno_4", "website": "https://www.drhorton.com/nevada/las-vegas/henderson/symmetry-manor-at-cadence", "webDomain": "drhorton.com", "webType": "Community page", "geoNote": "Sales office"}, {"id": "symmetry-summit-45", "builder": "D.R. Horton", "sub": "Symmetry Summit", "mp": "Cadence", "group": "Cadence", "type": "Detached", "lo": 728990, "hi": 802990, "minSqft": 3765, "maxSqft": 4425, "standing": 1, "unsold": 10, "ytd": 27, "traffic": 11, "totalLot": 177, "opened": "04/16/2023", "address": "1070 Gentle Swan St, Henderson, NV 89011", "lat": 36.080999, "lng": -115.008775, "mapUrl": "https://www.google.com/maps/search/?api=1&query=36.0809987,-115.0087745&query_place_id=ChIJffgNlrfRyIARbNndWh-xCrg", "website": "https://www.drhorton.com/nevada/las-vegas/henderson/symmetry-summit-at-cadence", "webDomain": "drhorton.com", "webType": "Community page", "geoNote": "Sales office"}, {"id": "symmetry-trails-ii-46", "builder": "D.R. Horton", "sub": "Symmetry Trails II", "mp": "Cadence", "group": "Cadence", "type": "Attached", "lo": 336990, "hi": 366990, "minSqft": 1309, "maxSqft": 1410, "standing": 2, "unsold": 125, "ytd": 73, "traffic": 11, "totalLot": 210, "opened": "10/31/2025", "address": "526 Golden Myna Ave, Henderson, NV 89011", "lat": 36.076195, "lng": -115.007203, "mapUrl": "https://www.google.com/maps/search/?api=1&query=36.076195,-115.007203&query_place_id=ChIJoWLvRR_RyIARqoHmUurBZhY", "website": "https://www.drhorton.com/nevada/las-vegas/henderson/symmetry-trails-at-cadence", "webDomain": "drhorton.com", "webType": "Community page", "geoNote": "Sales office"}, {"id": "caspian-bay-landings-58", "builder": "KB Home", "sub": "Caspian Bay Landings", "mp": "", "group": "Standalone", "type": "Detached", "lo": 415990, "hi": 458990, "minSqft": 1572, "maxSqft": 2469, "standing": 2, "unsold": 7, "ytd": 42, "traffic": 16, "totalLot": 168, "opened": "07/27/2025", "address": "672 Equestrian Dr, Henderson, NV 89002", "lat": 36.008069, "lng": -114.953694, "mapUrl": "https://www.google.com/maps/search/?api=1&query=36.0080694,-114.9536937&query_place_id=ChIJDzSqbMPVyIARXIdeOsQYZU0", "website": "https://www.kbhome.com/new-homes-las-vegas/landings-at-caspian-bay", "webDomain": "kbhome.com", "webType": "Community page", "geoNote": "Sales office"}, {"id": "caspian-bay-reserves-59", "builder": "KB Home", "sub": "Caspian Bay Reserves", "mp": "", "group": "Standalone", "type": "Detached", "lo": 427990, "hi": 539990, "minSqft": 1644, "maxSqft": 3066, "standing": 1, "unsold": 7, "ytd": 27, "traffic": 5, "totalLot": 72, "opened": "07/27/2025", "address": "672 Equestrian Dr, Henderson, NV 89002", "lat": 36.008069, "lng": -114.953694, "mapUrl": "https://www.google.com/maps/search/?api=1&query=36.0080694,-114.9536937&query_place_id=ChIJDzSqbMPVyIARXIdeOsQYZU0", "website": "https://www.newhomesource.com/community/nv/henderson/reserves-at-caspian-bay-by-kb-home/209690", "webDomain": "newhomesource.com", "webType": "Community page", "geoNote": "Shared Caspian Bay sales center"}, {"id": "inspirada-63-landings-64", "builder": "KB Home", "sub": "Inspirada 63 Landings", "mp": "Inspirada", "group": "Inspirada", "type": "Detached", "lo": 455990, "hi": 569750, "minSqft": 1150, "maxSqft": 2469, "standing": 0, "unsold": 0, "ytd": 9, "traffic": 0, "totalLot": 105, "opened": "10/13/2024", "address": "3433 Oristano Ln, Henderson, NV 89044", "lat": 35.936958, "lng": -115.138576, "mapUrl": "https://www.google.com/maps/search/?api=1&query=35.9369577,-115.1385759&query_place_id=ChIJRYNt3A7NyIAR8SZw60j5tII", "website": "https://www.kbhome.com/new-homes-nevada/las-vegas", "webDomain": "kbhome.com", "webType": "Builder / master-plan page", "geoNote": "KB Inspirada sales office (pod-level approx)"}, {"id": "inspirada-71-greencourts-65", "builder": "KB Home", "sub": "Inspirada 71 Greencourts", "mp": "Inspirada", "group": "Inspirada", "type": "Detached", "lo": 431990, "hi": 499750, "minSqft": 1558, "maxSqft": 2044, "standing": 1, "unsold": 2, "ytd": 6, "traffic": 0, "totalLot": 16, "opened": "08/10/2025", "address": "3433 Oristano Ln, Henderson, NV 89044", "lat": 35.936958, "lng": -115.138576, "mapUrl": "https://www.google.com/maps/search/?api=1&query=35.9369577,-115.1385759&query_place_id=ChIJRYNt3A7NyIAR8SZw60j5tII", "website": "https://www.kbhome.com/new-homes-nevada/las-vegas", "webDomain": "kbhome.com", "webType": "Builder / master-plan page", "geoNote": "KB Inspirada sales office (pod-level approx)"}, {"id": "inspirada-71-landings-66", "builder": "KB Home", "sub": "Inspirada 71 Landings", "mp": "Inspirada", "group": "Inspirada", "type": "Detached", "lo": 474750, "hi": 569750, "minSqft": 1150, "maxSqft": 2469, "standing": 1, "unsold": 2, "ytd": 13, "traffic": 0, "totalLot": 26, "opened": "08/10/2025", "address": "3433 Oristano Ln, Henderson, NV 89044", "lat": 35.936958, "lng": -115.138576, "mapUrl": "https://www.google.com/maps/search/?api=1&query=35.9369577,-115.1385759&query_place_id=ChIJRYNt3A7NyIAR8SZw60j5tII", "website": "https://www.kbhome.com/new-homes-nevada/las-vegas", "webDomain": "kbhome.com", "webType": "Builder / master-plan page", "geoNote": "KB Inspirada sales office (pod-level approx)"}, {"id": "inspirada-72-landings-67", "builder": "KB Home", "sub": "Inspirada 72 Landings", "mp": "Inspirada", "group": "Inspirada", "type": "Detached", "lo": 434990, "hi": 569750, "minSqft": 1150, "maxSqft": 2469, "standing": 2, "unsold": 5, "ytd": 6, "traffic": 9, "totalLot": 144, "opened": "01/31/2020", "address": "3433 Oristano Ln, Henderson, NV 89044", "lat": 35.936958, "lng": -115.138576, "mapUrl": "https://www.google.com/maps/search/?api=1&query=35.9369577,-115.1385759&query_place_id=ChIJRYNt3A7NyIAR8SZw60j5tII", "website": "https://www.kbhome.com/new-homes-nevada/las-vegas", "webDomain": "kbhome.com", "webType": "Builder / master-plan page", "geoNote": "KB Inspirada sales office (pod-level approx)"}, {"id": "meriden-avenues-71", "builder": "KB Home", "sub": "Meriden - Avenues", "mp": "", "group": "Standalone", "type": "Attached", "lo": 327990, "hi": 372120, "minSqft": 1574, "maxSqft": 1947, "standing": 0, "unsold": 9, "ytd": 15, "traffic": 0, "totalLot": 217, "opened": "05/10/2026", "address": "1350 Bushbery Pl, Henderson, NV 89014", "lat": 36.076027, "lng": -115.044549, "mapUrl": "https://www.google.com/maps/search/?api=1&query=36.0760266,-115.0445493&query_place_id=ChIJ0S_fsuPRyIARUu7yB4F-Agg", "website": "https://www.kbhome.com/new-homes-las-vegas/avenues-at-meriden", "webDomain": "kbhome.com", "webType": "Community page", "geoNote": "KB Meriden shared sales center"}, {"id": "meriden-glades-72", "builder": "KB Home", "sub": "Meriden - Glades", "mp": "", "group": "Standalone", "type": "Detached", "lo": 446990, "hi": 499990, "minSqft": 1572, "maxSqft": 2469, "standing": 3, "unsold": 9, "ytd": 6, "traffic": 0, "totalLot": 133, "opened": "05/10/2026", "address": "1350 Bushbery Pl, Henderson, NV 89014", "lat": 36.076027, "lng": -115.044549, "mapUrl": "https://www.google.com/maps/search/?api=1&query=36.0760266,-115.0445493&query_place_id=ChIJ0S_fsuPRyIARUu7yB4F-Agg", "website": "https://www.kbhome.com/new-homes-las-vegas/glades-at-meriden", "webDomain": "kbhome.com", "webType": "Community page (verify)", "geoNote": "KB Meriden shared sales center"}, {"id": "meriden-liberty-73", "builder": "KB Home", "sub": "Meriden - Liberty", "mp": "", "group": "Standalone", "type": "Detached", "lo": 365990, "hi": 404990, "minSqft": 1353, "maxSqft": 1765, "standing": 1, "unsold": 8, "ytd": 14, "traffic": 27, "totalLot": 204, "opened": "05/10/2026", "address": "1350 Bushbery Pl, Henderson, NV 89014", "lat": 36.076027, "lng": -115.044549, "mapUrl": "https://www.google.com/maps/search/?api=1&query=36.0760266,-115.0445493&query_place_id=ChIJ0S_fsuPRyIARUu7yB4F-Agg", "website": "https://www.kbhome.com/new-homes-las-vegas/liberty-at-meriden", "webDomain": "kbhome.com", "webType": "Community page (verify)", "geoNote": "Sales office (Liberty)"}, {"id": "meriden-meadows-74", "builder": "KB Home", "sub": "Meriden - Meadows", "mp": "", "group": "Standalone", "type": "Attached", "lo": 336990, "hi": 365990, "minSqft": 1396, "maxSqft": 1657, "standing": 0, "unsold": 10, "ytd": 6, "traffic": 0, "totalLot": 221, "opened": "05/10/2026", "address": "1350 Bushbery Pl, Henderson, NV 89014", "lat": 36.076027, "lng": -115.044549, "mapUrl": "https://www.google.com/maps/search/?api=1&query=36.0760266,-115.0445493&query_place_id=ChIJ0S_fsuPRyIARUu7yB4F-Agg", "website": "https://www.kbhome.com/new-homes-las-vegas/meadows-at-meriden", "webDomain": "kbhome.com", "webType": "Community page", "geoNote": "KB Meriden shared sales center"}, {"id": "meriden-peaks-75", "builder": "KB Home", "sub": "Meriden - Peaks", "mp": "", "group": "Standalone", "type": "Detached", "lo": 391990, "hi": 464990, "minSqft": 1720, "maxSqft": 2320, "standing": 0, "unsold": 6, "ytd": 8, "traffic": 28, "totalLot": 165, "opened": "05/10/2026", "address": "1350 Bushbery Pl, Henderson, NV 89014", "lat": 36.076027, "lng": -115.044549, "mapUrl": "https://www.google.com/maps/search/?api=1&query=36.0760266,-115.0445493&query_place_id=ChIJ0S_fsuPRyIARUu7yB4F-Agg", "website": "https://www.kbhome.com/new-homes-las-vegas/peaks-at-meriden", "webDomain": "kbhome.com", "webType": "Community page (verify)", "geoNote": "KB Meriden shared sales center"}, {"id": "black-mtn-ranch-highpoint-85", "builder": "Lennar", "sub": "Black Mtn Ranch Highpoint", "mp": "", "group": "Standalone", "type": "Attached", "lo": 353990, "hi": 427990, "minSqft": 1705, "maxSqft": 1934, "standing": 0, "unsold": 4, "ytd": 36, "traffic": 3, "totalLot": 282, "opened": "01/22/2023", "address": "500 Greenway Rd, Henderson, NV 89015", "lat": 36.014142, "lng": -114.971479, "mapUrl": "https://www.google.com/maps/search/?api=1&query=36.0141423,-114.9714786&query_place_id=ChIJr7Ffi8fVyIAROLevWPJGxME", "website": "https://www.lennar.com/new-homes/nevada/las-vegas/henderson/black-mountain-ranch/highpointe", "webDomain": "lennar.com", "webType": "Community page", "geoNote": "Black Mtn Ranch (Highpointe)"}, {"id": "black-mtn-ranch-landmark-86", "builder": "Lennar", "sub": "Black Mtn Ranch Landmark", "mp": "", "group": "Standalone", "type": "Detached", "lo": 544990, "hi": 579990, "minSqft": 2472, "maxSqft": 2868, "standing": 0, "unsold": 0, "ytd": 21, "traffic": 0, "totalLot": 210, "opened": "09/25/2022", "address": "318 Laurel Peak Dr, Henderson, NV 89015", "lat": 36.015421, "lng": -114.973185, "mapUrl": "https://www.google.com/maps/search/?api=1&query=36.0154209,-114.9731853&query_place_id=ChIJFXI0DRPVyIARICQSxyHlp58", "website": "https://www.lennar.com/new-homes/nevada/las-vegas/henderson/black-mountain-ranch/highpointe", "webDomain": "lennar.com", "webType": "Builder / master-plan page", "geoNote": "Black Mtn Ranch sales office"}, {"id": "carlton-87", "builder": "Lennar", "sub": "Carlton", "mp": "Cadence", "group": "Cadence", "type": "Detached", "lo": 388990, "hi": 450990, "minSqft": 1248, "maxSqft": 1724, "standing": 0, "unsold": 4, "ytd": 33, "traffic": 1, "totalLot": 201, "opened": "07/07/2024", "address": "106 Caleb Chase Ave, Henderson, NV 89011", "lat": 36.063926, "lng": -114.98911, "mapUrl": "https://www.google.com/maps/search/?api=1&query=36.063926,-114.98911&query_place_id=ChIJIeqeEa3XyIARijxQmOzsrEI", "website": "https://cadencenv.com/lennar/", "webDomain": "cadencenv.com", "webType": "Builder / master-plan page", "geoNote": "Sales office"}, {"id": "founders-village-at-black-mtn-ranch-94", "builder": "Lennar", "sub": "Founders Village At Black Mtn Ranch", "mp": "", "group": "Standalone", "type": "Detached", "lo": 342990, "hi": 997990, "minSqft": 2015, "maxSqft": 4092, "standing": 0, "unsold": 1, "ytd": 12, "traffic": 0, "totalLot": 156, "opened": "06/11/2023", "address": "234 Bellevue Grove Ave, Henderson, NV 89015", "lat": 36.021085, "lng": -114.972929, "mapUrl": "https://www.google.com/maps/search/?api=1&query=36.0210854,-114.9729289&query_place_id=ChIJxQYGLbLXyIARb_7qfcYJY2Q", "website": "https://www.lennar.com/new-homes/nevada/las-vegas/henderson/founders-village-at-black-mt-ranch", "webDomain": "lennar.com", "webType": "Community page", "geoNote": "Sales office (Founders Village)"}, {"id": "lago-del-sol-98", "builder": "Lennar", "sub": "Lago Del Sol", "mp": "Lake Las Vegas", "group": "Lake Las Vegas", "type": "Detached", "lo": 589990, "hi": 686990, "minSqft": 2126, "maxSqft": 2668, "standing": 20, "unsold": 20, "ytd": 35, "traffic": 2, "totalLot": 221, "opened": "04/27/2025", "address": "1565 Luca Mountain Ln, Henderson, NV 89011", "lat": 36.098742, "lng": -114.914335, "mapUrl": "https://www.google.com/maps/search/?api=1&query=36.098742,-114.914335&query_place_id=ChIJr0Zv8zXXyIARyMUgstERBo8", "website": "https://www.lennar.com/new-homes/nevada/las-vegas/henderson/lake-las-vegas/hills-at-lago-del-sol", "webDomain": "lennar.com", "webType": "Community page", "geoNote": "Sales office (Lake Las Vegas)"}, {"id": "lucere-99", "builder": "Lennar", "sub": "Lucere", "mp": "Inspirada", "group": "Inspirada", "type": "Detached", "lo": 588990, "hi": 982024, "minSqft": 2590, "maxSqft": 3335, "standing": 1, "unsold": 1, "ytd": 47, "traffic": 1, "totalLot": 250, "opened": "04/27/2025", "address": "3636 Via Gennaro, Henderson, NV 89044", "lat": 35.931856, "lng": -115.148676, "mapUrl": "https://www.google.com/maps/search/?api=1&query=35.931856,-115.148676&query_place_id=ChIJjaOOanfNyIARE8KfsbEyf9Y", "website": "https://www.lennar.com/find-a-home?state=NV&market=LVE", "webDomain": "lennar.com", "webType": "Builder / master-plan page", "geoNote": "Lennar Inspirada sales office"}, {"id": "midtown-accent-100", "builder": "Lennar", "sub": "Midtown Accent", "mp": "Cadence", "group": "Cadence", "type": "Detached", "lo": 432990, "hi": 432990, "minSqft": 1445, "maxSqft": 2218, "standing": 2, "unsold": 2, "ytd": 4, "traffic": 0, "totalLot": 20, "opened": "04/13/2025", "address": "147 Corretto Corner Ave, Henderson, NV 89015", "lat": 36.051035, "lng": -114.977598, "mapUrl": "https://www.google.com/maps/search/?api=1&query=36.0510355,-114.9775975&query_place_id=ChIJKSjnj53XyIAR6LmaQQAmPuQ", "website": "https://cadencenv.com/lennar/", "webDomain": "cadencenv.com", "webType": "Builder / master-plan page", "geoNote": "Sales office (Midtown)"}, {"id": "midtown-forte-101", "builder": "Lennar", "sub": "Midtown Forte", "mp": "Cadence", "group": "Cadence", "type": "Detached", "lo": 442990, "hi": 491990, "minSqft": 1486, "maxSqft": 2153, "standing": 3, "unsold": 5, "ytd": 18, "traffic": 2, "totalLot": 60, "opened": "04/13/2025", "address": "147 Corretto Corner Ave, Henderson, NV 89015", "lat": 36.051035, "lng": -114.977598, "mapUrl": "https://www.google.com/maps/search/?api=1&query=36.0510355,-114.9775975&query_place_id=ChIJKSjnj53XyIAR6LmaQQAmPuQ", "website": "https://cadencenv.com/lennar/", "webDomain": "cadencenv.com", "webType": "Builder / master-plan page", "geoNote": "Shared Midtown sales center"}, {"id": "piazza-paradiso-105", "builder": "Lennar", "sub": "Piazza Paradiso", "mp": "Lake Las Vegas", "group": "Lake Las Vegas", "type": "Detached", "lo": 900990, "hi": 1270999, "minSqft": 3080, "maxSqft": 5170, "standing": 23, "unsold": 4, "ytd": 8, "traffic": 4, "totalLot": 98, "opened": "01/18/2026", "address": "1574 Capri Cascades Ct, Henderson, NV 89011", "lat": 36.098861, "lng": -114.90992, "mapUrl": "https://www.google.com/maps/search/?api=1&query=36.098861,-114.90992&query_place_id=ChIJ73axwNfXyIARtYT3uk9hGQQ", "website": "https://www.lennar.com/new-homes/nevada/las-vegas/promo/nevlen_lakelasvegas", "webDomain": "lennar.com", "webType": "Builder / master-plan page", "geoNote": "Sales office (Lake Las Vegas)"}, {"id": "presley-place-106", "builder": "Lennar", "sub": "Presley Place", "mp": "", "group": "Standalone", "type": "Attached", "lo": 304990, "hi": 340990, "minSqft": 1096, "maxSqft": 1505, "standing": 1, "unsold": 6, "ytd": 26, "traffic": 0, "totalLot": 58, "opened": "02/23/2025", "address": "541 Bellum Dr, Henderson, NV 89011", "lat": 36.064963, "lng": -115.009914, "mapUrl": "https://www.google.com/maps/search/?api=1&query=36.0649626,-115.0099136&query_place_id=ChIJFZx-idDQyIARNg-ODGxXrcM", "website": "https://www.lennar.com/find-a-home?state=NV&market=LVE", "webDomain": "lennar.com", "webType": "Builder / master-plan page", "geoNote": "Sales office"}, {"id": "preston-pointe-107", "builder": "Lennar", "sub": "Preston Pointe", "mp": "Cadence", "group": "Cadence", "type": "Detached", "lo": 612990, "hi": 684990, "minSqft": 2469, "maxSqft": 3348, "standing": 0, "unsold": 0, "ytd": 18, "traffic": 0, "totalLot": 94, "opened": "06/23/2024", "address": "136 Harper Crest Ave, Henderson, NV 89011", "lat": 36.057522, "lng": -114.992415, "mapUrl": "https://www.google.com/maps/search/?api=1&query=36.057522,-114.9924151&query_place_id=ChIJ98GyGIbXyIARtWV8JevEubs", "website": "https://cadencenv.com/lennar/", "webDomain": "cadencenv.com", "webType": "Builder / master-plan page", "geoNote": "Sales office (Preston)"}, {"id": "preston-terrace-108", "builder": "Lennar", "sub": "Preston Terrace", "mp": "Cadence", "group": "Cadence", "type": "Detached", "lo": 518990, "hi": 575990, "minSqft": 2472, "maxSqft": 2918, "standing": 0, "unsold": 1, "ytd": 32, "traffic": 2, "totalLot": 120, "opened": "05/19/2024", "address": "136 Harper Crest Ave, Henderson, NV 89011", "lat": 36.057522, "lng": -114.992415, "mapUrl": "https://www.google.com/maps/search/?api=1&query=36.057522,-114.9924151&query_place_id=ChIJ98GyGIbXyIARtWV8JevEubs", "website": "https://cadencenv.com/lennar/", "webDomain": "cadencenv.com", "webType": "Builder / master-plan page", "geoNote": "Shared Preston sales center"}, {"id": "quail-crossings-109", "builder": "Lennar", "sub": "Quail Crossings", "mp": "Cadence", "group": "Cadence", "type": "Attached", "lo": 390990, "hi": 437990, "minSqft": 1270, "maxSqft": 1711, "standing": 0, "unsold": 6, "ytd": 24, "traffic": 2, "totalLot": 87, "opened": "02/23/2025", "address": "786 Black Palace St, Henderson, NV 89015", "lat": 36.070869, "lng": -114.983257, "mapUrl": "https://www.google.com/maps/search/?api=1&query=36.070869,-114.983257&query_place_id=ChIJ1z5FdSTXyIARTidHbsild0w", "website": "https://www.lennar.com/new-homes/nevada/las-vegas/henderson/cadence/quail-crossings", "webDomain": "lennar.com", "webType": "Community page", "geoNote": "Sales office"}, {"id": "riviera-vista-110", "builder": "Lennar", "sub": "Riviera Vista", "mp": "Lake Las Vegas", "group": "Lake Las Vegas", "type": "Detached", "lo": 486910, "hi": 538353, "minSqft": 2255, "maxSqft": 2405, "standing": 1, "unsold": 2, "ytd": 28, "traffic": 0, "totalLot": 68, "opened": "08/18/2024", "address": "1718 Strada Nathan, Henderson, NV 89011", "lat": 36.106046, "lng": -114.936974, "mapUrl": "https://www.google.com/maps/search/?api=1&query=36.106046,-114.936974&query_place_id=ChIJT7ZTe0LXyIARApcvTWutfgo", "website": "https://www.lennar.com/new-homes/nevada/las-vegas/henderson/lake-las-vegas/riviera-vista", "webDomain": "lennar.com", "webType": "Community page", "geoNote": "Sales office (Lake Las Vegas)"}, {"id": "serenity-avery-place-112", "builder": "Lennar", "sub": "Serenity & Avery Place", "mp": "Cadence", "group": "Cadence", "type": "Attached", "lo": 356990, "hi": 406990, "minSqft": 1180, "maxSqft": 1505, "standing": 0, "unsold": 3, "ytd": 24, "traffic": 0, "totalLot": 58, "opened": "04/13/2025", "address": "655 Pickled Pepper Pl, Henderson, NV 89015", "lat": 36.061071, "lng": -114.977286, "mapUrl": "https://www.google.com/maps/search/?api=1&query=36.061071,-114.977286&query_place_id=ChIJH3aCqk3XyIARa6Vaf963tCo", "website": "https://cadencenv.com/lennar/", "webDomain": "cadencenv.com", "webType": "Builder / master-plan page", "geoNote": "Sales office (Serenity & Avery)"}, {"id": "the-presley-118", "builder": "Lennar", "sub": "The Presley", "mp": "", "group": "Standalone", "type": "Attached", "lo": 361990, "hi": 406990, "minSqft": 1696, "maxSqft": 1927, "standing": 0, "unsold": 2, "ytd": 38, "traffic": 0, "totalLot": 308, "opened": "05/21/2023", "address": "1037 Presley Ridge St, Henderson, NV 89002", "lat": 35.989734, "lng": -114.936721, "mapUrl": "https://www.google.com/maps/search/?api=1&query=35.989734,-114.936721&query_place_id=ChIJwYvMdePVyIARfSgQUZxW9_4", "website": "https://www.lennar.com/find-a-home?state=NV&market=LVE", "webDomain": "lennar.com", "webType": "Builder / master-plan page", "geoNote": "Sales office"}, {"id": "del-webb-at-lake-las-vegas-dw-132", "builder": "Pulte / Del Webb", "sub": "Del Webb At Lake Las Vegas (DW)", "mp": "Lake Las Vegas", "group": "Lake Las Vegas", "type": "Detached", "lo": 434990, "hi": 820990, "minSqft": 1285, "maxSqft": 2726, "standing": 7, "unsold": 42, "ytd": 37, "traffic": 16, "totalLot": 786, "opened": "02/09/2020", "address": "28 Lake Oasis St, Henderson, NV 89011", "lat": 36.123306, "lng": -114.929507, "mapUrl": "https://www.google.com/maps/search/?api=1&query=36.1233055,-114.9295071&query_place_id=ChIJXZKd6CTZyIARd9JSZnTs0A8", "website": "https://www.delwebb.com/homes/nevada/las-vegas/henderson/del-webb-at-lake-las-vegas-210340", "webDomain": "delwebb.com", "webType": "Community page", "geoNote": "Sales office (Del Webb 55+)"}, {"id": "acacia-wh-144", "builder": "Sekisui House", "sub": "Acacia (WH)", "mp": "Cadence", "group": "Cadence", "type": "Detached", "lo": 436950, "hi": 470950, "minSqft": 1732, "maxSqft": 2153, "standing": 0, "unsold": 13, "ytd": 24, "traffic": 10, "totalLot": 56, "opened": "01/01/2026", "address": "Island Plumeria Ln & Dahlia Rachel Pl, Henderson, NV 89011", "lat": 36.047333, "lng": -114.98525, "mapUrl": "https://www.google.com/maps/search/?api=1&query=36.047333,-114.98525&query_place_id=ChIJe34W9cbWyIARiJ-b6INTvh8", "website": "https://www.woodsidehomes.com/findmyhome/nevada/henderson/acacia-at-cadence", "webDomain": "woodsidehomes.com", "webType": "Community page (verify)", "geoNote": "Sales office"}, {"id": "adair-wh-145", "builder": "Sekisui House", "sub": "Adair (WH)", "mp": "Cadence", "group": "Cadence", "type": "Detached", "lo": 546950, "hi": 604950, "minSqft": 2769, "maxSqft": 2935, "standing": 2, "unsold": 62, "ytd": 15, "traffic": 6, "totalLot": 73, "opened": "01/01/2026", "address": "709 Black Palace St, Henderson, NV 89011", "lat": 36.067952, "lng": -114.983753, "mapUrl": "https://www.google.com/maps/search/?api=1&query=36.0679525,-114.9837526&query_place_id=ChIJ2x8v_vrXyIARUQNyAm937iI", "website": "https://www.woodsidehomes.com/findmyhome/nevada/henderson/adair-at-cadence", "webDomain": "woodsidehomes.com", "webType": "Community page (verify)", "geoNote": "Sales office"}, {"id": "ambridge-wh-148", "builder": "Sekisui House", "sub": "Ambridge (WH)", "mp": "Cadence", "group": "Cadence", "type": "Detached", "lo": 510950, "hi": 572950, "minSqft": 1597, "maxSqft": 2192, "standing": 0, "unsold": 43, "ytd": 14, "traffic": 5, "totalLot": 77, "opened": "01/01/2026", "address": "921 Cottonwood Hill Pl, Henderson, NV 89011", "lat": 36.06619, "lng": -114.98773, "mapUrl": "https://www.google.com/maps/search/?api=1&query=36.06619,-114.98773&query_place_id=ChIJBSfbS3fXyIARSk2OFIz8g9k", "website": "https://www.woodsidehomes.com/findmyhome/nevada/henderson/ambridge-at-cadence", "webDomain": "woodsidehomes.com", "webType": "Community page (verify)", "geoNote": "Sales office"}, {"id": "ashwood-wh-151", "builder": "Sekisui House", "sub": "Ashwood (WH)", "mp": "Cadence", "group": "Cadence", "type": "Detached", "lo": 479950, "hi": 530950, "minSqft": 2153, "maxSqft": 2608, "standing": 2, "unsold": 42, "ytd": 18, "traffic": 10, "totalLot": 36, "opened": "01/01/2026", "address": "172 May Park Ave, Henderson, NV 89011", "lat": 36.067089, "lng": -114.991851, "mapUrl": "https://www.google.com/maps/search/?api=1&query=36.0670889,-114.9918511&query_place_id=ChIJn-GMUinXyIARwWHykJgyyUg", "website": "https://www.woodsidehomes.com/findmyhome/nevada/henderson/ashwood-at-cadence", "webDomain": "woodsidehomes.com", "webType": "Community page", "geoNote": "Sales office"}, {"id": "cresta-rosa-rah-157", "builder": "Sekisui House", "sub": "Cresta Rosa (RAH)", "mp": "", "group": "Standalone", "type": "Detached", "lo": null, "hi": null, "minSqft": 3680, "maxSqft": 4320, "standing": 2, "unsold": 8, "ytd": 7, "traffic": 3, "totalLot": 15, "opened": "01/01/2026", "address": "1184 Viento View Ave, Henderson, NV 89012", "lat": 36.02154, "lng": -115.038342, "mapUrl": "https://www.google.com/maps/search/?api=1&query=36.02154,-115.038342&query_place_id=ChIJ8Vge58zRyIAR-zBkRIXCHr8", "website": "https://www.richmondamerican.com/nevada/las-vegas-new-homes/henderson/", "webDomain": "richmondamerican.com", "webType": "Builder / master-plan page", "geoNote": "Sales office"}, {"id": "interlude-rah-162", "builder": "Sekisui House", "sub": "Interlude (RAH)", "mp": "Cadence", "group": "Cadence", "type": "Detached", "lo": 549950, "hi": 649950, "minSqft": 2640, "maxSqft": 3280, "standing": 2, "unsold": 19, "ytd": 18, "traffic": 3, "totalLot": 21, "opened": "01/01/2026", "address": "46 Serene Tempo Ave, Henderson, NV 89011", "lat": 36.06389, "lng": -114.98759, "mapUrl": "https://www.google.com/maps/search/?api=1&query=36.06389,-114.98759&query_place_id=ChIJQVMBT87XyIARYMfGUcejxvE", "website": "https://www.richmondamerican.com/nevada/las-vegas-new-homes/henderson/interlude-at-cadence/", "webDomain": "richmondamerican.com", "webType": "Community page", "geoNote": "Sales office"}, {"id": "meridian-wh-166", "builder": "Sekisui House", "sub": "Meridian (WH)", "mp": "Cadence", "group": "Cadence", "type": "Attached", "lo": 355950, "hi": 385950, "minSqft": 1284, "maxSqft": 1598, "standing": 0, "unsold": 14, "ytd": 23, "traffic": 5, "totalLot": 85, "opened": "01/01/2026", "address": "112 Mossy Glen Pl, Henderson, NV 89015", "lat": 36.04744, "lng": -114.986018, "mapUrl": "https://www.google.com/maps/search/?api=1&query=36.0474403,-114.986018&query_place_id=ChIJ21nMBSDXyIAReAmjW7YKsjw", "website": "https://www.woodsidehomes.com/findmyhome/nevada/henderson/meridian-at-cadence", "webDomain": "woodsidehomes.com", "webType": "Community page (verify)", "geoNote": "Sales office"}, {"id": "salerno-summit-rah-168", "builder": "Sekisui House", "sub": "Salerno Summit (RAH)", "mp": "Lake Las Vegas", "group": "Lake Las Vegas", "type": "Detached", "lo": 1195950, "hi": 1363950, "minSqft": 2830, "maxSqft": 4320, "standing": 7, "unsold": 12, "ytd": 6, "traffic": 1, "totalLot": 19, "opened": "01/01/2026", "address": "1662 Strada Gracia, Henderson, NV 89011", "lat": 36.088805, "lng": -114.925939, "mapUrl": "https://www.google.com/maps/search/?api=1&query=36.0888045,-114.9259391&query_place_id=ChIJKxFfu-PXyIARAk7o5y78KAA", "website": "https://www.richmondamerican.com/nevada/las-vegas-new-homes/henderson/", "webDomain": "richmondamerican.com", "webType": "Builder / master-plan page", "geoNote": "Sales office (Lake Las Vegas)"}, {"id": "serenata-wh-169", "builder": "Sekisui House", "sub": "Serenata (WH)", "mp": "Cadence", "group": "Cadence", "type": "Detached", "lo": 500950, "hi": 545950, "minSqft": 2488, "maxSqft": 2752, "standing": 1, "unsold": 101, "ytd": 12, "traffic": 10, "totalLot": 93, "opened": "01/01/2026", "address": "322 Cadence Vista Dr, Henderson, NV 89015", "lat": 36.053805, "lng": -114.980993, "mapUrl": "https://www.google.com/maps/search/?api=1&query=36.0538049,-114.980993&query_place_id=ChIJw-L_aq3XyIAR82oCmSniA4I", "website": "https://www.woodsidehomes.com/findmyhome/nevada/henderson/serenata-at-cadence", "webDomain": "woodsidehomes.com", "webType": "Community page", "geoNote": "Sales office"}, {"id": "signature-estates-183", "builder": "Signature Homes", "sub": "Signature Estates", "mp": "", "group": "Standalone", "type": "Detached", "lo": 1299990, "hi": 1324990, "minSqft": 3675, "maxSqft": 3780, "standing": 0, "unsold": -8, "ytd": 7, "traffic": 14, "totalLot": 10, "opened": "12/28/2025", "address": "2908 Richmar Ave, Henderson, NV 89074", "lat": 36.016566, "lng": -115.110446, "mapUrl": "https://www.google.com/maps/search/?api=1&query=36.0165656,-115.1104458&query_place_id=ChIJM8Z4yD3OyIARuJrL-BIDMuA", "website": "https://signaturehomes.com/communities/signature-estates/", "webDomain": "signaturehomes.com", "webType": "Community page", "geoNote": "Community (Richmar Ave & Jessup Rd)"}, {"id": "opus-190", "builder": "Taylor Morrison", "sub": "Opus", "mp": "Cadence", "group": "Cadence", "type": "Detached", "lo": 424990, "hi": 549990, "minSqft": 1856, "maxSqft": 2779, "standing": 0, "unsold": 131, "ytd": 19, "traffic": 20, "totalLot": 202, "opened": "10/31/2024", "address": "304 Taylor St, Henderson, NV 89015", "lat": 36.049765, "lng": -114.988649, "mapUrl": "https://www.google.com/maps/search/?api=1&query=36.0497646,-114.9886487&query_place_id=ChIJeTAzh8_WyIARgCvrbeJOS5k", "website": "https://www.taylormorrison.com/nv/las-vegas/henderson", "webDomain": "taylormorrison.com", "webType": "Builder / master-plan page", "geoNote": "Sales office"}, {"id": "portofino-192", "builder": "Taylor Morrison", "sub": "Portofino", "mp": "Lake Las Vegas", "group": "Lake Las Vegas", "type": "Detached", "lo": 614990, "hi": 960990, "minSqft": 1990, "maxSqft": 3432, "standing": 0, "unsold": 101, "ytd": 31, "traffic": 17, "totalLot": 275, "opened": "12/31/2023", "address": "359 Faro Di Portofino Ct, Henderson, NV 89011", "lat": 36.127554, "lng": -114.92053, "mapUrl": "https://www.google.com/maps/search/?api=1&query=36.1275543,-114.9205302&query_place_id=ChIJ1fosh7DXyIART196O_MvhBg", "website": "https://www.taylormorrison.com/nv/las-vegas/portofino-at-lake-las-vegas", "webDomain": "taylormorrison.com", "webType": "Community page", "geoNote": "Sales office (Lake Las Vegas)"}, {"id": "verona-194", "builder": "Taylor Morrison", "sub": "Verona", "mp": "Lake Las Vegas", "group": "Lake Las Vegas", "type": "Detached", "lo": 490990, "hi": 534990, "minSqft": 2222, "maxSqft": 2723, "standing": 0, "unsold": 40, "ytd": 19, "traffic": 4, "totalLot": 100, "opened": "08/31/2024", "address": "111 Via Magrini, Henderson, NV 89011", "lat": 36.088097, "lng": -114.916947, "mapUrl": "https://www.google.com/maps/search/?api=1&query=36.0880972,-114.9169473&query_place_id=ChIJU9wOgs_XyIARyQJDLsaTOI4", "website": "https://www.taylormorrison.com/nv/las-vegas/henderson", "webDomain": "taylormorrison.com", "webType": "Builder / master-plan page", "geoNote": "Sales office (Lake Las Vegas)"}, {"id": "amiata-198", "builder": "Toll Brothers", "sub": "Amiata", "mp": "Inspirada", "group": "Inspirada", "type": "Attached", "lo": 459995, "hi": 529995, "minSqft": 1803, "maxSqft": 2154, "standing": 4, "unsold": 8, "ytd": 12, "traffic": 7, "totalLot": 98, "opened": "02/20/2022", "address": "2527 Cracked Stone St, Henderson, NV 89044", "lat": 35.936023, "lng": -115.135959, "mapUrl": "https://www.google.com/maps/search/?api=1&query=35.9360235,-115.1359586&query_place_id=ChIJ-5-lp6XNyIARCgIzziKHhJc", "website": "https://www.tollbrothers.com/luxury-homes-for-sale/Nevada/Toll-Brothers-at-Inspirada/Amiata-Collection", "webDomain": "tollbrothers.com", "webType": "Community page", "geoNote": "Toll Bros Inspirada sales office"}, {"id": "incanta-lago-206", "builder": "Toll Brothers", "sub": "Incanta Lago", "mp": "Lake Las Vegas", "group": "Lake Las Vegas", "type": "Detached", "lo": 939995, "hi": 1099995, "minSqft": 2488, "maxSqft": 3293, "standing": 4, "unsold": 16, "ytd": 4, "traffic": 26, "totalLot": 65, "opened": "04/27/2025", "address": "427 Terra Alta, Henderson, NV 89011", "lat": 36.126594, "lng": -114.916687, "mapUrl": "https://www.google.com/maps/search/?api=1&query=36.1265937,-114.9166866&query_place_id=ChIJ_32m4xrYyIARdONK_YqJTNg", "website": "https://www.tollbrothers.com/luxury-homes-for-sale/Nevada/Incanta-Lago", "webDomain": "tollbrothers.com", "webType": "Community page", "geoNote": "Sales office (Lake Las Vegas)"}, {"id": "highview-231", "builder": "Tri Pointe Homes", "sub": "Highview", "mp": "Inspirada", "group": "Inspirada", "type": "Attached", "lo": 449000, "hi": 557014, "minSqft": 1640, "maxSqft": 2252, "standing": 3, "unsold": 4, "ytd": 5, "traffic": 0, "totalLot": 121, "opened": "06/30/2023", "address": "3363 San Ripalta St, Henderson, NV 89044", "lat": 35.935245, "lng": -115.134617, "mapUrl": "https://www.google.com/maps/search/?api=1&query=35.935245,-115.134617&query_place_id=ChIJ6T_fQI_NyIARqXGQKsBi-Nk", "website": "https://www.tripointehomes.com/nv/las-vegas/highview", "webDomain": "tripointehomes.com", "webType": "Community page", "geoNote": "Sales office (Inspirada)"}, {"id": "la-cova-232", "builder": "Tri Pointe Homes", "sub": "La Cova", "mp": "Lake Las Vegas", "group": "Lake Las Vegas", "type": "Detached", "lo": 1260000, "hi": 2110000, "minSqft": 2813, "maxSqft": 4225, "standing": 3, "unsold": 10, "ytd": 10, "traffic": 8, "totalLot": 42, "opened": "06/15/2025", "address": "57 La Cova Way, Henderson, NV 89011", "lat": 36.114072, "lng": -114.916244, "mapUrl": "https://www.google.com/maps/search/?api=1&query=36.1140716,-114.9162442&query_place_id=ChIJpRL_BRPGyIARpwnbqgLZXvw", "website": "https://www.tripointehomes.com/nv/las-vegas/la-cova", "webDomain": "tripointehomes.com", "webType": "Community page", "geoNote": "Sales office (Lake Las Vegas)"}, {"id": "lakeview-ridge-233", "builder": "Tri Pointe Homes", "sub": "Lakeview Ridge", "mp": "Lake Las Vegas", "group": "Lake Las Vegas", "type": "Detached", "lo": 944000, "hi": 1063000, "minSqft": 2579, "maxSqft": 3780, "standing": 2, "unsold": 15, "ytd": 11, "traffic": 20, "totalLot": 53, "opened": "01/25/2026", "address": "176 Sailing Sunset Way, Henderson, NV 89011", "lat": 36.120921, "lng": -114.930766, "mapUrl": "https://www.google.com/maps/search/?api=1&query=36.1209208,-114.9307657&query_place_id=ChIJ3ajemOzZyIAReUZYqVlKHcw", "website": "https://www.tripointehomes.com/nv/las-vegas/lakeview-ridge", "webDomain": "tripointehomes.com", "webType": "Community page", "geoNote": "Sales office (Lake Las Vegas)"}];
+const GROUPS = ["Cadence","Lake Las Vegas","Inspirada","Standalone"];
+const GROUP_COLOR = {"Cadence":"#2e6bd6","Lake Las Vegas":"#0f9b6c","Inspirada":"#e08a1e","Standalone":"#64748b"};
+const BUILDERS = [...new Set(SUBS.map(s=>s.builder))].sort();
+
+/* ============ STORAGE (localStorage w/ in-memory fallback) ============ */
+const NS="b2b_watch_v1";
+let memStore={}, storeOK=true;
+try{ localStorage.setItem(NS+"_probe","1"); localStorage.removeItem(NS+"_probe"); }
+catch(e){ storeOK=false; }
+function sget(key,def){
+  try{ if(storeOK){ const v=localStorage.getItem(NS+"_"+key); return v?JSON.parse(v):def; } }catch(e){}
+  return (key in memStore)?memStore[key]:def;
+}
+function sset(key,val){
+  try{ if(storeOK){ localStorage.setItem(NS+"_"+key,JSON.stringify(val)); return; } }catch(e){}
+  memStore[key]=val;
+}
+if(!storeOK) document.getElementById('storeWarn').classList.add('on');
+
+let RECORDS = sget("records",{});   // { id: {contact,rating,incentives:[],notes:[]} }
+let IDENTITY = sget("identity",null);
+
+function recOf(id){ if(!RECORDS[id]) RECORDS[id]={contact:{},rating:null,incentives:[],notes:[]}; return RECORDS[id]; }
+function saveRecords(){ sset("records",RECORDS); }
+function nowStr(){ return new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
+function uid(){ return Math.random().toString(36).slice(2,9); }
+
+/* ============ STATE ============ */
+const state = {
+  view:"cards", sort:"price-asc",
+  type:"all", priceMin:null, priceMax:null, sqftMin:null,
+  groups:new Set(), builders:new Set(), hasStanding:false,
+  text:"", chips:[]
+};
+
+/* ============ HELPERS ============ */
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const money=n=> (n||n===0)? '$'+Number(n).toLocaleString() : '—';
+const moneyK=n=> Math.round(n/1000)+'k';
+const initials=nm=> (nm||'?').trim().split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase();
+
+/* ============ QUERY PARSER ============ */
+function parseQuery(raw){
+  const q=' '+raw.toLowerCase().replace(/[,]/g,' ')+' ', f={}, chips=[];
+  if(/\b(town\s?homes?|townhouse|attached|condo|condos)\b/.test(q)){f.type='Attached';chips.push('Townhome / attached');}
+  else if(/\b(detached|single[\s-]?family|single[\s-]?story|two[\s-]?story|sfr)\b/.test(q)){f.type='Detached';chips.push('Detached');}
+  const money2=tok=>{let t=tok.replace(/[$,\s]/g,'').toLowerCase(),mult=1;
+    if(t.endsWith('m')){mult=1e6;t=t.slice(0,-1);}else if(t.endsWith('k')){mult=1e3;t=t.slice(0,-1);}
+    let n=parseFloat(t); if(isNaN(n))return null; n=n*mult; if(mult===1&&n<10000)n*=1000; return Math.round(n);};
+  const NT='\\$?\\d+(?:[.,]\\d+)?\\s?[km]?';
+  let m=q.match(new RegExp('(?:between\\s+)?('+NT+')\\s*(?:to|-|and|–|through)\\s*('+NT+')'));
+  if(m){const a=money2(m[1]),b=money2(m[2]); if(a!=null&&b!=null){f.priceMin=Math.min(a,b);f.priceMax=Math.max(a,b);chips.push('$'+moneyK(f.priceMin)+' – $'+moneyK(f.priceMax));}}
+  else{
+    let u=q.match(new RegExp('(?:under|below|less than|up to|max|<)\\s*('+NT+')'));
+    if(u){const b=money2(u[1]); if(b!=null){f.priceMax=b;chips.push('≤ $'+moneyK(b));}}
+    let o=q.match(new RegExp('(?:over|above|more than|min|starting at|from|>)\\s*('+NT+')'));
+    if(o){const a=money2(o[1]); if(a!=null){f.priceMin=a;chips.push('≥ $'+moneyK(a));}}
+    let ar=q.match(new RegExp('(?:around|about|~)\\s*('+NT+')'));
+    if(ar&&f.priceMin==null&&f.priceMax==null){const c=money2(ar[1]); if(c!=null){f.priceMin=c-25000;f.priceMax=c+25000;chips.push('~$'+moneyK(c));}}
+  }
+  let s=q.match(/(\d[\d,]{2,})\s*\+?\s*(?:sq\.?\s?ft|sqft|square\s?feet|sf)\b/);
+  if(s){const n=parseInt(s[1].replace(/,/g,''));f.sqftMin=n;chips.push(n.toLocaleString()+'+ sq ft');}
+  if(/\b(available|move[\s-]?in|standing|in stock|quick move|ready)\b/.test(q)){f.hasStanding=true;chips.push('Has standing inventory');}
+  GROUPS.forEach(g=>{ if(q.includes(g.toLowerCase())){f.groups=f.groups||[];f.groups.push(g);chips.push(g);} });
+  BUILDERS.forEach(b=>{const key=b.toLowerCase().replace(/[.\/]/g,'').split(' ')[0];
+    if(key.length>=2 && new RegExp('\\b'+key+'\\b').test(q)){f.builders=f.builders||[]; if(!f.builders.includes(b)){f.builders.push(b);chips.push(b);}}});
+  return {filters:f,chips};
+}
+
+function applyParsedQuery(raw){
+  // reset query-derived filters, keep nothing sticky from prior text query
+  const {filters:f,chips}=parseQuery(raw);
+  state.type = f.type||'all';
+  state.priceMin = f.priceMin??null;
+  state.priceMax = f.priceMax??null;
+  state.sqftMin = f.sqftMin??null;
+  state.hasStanding = !!f.hasStanding;
+  state.groups = new Set(f.groups||[]);
+  state.builders = new Set(f.builders||[]);
+  state.text = raw.trim();
+  syncControls();
+  render();
+}
+
+/* ============ FILTER + SORT ============ */
+function filtered(){
+  let out = SUBS.filter(s=>{
+    if(state.type!=='all' && s.type!==state.type) return false;
+    if(state.priceMin!=null && (s.hi==null || s.hi < state.priceMin)) return false;
+    if(state.priceMax!=null && (s.lo==null || s.lo > state.priceMax)) return false;
+    if(state.sqftMin!=null && (s.maxSqft==null || s.maxSqft < state.sqftMin)) return false;
+    if(state.groups.size && !state.groups.has(s.group)) return false;
+    if(state.builders.size && !state.builders.has(s.builder)) return false;
+    if(state.hasStanding && !(Number(s.standing)>0)) return false;
+    return true;
+  });
+  const rt = state.sort;
+  const rate=id=>{const r=RECORDS[id]; return r&&r.rating?r.rating.value:0;};
+  out.sort((a,b)=>{
+    switch(rt){
+      case 'price-asc': return (a.lo??1e12)-(b.lo??1e12);
+      case 'price-desc': return (b.hi??-1)-(a.hi??-1);
+      case 'sqft-desc': return (b.maxSqft??-1)-(a.maxSqft??-1);
+      case 'standing-desc': return (Number(b.standing)||0)-(Number(a.standing)||0);
+      case 'rating-desc': return rate(b.id)-rate(a.id);
+      case 'name-asc': return a.sub.localeCompare(b.sub);
+      case 'builder-asc': return a.builder.localeCompare(b.builder)|| a.sub.localeCompare(b.sub);
+      default: return 0;
+    }
+  });
+  return out;
+}
+
+/* ============ RENDER: chips + count ============ */
+function renderChips(){
+  const box=$('#chips'); box.innerHTML='';
+  const add=(label,onx)=>{ const c=document.createElement('span'); c.className='chip';
+    c.innerHTML=label+' <button>×</button>'; c.querySelector('button').onclick=onx; box.appendChild(c); };
+  if(state.type!=='all') add(state.type==='Attached'?'Townhome / attached':'Detached',()=>{state.type='all';syncControls();render();});
+  if(state.priceMin!=null&&state.priceMax!=null) add('$'+moneyK(state.priceMin)+' – $'+moneyK(state.priceMax),()=>{state.priceMin=state.priceMax=null;syncControls();render();});
+  else{ if(state.priceMin!=null) add('≥ $'+moneyK(state.priceMin),()=>{state.priceMin=null;syncControls();render();});
+        if(state.priceMax!=null) add('≤ $'+moneyK(state.priceMax),()=>{state.priceMax=null;syncControls();render();}); }
+  if(state.sqftMin!=null) add(state.sqftMin.toLocaleString()+'+ sq ft',()=>{state.sqftMin=null;syncControls();render();});
+  state.groups.forEach(g=> add(g,()=>{state.groups.delete(g);syncControls();render();}));
+  state.builders.forEach(b=> add(b,()=>{state.builders.delete(b);syncControls();render();}));
+  if(state.hasStanding) add('Has standing inventory',()=>{state.hasStanding=false;syncControls();render();});
+  const any = state.type!=='all'||state.priceMin!=null||state.priceMax!=null||state.sqftMin!=null||state.groups.size||state.builders.size||state.hasStanding;
+  $('#clearBtn').style.display=any?'inline':'none';
+}
+function clearAll(){ state.type='all';state.priceMin=state.priceMax=state.sqftMin=null;state.groups=new Set();state.builders=new Set();state.hasStanding=false;state.text='';$('#q').value=''; syncControls(); render(); }
+
+/* ============ RENDER: views ============ */
+function ratingOf(id){const r=RECORDS[id];return r&&r.rating?r.rating.value:0;}
+function starRow(n){let s='';for(let i=1;i<=5;i++)s+=i<=n?'★':'';return s;}
+
+function render(){
+  renderChips();
+  const rows=filtered();
+  $('#count').textContent=rows.length;
+  const host=$('#results');
+  $('#sortbar').style.display=(state.view==='cards'||state.view==='table')?'flex':'none';
+  if(rows.length===0){ host.innerHTML=`<div class="empty"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg><b>No subdivisions match</b>Try widening the price range or clearing a filter.</div>`; return; }
+  if(state.view==='cards') host.innerHTML=`<div class="cards">${rows.map(cardHTML).join('')}</div>`;
+  else if(state.view==='table') host.innerHTML=tableHTML(rows);
+  else if(state.view==='map') host.innerHTML=mapHTML(rows);
+  else host.innerHTML=chartsHTML(rows);
+  // wire clicks
+  $$('[data-open]').forEach(el=> el.onclick=()=>openPanel(el.getAttribute('data-open')) );
+  if(state.view==='table') wireTableSort();
+}
+
+function cardHTML(s){
+  const r=RECORDS[s.id]||{}, inc=(r.incentives||[]).length, notes=(r.notes||[]).length, rate=r.rating?r.rating.value:0;
+  const col=GROUP_COLOR[s.group];
+  return `<div class="card" data-open="${s.id}">
+    <div class="stripe" style="background:${col}"></div>
+    <div class="body">
+      <span class="tag mp gtag">${s.group}</span>
+      <div class="top"><div><div class="name">${s.sub}</div><div class="builder">${s.builder}</div></div>
+        <span class="badge ${s.type==='Attached'?'att':'det'}">${s.type==='Attached'?'Townhome':'Detached'}</span></div>
+      <div class="price tnum">${money(s.lo)} <span style="color:var(--muted);font-weight:600;font-size:14px">– ${money(s.hi)}</span></div>
+      <div class="meta">
+        <span><b>${s.minSqft?s.minSqft.toLocaleString():'—'}–${s.maxSqft?s.maxSqft.toLocaleString():'—'}</b> sq ft</span>
+        <span>Standing <b>${s.standing??'—'}</b></span>
+        <span>YTD sold <b>${s.ytd??'—'}</b></span>
+      </div>
+      <div class="tags">
+        ${rate?`<span class="tag rate">★ ${rate}</span>`:''}
+        ${inc?`<span class="tag inc">${inc} incentive${inc>1?'s':''}</span>`:''}
+        ${notes?`<span class="tag vis">✎ ${notes} note${notes>1?'s':''}</span>`:''}
+        ${s.mp?`<span class="tag mp">${s.mp}</span>`:''}
+      </div>
+    </div></div>`;
+}
+
+let tableRows=[];
+function tableHTML(rows){
+  tableRows=rows;
+  const head=[['sub','Subdivision'],['builder','Builder'],['type','Type'],['lo','Price'],['maxSqft','Sq ft'],['standing','Standing'],['ytd','YTD'],['group','Master plan'],['rating','Rating']];
+  return `<div class="tablewrap"><table><thead><tr>${head.map(h=>`<th data-sort="${h[0]}">${h[1]}</th>`).join('')}</tr></thead><tbody>
+    ${rows.map(s=>{const rate=ratingOf(s.id);const col=GROUP_COLOR[s.group];
+      return `<tr data-open="${s.id}">
+        <td><span class="nm">${s.sub}</span></td>
+        <td>${s.builder}</td>
+        <td><span class="cellbadge ${s.type==='Attached'?'att':'det'}" style="background:${s.type==='Attached'?'#fff1e2':'#eef4ff'};color:${s.type==='Attached'?'#a5621a':'#2a53a8'}">${s.type==='Attached'?'TH':'SFR'}</span></td>
+        <td class="tnum">${money(s.lo)}<span style="color:var(--muted)"> – ${money(s.hi)}</span></td>
+        <td class="tnum">${s.maxSqft?s.maxSqft.toLocaleString():'—'}</td>
+        <td class="tnum">${s.standing??'—'}</td>
+        <td class="tnum">${s.ytd??'—'}</td>
+        <td><span style="display:inline-flex;align-items:center;gap:6px"><span class="dot" style="width:8px;height:8px;border-radius:50%;background:${col}"></span>${s.group}</span></td>
+        <td style="color:var(--star)">${rate?starRow(rate):'<span style="color:var(--line)">—</span>'}</td>
+      </tr>`;}).join('')}
+  </tbody></table></div>`;
+}
+function wireTableSort(){
+  $$('th[data-sort]').forEach(th=> th.onclick=()=>{
+    const k=th.getAttribute('data-sort');
+    const map={lo:'price-asc',maxSqft:'sqft-desc',standing:'standing-desc',rating:'rating-desc',sub:'name-asc',builder:'builder-asc'};
+    if(map[k]){ state.sort=map[k]; $('#sortSel').value=map[k]; render(); }
+  });
+}
+
+/* ---- map (schematic SVG, no tiles) ---- */
+function mapHTML(rows){
+  const W=820,H=560,pad=54;
+  const lats=SUBS.map(s=>s.lat),lngs=SUBS.map(s=>s.lng);
+  const minLat=Math.min(...lats),maxLat=Math.max(...lats),minLng=Math.min(...lngs),maxLng=Math.max(...lngs);
+  const px=lng=> pad+(lng-minLng)/(maxLng-minLng)*(W-2*pad);
+  const py=lat=> pad+(maxLat-lat)/(maxLat-minLat)*(H-2*pad);
+  // jitter identical coords
+  const seen={};
+  const pts=rows.map(s=>{const key=s.lat.toFixed(4)+','+s.lng.toFixed(4);seen[key]=(seen[key]||0)+1;
+    const i=seen[key]-1; const ang=i*2.4, rad=i?7:0;
+    return {s, x:px(s.lng)+Math.cos(ang)*rad, y:py(s.lat)+Math.sin(ang)*rad};});
+  // area labels at group centroids
+  const cents={};
+  GROUPS.forEach(g=>{const gs=SUBS.filter(s=>s.group===g); if(!gs.length)return;
+    cents[g]={x:px(gs.reduce((a,s)=>a+s.lng,0)/gs.length), y:py(gs.reduce((a,s)=>a+s.lat,0)/gs.length)};});
+  const legend=GROUPS.map(g=>`<span><span class="dot" style="background:${GROUP_COLOR[g]}"></span>${g}</span>`).join('');
+  const areaLbls=Object.entries(cents).map(([g,c])=>`<text class="arealbl" x="${c.x}" y="${g==='Cadence'?c.y-40:c.y-46}" text-anchor="middle">${g.toUpperCase()}</text>`).join('');
+  const pins=pts.map(p=>`<circle class="pin" cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="7" fill="${GROUP_COLOR[p.s.group]}" fill-opacity="0.85" stroke="#fff" stroke-width="1.5" data-open="${p.s.id}"><title>${p.s.sub} — ${p.s.builder} · ${money(p.s.lo)}</title></circle>`).join('');
+  return `<div class="mapwrap"><div class="maplegend">${legend}<span style="margin-left:auto;color:var(--muted);font-weight:500">Schematic layout — click a pin for detail</span></div>
+    <svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;background:linear-gradient(180deg,#f2f6fb,#eef2f7);border-radius:10px">
+    ${areaLbls}${pins}</svg></div>`;
+}
+
+/* ---- charts ---- */
+function barChart(title,data,fmt){
+  const W=360,rowH=30,H=data.length*rowH+16, max=Math.max(1,...data.map(d=>d.v)), lblW=118, barW=W-lblW-52;
+  const bars=data.map((d,i)=>{const y=i*rowH+8, w=Math.max(2,d.v/max*barW);
+    return `<text class="barlbl" x="0" y="${y+15}">${d.k}</text>
+      <rect class="bar" x="${lblW}" y="${y+4}" width="${w.toFixed(1)}" height="16" rx="3" fill="${d.c||'var(--brand)'}"></rect>
+      <text class="barval" x="${lblW+w+6}" y="${y+15}">${fmt?fmt(d.v):d.v}</text>`;}).join('');
+  return `<div class="chartcard"><h4>${title}</h4><svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto">${bars}</svg></div>`;
+}
+function chartsHTML(rows){
+  // price bands
+  const bands=[['< $350k',0,350000],['$350–450k',350000,450000],['$450–550k',450000,550000],['$550–700k',550000,700000],['$700k–1M',700000,1000000],['$1M+',1000000,1e12]];
+  const priceData=bands.map(b=>({k:b[0],v:rows.filter(s=>s.lo>=b[1]&&s.lo<b[2]).length}));
+  // by group
+  const groupData=GROUPS.map(g=>({k:g,v:rows.filter(s=>s.group===g).length,c:GROUP_COLOR[g]})).filter(d=>d.v);
+  // by builder
+  const bcount={}; rows.forEach(s=>bcount[s.builder]=(bcount[s.builder]||0)+1);
+  const builderData=Object.entries(bcount).map(([k,v])=>({k,v})).sort((a,b)=>b.v-a.v);
+  // avg price by type
+  const typeData=['Detached','Attached'].map(t=>{const g=rows.filter(s=>s.type===t&&s.lo);const avg=g.length?Math.round(g.reduce((a,s)=>a+s.lo,0)/g.length):0;return{k:t==='Attached'?'Townhome':'Detached',v:avg,c:t==='Attached'?'#e08a1e':'#2e6bd6'};}).filter(d=>d.v);
+  return `<div class="chartwrap"><div class="chartgrid">
+    ${barChart('Entry price distribution',priceData)}
+    ${barChart('Subdivisions by master plan',groupData)}
+    ${barChart('Subdivisions by builder',builderData)}
+    ${barChart('Avg. entry price by type',typeData,v=>'$'+moneyK(v))}
+  </div></div>`;
+}
+
+/* ============ DETAIL PANEL ============ */
+let openId=null;
+function openPanel(id){
+  openId=id; const s=SUBS.find(x=>x.id===id); const r=recOf(id);
+  const col=GROUP_COLOR[s.group];
+  const snap=(k,v)=>`<div class="snap"><div class="k">${k}</div><div class="v tnum">${v}</div></div>`;
+  const inner=`
+   <div class="phead" style="border-top:5px solid ${col}">
+     <button class="pclose" id="pclose">×</button>
+     <div class="pname">${s.sub}</div>
+     <div class="pbuilder">${s.builder} · <span style="color:${col};font-weight:600">${s.group}</span> · ${s.type==='Attached'?'Townhome / attached':'Detached'}</div>
+   </div>
+   <div class="pbody">
+     <div class="sect">
+       <div class="snapgrid">
+         ${snap('Price',money(s.lo)+' – '+money(s.hi))}
+         ${snap('Square feet',(s.minSqft?s.minSqft.toLocaleString():'—')+'–'+(s.maxSqft?s.maxSqft.toLocaleString():'—'))}
+         ${snap('Standing unsold',s.standing??'—')}
+         ${snap('Unsold lots',s.unsold??'—')}
+         ${snap('YTD net sold',s.ytd??'—')}
+         ${snap('Weekly traffic',s.traffic??'—')}
+         ${snap('Total lots',s.totalLot??'—')}
+         ${snap('Open since',s.opened||'—')}
+       </div>
+     </div>
+     <div class="sect">
+       <div class="linkline"><svg viewBox="0 0 24 24"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>
+         <a href="${s.mapUrl}" target="_blank" rel="noopener">${s.address}</a></div>
+       <div class="linkline"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18Z"/></svg>
+         <a href="${s.website}" target="_blank" rel="noopener">${s.webDomain}</a><span class="webtype">${s.webType}</span></div>
+     </div>
+     <div class="sect">
+       <h5>Your rating</h5>
+       <div class="stars" id="stars">${[1,2,3,4,5].map(i=>`<button data-star="${i}" class="${r.rating&&i<=r.rating.value?'lit':''}">★</button>`).join('')}</div>
+       ${r.rating?`<div class="item" style="background:none;border:none;padding:6px 0 0"><div class="by">Rated ${r.rating.value}/5 by ${r.rating.by} · ${r.rating.at}</div></div>`:''}
+     </div>
+     <div class="sect">
+       <h5>Sales contact</h5>
+       <div class="field"><label>Sales manager</label><input id="cName" placeholder="Name" value="${(r.contact.name||'').replace(/"/g,'&quot;')}"></div>
+       <div class="field"><label>Phone</label><input id="cPhone" placeholder="(702) 000-0000" value="${(r.contact.phone||'').replace(/"/g,'&quot;')}"></div>
+       <div class="field"><label>Email</label><input id="cEmail" placeholder="name@builder.com" value="${(r.contact.email||'').replace(/"/g,'&quot;')}"></div>
+       <div style="display:flex;align-items:center;gap:12px"><button class="savebtn" id="cSave">Save contact</button><span class="savedhint" id="cHint">Saved ✓</span></div>
+     </div>
+     <div class="sect">
+       <h5>Builder incentives</h5>
+       <div class="itemlist" id="incList">${incItems(r)}</div>
+       <div class="addrow"><input id="incInput" placeholder="e.g. $15k design credit + rate buydown to 4.99%"><button class="addbtn inc" id="incAdd">Add</button></div>
+     </div>
+     <div class="sect">
+       <h5>Site-visit notes</h5>
+       <div class="itemlist" id="noteList">${noteItems(r)}</div>
+       <div class="addrow"><textarea id="noteInput" rows="2" placeholder="What you saw on the visit…"></textarea><button class="addbtn" id="noteAdd">Add</button></div>
+     </div>
+   </div>
+   <div class="pfoot"><span>${lastEdited(r)}</span><span>${s.geoNote}</span></div>`;
+  $('#panelInner').innerHTML=inner;
+  $('#panel').classList.add('on'); $('#scrim').classList.add('on');
+  wirePanel(id);
+}
+function incItems(r){ return (r.incentives||[]).map(it=>`<div class="item inc"><button class="del" data-delinc="${it.id}">×</button><div class="txt">${esc(it.text)}</div><div class="by">${it.by} · ${it.at}</div></div>`).join('') || `<div style="color:var(--muted);font-size:13px">No incentives logged yet.</div>`; }
+function noteItems(r){ return (r.notes||[]).map(it=>`<div class="item"><button class="del" data-delnote="${it.id}">×</button><div class="txt">${esc(it.text)}</div><div class="by">${it.by} · ${it.at}</div></div>`).join('') || `<div style="color:var(--muted);font-size:13px">No notes yet.</div>`; }
+function lastEdited(r){ if(!r.updatedBy)return 'Not yet annotated'; return 'Last updated by '+r.updatedBy+' · '+r.updatedAt; }
+function esc(s){return String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
+function touch(r){ r.updatedBy=IDENTITY?IDENTITY.name:'Unknown'; r.updatedAt=nowStr(); }
+
+function wirePanel(id){
+  const r=recOf(id);
+  $('#pclose').onclick=closePanel;
+  // stars
+  $$('#stars button').forEach(b=> b.onclick=()=>{
+    const v=+b.getAttribute('data-star');
+    r.rating={value:v,by:IDENTITY?IDENTITY.name:'Unknown',at:nowStr()}; touch(r); saveRecords();
+    $$('#stars button').forEach(x=>x.classList.toggle('lit',+x.getAttribute('data-star')<=v));
+    openPanel(id); // refresh footer/labels
+  });
+  // contact
+  $('#cSave').onclick=()=>{
+    r.contact={name:$('#cName').value.trim(),phone:$('#cPhone').value.trim(),email:$('#cEmail').value.trim()};
+    touch(r); saveRecords(); const h=$('#cHint'); h.classList.add('on'); setTimeout(()=>h.classList.remove('on'),1500);
+  };
+  // incentives
+  const addInc=()=>{const v=$('#incInput').value.trim(); if(!v)return;
+    r.incentives=r.incentives||[]; r.incentives.unshift({id:uid(),text:v,by:IDENTITY?IDENTITY.name:'Unknown',at:nowStr()});
+    touch(r); saveRecords(); $('#incInput').value=''; $('#incList').innerHTML=incItems(r); rewireDeletes(id); render();};
+  $('#incAdd').onclick=addInc;
+  $('#incInput').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addInc();}});
+  // notes
+  const addNote=()=>{const v=$('#noteInput').value.trim(); if(!v)return;
+    r.notes=r.notes||[]; r.notes.unshift({id:uid(),text:v,by:IDENTITY?IDENTITY.name:'Unknown',at:nowStr()});
+    touch(r); saveRecords(); $('#noteInput').value=''; $('#noteList').innerHTML=noteItems(r); rewireDeletes(id); render();};
+  $('#noteAdd').onclick=addNote;
+  rewireDeletes(id);
+}
+function rewireDeletes(id){
+  const r=recOf(id);
+  $$('[data-delinc]').forEach(b=> b.onclick=e=>{e.stopPropagation();r.incentives=r.incentives.filter(x=>x.id!==b.getAttribute('data-delinc'));touch(r);saveRecords();$('#incList').innerHTML=incItems(r);rewireDeletes(id);render();});
+  $$('[data-delnote]').forEach(b=> b.onclick=e=>{e.stopPropagation();r.notes=r.notes.filter(x=>x.id!==b.getAttribute('data-delnote'));touch(r);saveRecords();$('#noteList').innerHTML=noteItems(r);rewireDeletes(id);render();});
+}
+function closePanel(){ $('#panel').classList.remove('on'); $('#scrim').classList.remove('on'); openId=null; }
+$('#scrim').onclick=closePanel;
+
+/* ============ IDENTITY ============ */
+function refreshWho(){
+  if(IDENTITY&&IDENTITY.name){ $('#whoNm').textContent=IDENTITY.name; $('#whoAv').textContent=initials(IDENTITY.name); }
+  else { $('#whoNm').textContent='Sign in'; $('#whoAv').textContent='?'; }
+}
+function openIdModal(){ $('#idModal').classList.add('on'); const i=$('#idInput'); i.value=IDENTITY?IDENTITY.name:''; setTimeout(()=>i.focus(),50); }
+$('#idGo').onclick=()=>{ const v=$('#idInput').value.trim(); if(!v){$('#idInput').focus();return;} IDENTITY={name:v}; sset('identity',IDENTITY); refreshWho(); $('#idModal').classList.remove('on'); if(openId)openPanel(openId); };
+$('#idInput')&&$('#idInput').addEventListener('keydown',e=>{if(e.key==='Enter')$('#idGo').click();});
+$('#whoBtn').onclick=openIdModal;
+
+/* ============ EXPORT CSV ============ */
+function exportCSV(){
+  const rows=filtered();
+  const cols=['Subdivision','Builder','Type','Master Plan','Low Price','High Price','Min Sqft','Max Sqft','Standing Unsold','Unsold Lots','YTD Net Sold','Address','Website','Your Rating','Incentives','Sales Contact','Notes'];
+  const q=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"';
+  const lines=[cols.join(',')];
+  rows.forEach(s=>{const r=RECORDS[s.id]||{};
+    const inc=(r.incentives||[]).map(i=>i.text+' ('+i.by+')').join(' | ');
+    const notes=(r.notes||[]).map(i=>i.text+' ('+i.by+')').join(' | ');
+    const c=r.contact||{}; const contact=[c.name,c.phone,c.email].filter(Boolean).join(' / ');
+    lines.push([s.sub,s.builder,s.type,s.group,s.lo,s.hi,s.minSqft,s.maxSqft,s.standing,s.unsold,s.ytd,s.address,s.website,r.rating?r.rating.value:'',inc,contact,notes].map(q).join(','));
+  });
+  const blob=new Blob([lines.join('\n')],{type:'text/csv'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download='henderson-watch-'+new Date().toISOString().slice(0,10)+'.csv'; a.click();
+}
+$('#exportBtn').onclick=exportCSV;
+
+/* ============ PRINT ============ */
+function buildPrintReport(){
+  const rows=filtered();
+  const chips=[...$$('#chips .chip')].map(c=>c.textContent.replace('×','').trim());
+  const qsum = chips.length? chips.map(c=>`<span class="chip">${c}</span>`).join(' ') : '<span style="color:#555">All 61 subdivisions</span>';
+  const items=rows.map(s=>{const r=RECORDS[s.id]||{};
+    const inc=(r.incentives||[]);
+    const c=r.contact||{}; const contact=[c.name,c.phone,c.email].filter(Boolean).join(' · ');
+    return `<div class="prep-item">
+      <div class="pi-top"><span>${s.sub} — ${s.builder}</span><span>${money(s.lo)} – ${money(s.hi)}</span></div>
+      <div class="pi-grid">
+        <span>${s.type==='Attached'?'Townhome':'Detached'}</span>
+        <span>${s.group}</span>
+        <span>${s.minSqft?s.minSqft.toLocaleString():'—'}–${s.maxSqft?s.maxSqft.toLocaleString():'—'} sq ft</span>
+        <span>Standing ${s.standing??'—'}</span>
+        <span>YTD ${s.ytd??'—'}</span>
+        ${r.rating?`<span>Rated ${r.rating.value}/5</span>`:''}
+      </div>
+      <div class="pi-grid"><span>${s.address}</span></div>
+      ${contact?`<div class="pi-grid"><span><span class="pi-lbl">Contact</span> ${contact}</span></div>`:''}
+      ${inc.length?`<div class="pi-inc"><span class="pi-lbl">Incentives</span><br>${inc.map(i=>'• '+esc(i.text)+' <span style=\"color:#777\">('+i.by+')</span>').join('<br>')}</div>`:''}
+    </div>`;}).join('');
+  $('#printReport').innerHTML=`
+    <div class="prep-head">
+      <div class="prep-title">Henderson New-Home Watch</div>
+      <div class="prep-sub">Buyer2Builder · Market Watch — generated ${nowStr()}${IDENTITY?' by '+IDENTITY.name:''} · ${rows.length} subdivision${rows.length!==1?'s':''}</div>
+      <div class="prep-query"><span class="pi-lbl" style="margin-right:8px">Query</span>${qsum}</div>
+    </div>${items}`;
+}
+$('#printBtn').onclick=()=>{ buildPrintReport(); setTimeout(()=>window.print(),60); };
+
+/* ============ CONTROLS SYNC + WIRING ============ */
+function buildRail(){
+  const gc=$('#groupChecks');
+  gc.innerHTML=GROUPS.map(g=>`<label class="checkline"><input type="checkbox" data-group="${g}"><span class="dot" style="background:${GROUP_COLOR[g]}"></span>${g}</label>`).join('');
+  $('#builderChecks').innerHTML=BUILDERS.map(b=>`<label class="checkline"><input type="checkbox" data-builder="${b}">${b}</label>`).join('');
+  $$('[data-group]').forEach(cb=> cb.onchange=()=>{ cb.checked?state.groups.add(cb.getAttribute('data-group')):state.groups.delete(cb.getAttribute('data-group')); render(); });
+  $$('[data-builder]').forEach(cb=> cb.onchange=()=>{ cb.checked?state.builders.add(cb.getAttribute('data-builder')):state.builders.delete(cb.getAttribute('data-builder')); render(); });
+}
+function syncControls(){
+  $$('#segType button').forEach(b=> b.classList.toggle('on', b.getAttribute('data-v')===state.type));
+  $('#priceMin').value=state.priceMin??''; $('#priceMax').value=state.priceMax??''; $('#sqftMin').value=state.sqftMin??'';
+  $('#invSwitch').classList.toggle('on',state.hasStanding);
+  $$('[data-group]').forEach(cb=> cb.checked=state.groups.has(cb.getAttribute('data-group')));
+  $$('[data-builder]').forEach(cb=> cb.checked=state.builders.has(cb.getAttribute('data-builder')));
+}
+$$('#segType button').forEach(b=> b.onclick=()=>{ state.type=b.getAttribute('data-v'); syncControls(); render(); });
+$('#priceMin').oninput=e=>{ state.priceMin=e.target.value?+e.target.value:null; render(); };
+$('#priceMax').oninput=e=>{ state.priceMax=e.target.value?+e.target.value:null; render(); };
+$('#sqftMin').oninput=e=>{ state.sqftMin=e.target.value?+e.target.value:null; render(); };
+$('#invSwitch').onclick=()=>{ state.hasStanding=!state.hasStanding; syncControls(); render(); };
+$('#sortSel').onchange=e=>{ state.sort=e.target.value; render(); };
+$('#clearBtn').onclick=clearAll;
+$$('#tabs button').forEach(b=> b.onclick=()=>{ $$('#tabs button').forEach(x=>x.classList.remove('on')); b.classList.add('on'); state.view=b.getAttribute('data-v'); render(); });
+let qTimer;
+$('#q').addEventListener('input',e=>{ clearTimeout(qTimer); qTimer=setTimeout(()=>applyParsedQuery(e.target.value),260); });
+$('#q').addEventListener('keydown',e=>{ if(e.key==='Enter'){ clearTimeout(qTimer); applyParsedQuery(e.target.value);} });
+
+/* ============ INIT ============ */
+buildRail(); syncControls(); refreshWho(); render();
+if(!IDENTITY){ openIdModal(); }
+</script>
+</body>
+</html>
