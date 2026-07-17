@@ -57,6 +57,16 @@ with sync_playwright() as p:
     pickA = ids[0]
     cardIds = pg.evaluate("() => [...document.querySelectorAll('.card[data-open]')].map(c=>c.getAttribute('data-open'))")
 
+    # subdivision detail is now a centered modal with a map snapshot
+    pg.evaluate(f"openPanel({pickA!r})"); pg.wait_for_timeout(200)
+    check("subdivision opens as centered modal", pg.locator("#subModal.on .cmodal-card").count()==1)
+    check("subdivision modal has two columns", pg.locator("#subModal .cmodal-body .cmodal-col").count()==2)
+    check("subdivision keeps stats/contact/notes", pg.locator("#subModal #stars").count()==1 and pg.locator("#subModal #cName").count()==1 and pg.locator("#subModal #noteList").count()==1)
+    pg.wait_for_timeout(3000)
+    check("subdivision map snapshot renders", pg.locator("#subMap img").count()==1)
+    pg.click("#pclose"); pg.wait_for_timeout(150)
+    check("subdivision modal closes", pg.locator("#subModal.on").count()==0)
+
     pg.click("#clientsBtn"); pg.wait_for_timeout(150)
     pg.fill("#ncName","Jordan Fisher"); pg.fill("#ncPhone","(702) 555-0134"); pg.fill("#ncEmail","jordan@example.com")
     pg.click("#ncCreate"); pg.wait_for_timeout(300)

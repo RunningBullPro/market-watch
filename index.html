@@ -424,9 +424,8 @@ svg .pin:hover{stroke:var(--ink);stroke-width:2}
   <span class="dotsep"></span><span id="buildStamp" style="font-weight:600;color:var(--ink2)"></span>
 </div>
 
-<!-- detail panel -->
-<div class="scrim" id="scrim"></div>
-<div class="panel" id="panel"><div id="panelInner"></div></div>
+<!-- subdivision detail modal -->
+<div class="cmodal" id="subModal"><div class="cmodal-card" id="panelInner"></div></div>
 
 <!-- client profile modal -->
 <div class="cmodal" id="clientModal"><div class="cmodal-card" id="clientPanelInner"></div></div>
@@ -748,58 +747,66 @@ function openPanel(id){
   const col=GROUP_COLOR[s.group];
   const snap=(k,v)=>`<div class="snap"><div class="k">${k}</div><div class="v tnum">${v}</div></div>`;
   const inner=`
-   <div class="phead" style="border-top:5px solid ${col}">
+   <div class="cmodal-head" style="border-top:4px solid ${col}">
+     <div><div class="cmodal-title">${esc(s.sub)}</div>
+       <div class="cmodal-sub">${esc(s.builder)} · <span style="color:${col};font-weight:600">${s.group}</span> · ${s.type==='Attached'?'Townhome / attached':'Detached'}</div></div>
      <button class="pclose" id="pclose">×</button>
-     <div class="pname">${s.sub}</div>
-     <div class="pbuilder">${s.builder} · <span style="color:${col};font-weight:600">${s.group}</span> · ${s.type==='Attached'?'Townhome / attached':'Detached'}</div>
    </div>
-   <div class="pbody">
-     <div class="sect">
-       <div class="snapgrid">
-         ${snap('Price',money(s.lo)+' – '+money(s.hi))}
-         ${snap('Square feet',(s.minSqft?s.minSqft.toLocaleString():'—')+'–'+(s.maxSqft?s.maxSqft.toLocaleString():'—'))}
-         ${snap('Standing unsold',s.standing??'—')}
-         ${snap('Unsold lots',s.unsold??'—')}
-         ${snap('YTD net sold',s.ytd??'—')}
-         ${snap('Weekly traffic',s.traffic??'—')}
-         ${snap('Total lots',s.totalLot??'—')}
-         ${snap('Open since',s.opened||'—')}
-       </div>
+   <div class="cmodal-body">
+     <div class="cmodal-col">
+       <section>
+         <h5>At a glance</h5>
+         <div class="snapgrid">
+           ${snap('Price',money(s.lo)+' – '+money(s.hi))}
+           ${snap('Square feet',(s.minSqft?s.minSqft.toLocaleString():'—')+'–'+(s.maxSqft?s.maxSqft.toLocaleString():'—'))}
+           ${snap('Standing unsold',s.standing??'—')}
+           ${snap('Unsold lots',s.unsold??'—')}
+           ${snap('YTD net sold',s.ytd??'—')}
+           ${snap('Weekly traffic',s.traffic??'—')}
+           ${snap('Total lots',s.totalLot??'—')}
+           ${snap('Open since',s.opened||'—')}
+         </div>
+       </section>
+       <section>
+         <h5>Location</h5>
+         <div class="reportmap" id="subMap"></div>
+         <div class="linkline" style="margin-top:8px"><svg viewBox="0 0 24 24"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>
+           <a href="${s.mapUrl}" target="_blank" rel="noopener">${esc(s.address)}</a></div>
+         <div class="linkline"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18Z"/></svg>
+           <a href="${s.website}" target="_blank" rel="noopener">${esc(s.webDomain)}</a><span class="webtype">${esc(s.webType)}</span></div>
+       </section>
      </div>
-     <div class="sect">
-       <div class="linkline"><svg viewBox="0 0 24 24"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>
-         <a href="${s.mapUrl}" target="_blank" rel="noopener">${s.address}</a></div>
-       <div class="linkline"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18Z"/></svg>
-         <a href="${s.website}" target="_blank" rel="noopener">${s.webDomain}</a><span class="webtype">${s.webType}</span></div>
-     </div>
-     ${(()=>{const ac=activeClient(); if(!ac)return ''; const on=clientHas(ac,id); return `<div class="sect"><h5>Client profile</h5><button class="savebtn" id="pClientToggle" style="width:100%;background:${on?'var(--good)':'var(--brand)'}">${on?'✓ In '+esc(ac.name)+'’s list — tap to remove':'＋ Add to '+esc(ac.name)+'’s list'}</button></div>`;})()}
-     <div class="sect">
-       <h5>Your rating</h5>
-       <div class="stars" id="stars">${[1,2,3,4,5].map(i=>`<button data-star="${i}" class="${r.rating&&i<=r.rating.value?'lit':''}">★</button>`).join('')}</div>
-       ${r.rating?`<div class="item" style="background:none;border:none;padding:6px 0 0"><div class="by">Rated ${r.rating.value}/5 by ${r.rating.by} · ${r.rating.at}</div></div>`:''}
-     </div>
-     <div class="sect">
-       <h5>Sales contact</h5>
-       <div class="field"><label>Sales manager</label><input id="cName" placeholder="Name" value="${(r.contact.name||'').replace(/"/g,'&quot;')}"></div>
-       <div class="field"><label>Phone</label><input id="cPhone" placeholder="(702) 000-0000" value="${(r.contact.phone||'').replace(/"/g,'&quot;')}"></div>
-       <div class="field"><label>Email</label><input id="cEmail" placeholder="name@builder.com" value="${(r.contact.email||'').replace(/"/g,'&quot;')}"></div>
-       <div style="display:flex;align-items:center;gap:12px"><button class="savebtn" id="cSave">Save contact</button><span class="savedhint" id="cHint">Saved ✓</span></div>
-     </div>
-     <div class="sect">
-       <h5>Builder incentives</h5>
-       <div class="itemlist" id="incList">${incItems(r)}</div>
-       <div class="addrow"><input id="incInput" placeholder="e.g. $15k design credit + rate buydown to 4.99%"><button class="addbtn inc" id="incAdd">Add</button></div>
-     </div>
-     <div class="sect">
-       <h5>Site-visit notes</h5>
-       <div class="itemlist" id="noteList">${noteItems(r)}</div>
-       <div class="addrow"><textarea id="noteInput" rows="2" placeholder="What you saw on the visit…"></textarea><button class="addbtn" id="noteAdd">Add</button></div>
+     <div class="cmodal-col">
+       ${(()=>{const ac=activeClient(); if(!ac)return ''; const on=clientHas(ac,id); return `<section><h5>Client profile</h5><button class="savebtn" id="pClientToggle" style="width:100%;background:${on?'var(--good)':'var(--brand)'}">${on?'✓ In '+esc(ac.name)+'’s list — tap to remove':'＋ Add to '+esc(ac.name)+'’s list'}</button></section>`;})()}
+       <section>
+         <h5>Your rating</h5>
+         <div class="stars" id="stars">${[1,2,3,4,5].map(i=>`<button data-star="${i}" class="${r.rating&&i<=r.rating.value?'lit':''}">★</button>`).join('')}</div>
+         ${r.rating?`<div style="font-size:11px;color:var(--muted);margin-top:7px">Rated ${r.rating.value}/5 by ${esc(r.rating.by)} · ${r.rating.at}</div>`:''}
+       </section>
+       <section>
+         <h5>Sales contact</h5>
+         <div class="field"><label>Sales manager</label><input id="cName" placeholder="Name" value="${(r.contact.name||'').replace(/"/g,'&quot;')}"></div>
+         <div class="field"><label>Phone</label><input id="cPhone" placeholder="(702) 000-0000" value="${(r.contact.phone||'').replace(/"/g,'&quot;')}"></div>
+         <div class="field"><label>Email</label><input id="cEmail" placeholder="name@builder.com" value="${(r.contact.email||'').replace(/"/g,'&quot;')}"></div>
+         <div style="display:flex;align-items:center;gap:12px"><button class="savebtn" id="cSave">Save contact</button><span class="savedhint" id="cHint">Saved ✓</span></div>
+       </section>
+       <section>
+         <h5>Builder incentives</h5>
+         <div class="itemlist" id="incList">${incItems(r)}</div>
+         <div class="addrow"><input id="incInput" placeholder="e.g. $15k design credit + rate buydown to 4.99%"><button class="addbtn inc" id="incAdd">Add</button></div>
+       </section>
+       <section>
+         <h5>Site-visit notes</h5>
+         <div class="itemlist" id="noteList">${noteItems(r)}</div>
+         <div class="addrow"><textarea id="noteInput" rows="2" placeholder="What you saw on the visit…"></textarea><button class="addbtn" id="noteAdd">Add</button></div>
+       </section>
      </div>
    </div>
-   <div class="pfoot"><span>${lastEdited(r)}</span><span>${s.geoNote}</span></div>`;
+   <div class="cmodal-foot"><span>${lastEdited(r)}</span><span style="margin-left:auto">${esc(s.geoNote||'')}</span></div>`;
   $('#panelInner').innerHTML=inner;
-  $('#panel').classList.add('on'); $('#scrim').classList.add('on');
+  $('#subModal').classList.add('on');
   wirePanel(id);
+  renderSubMap(s);
 }
 function incItems(r){ return (r.incentives||[]).map(it=>`<div class="item inc"><button class="del" data-delinc="${it.id}">×</button><div class="txt">${esc(it.text)}</div><div class="by">${it.by} · ${it.at}</div></div>`).join('') || `<div style="color:var(--muted);font-size:13px">No incentives logged yet.</div>`; }
 function noteItems(r){ return (r.notes||[]).map(it=>`<div class="item"><button class="del" data-delnote="${it.id}">×</button><div class="txt">${esc(it.text)}</div><div class="by">${it.by} · ${it.at}</div></div>`).join('') || `<div style="color:var(--muted);font-size:13px">No notes yet.</div>`; }
@@ -841,8 +848,8 @@ function rewireDeletes(id){
   $$('[data-delinc]').forEach(b=> b.onclick=e=>{e.stopPropagation();r.incentives=r.incentives.filter(x=>x.id!==b.getAttribute('data-delinc'));touch(r);saveRecords();$('#incList').innerHTML=incItems(r);rewireDeletes(id);render();});
   $$('[data-delnote]').forEach(b=> b.onclick=e=>{e.stopPropagation();r.notes=r.notes.filter(x=>x.id!==b.getAttribute('data-delnote'));touch(r);saveRecords();$('#noteList').innerHTML=noteItems(r);rewireDeletes(id);render();});
 }
-function closePanel(){ $('#panel').classList.remove('on'); $('#scrim').classList.remove('on'); openId=null; }
-$('#scrim').onclick=closePanel;
+function closePanel(){ $('#subModal').classList.remove('on'); openId=null; }
+$('#subModal').addEventListener('click', e=>{ if(e.target.id==='subModal') closePanel(); });
 
 /* ============ IDENTITY ============ */
 function refreshWho(){
@@ -1119,7 +1126,8 @@ function reportMapSVG(entries){
    a canvas (tiles send Access-Control-Allow-Origin:*, so the canvas stays exportable),
    draw numbered pins, return a PNG data URL. No API key. Falls back to reportMapSVG. */
 function mercPx(lat,lng,z){ const s=256*Math.pow(2,z); const x=(lng+180)/360*s; const sl=Math.sin(lat*Math.PI/180); const y=(0.5-Math.log((1+sl)/(1-sl))/(4*Math.PI))*s; return {x,y}; }
-function staticOSMMap(entries, W, H){
+function staticOSMMap(entries, W, H, opts){
+  const numbered = !(opts && opts.numbered===false);
   return new Promise(resolve=>{
     try{
       const pts=(entries||[]).map((e,i)=>({i,lat:e.snap&&e.snap.lat,lng:e.snap&&e.snap.lng,col:GROUP_COLOR[e.snap&&e.snap.group]||'#64748b'})).filter(p=>typeof p.lat==='number'&&typeof p.lng==='number');
@@ -1146,7 +1154,8 @@ function staticOSMMap(entries, W, H){
       Promise.race([Promise.all(jobs), new Promise(res=>setTimeout(res,6000))]).then(()=>{
         pts.forEach(p=>{ const q=mercPx(p.lat,p.lng,z), x=q.x-originX, y=q.y-originY;
           ctx.beginPath(); ctx.arc(x,y,11,0,2*Math.PI); ctx.fillStyle=p.col; ctx.fill(); ctx.lineWidth=2.5; ctx.strokeStyle='#fff'; ctx.stroke();
-          ctx.fillStyle='#fff'; ctx.font='700 12px Inter,Arial,sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(String(p.i+1), x, y+0.5); });
+          if(numbered){ ctx.fillStyle='#fff'; ctx.font='700 12px Inter,Arial,sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(String(p.i+1), x, y+0.5); }
+          else { ctx.beginPath(); ctx.arc(x,y,3.5,0,2*Math.PI); ctx.fillStyle='#fff'; ctx.fill(); } });
         ctx.font='10px Arial'; const attr='© OpenStreetMap contributors', tw=ctx.measureText(attr).width;
         ctx.fillStyle='rgba(255,255,255,0.75)'; ctx.fillRect(W-tw-9,H-15,tw+9,15);
         ctx.fillStyle='#333'; ctx.textAlign='left'; ctx.textBaseline='alphabetic'; ctx.fillText(attr, W-tw-5, H-4);
@@ -1163,6 +1172,15 @@ function renderMapPreview(entries){
   staticOSMMap(entries,760,360).then(url=>{ const cur=$('#cmMap'); if(!cur) return;
     cur.innerHTML = url ? `<img src="${url}" style="display:block;width:100%">` : (reportMapSVG(entries)||''); });
 }
+const subMapCache={};
+function renderSubMap(s){
+  const el=$('#subMap'); if(!el || typeof s.lat!=='number') { if(el) el.innerHTML='<div style="padding:22px;text-align:center;color:var(--muted);font-size:12.5px">No location on file.</div>'; return; }
+  if(subMapCache[s.id]){ el.innerHTML=`<img src="${subMapCache[s.id]}" style="display:block;width:100%">`; return; }
+  el.innerHTML='<div style="padding:22px;text-align:center;color:var(--muted);font-size:12.5px">Loading map…</div>';
+  staticOSMMap([{snap:s}],640,300,{numbered:false}).then(url=>{ const cur=$('#subMap'); if(!cur) return;
+    if(url){ subMapCache[s.id]=url; cur.innerHTML=`<img src="${url}" style="display:block;width:100%">`; }
+    else { cur.innerHTML='<div style="padding:22px;text-align:center;color:var(--muted);font-size:12.5px">Map unavailable.</div>'; } });
+}
 function exportClientCSV(cid){
   const c=clientOf(cid); if(!c)return;
   const cols=['#','Subdivision','Builder','Type','Master Plan','Low Price','High Price','Min Sqft','Max Sqft','Standing','YTD Sold','Address','Saved (snapshot date)','Latest dataset status'];
@@ -1177,8 +1195,7 @@ function exportClientCSV(cid){
   const safe=(c.name||'client').replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'').toLowerCase()||'client';
   a.download='client-'+safe+'-'+new Date().toISOString().slice(0,10)+'.csv'; a.click();
 }
-function closeOverlays(){ $('#panel').classList.remove('on'); $('#clientModal').classList.remove('on'); $('#scrim').classList.remove('on'); openId=null; openClientId=null; }
-$('#scrim').onclick=closeOverlays;
+function closeOverlays(){ $('#subModal').classList.remove('on'); $('#clientModal').classList.remove('on'); openId=null; openClientId=null; }
 
 /* ---- client report ---- */
 async function buildClientReport(cid){
