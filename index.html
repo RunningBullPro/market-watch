@@ -268,6 +268,17 @@ svg .pin:hover{stroke:var(--ink);stroke-width:2}
 .card .clienttoggle{width:100%;margin-top:12px;border:1px dashed var(--line);background:var(--surface2);border-radius:9px;padding:8px;font-weight:700;font-size:12px;color:var(--brand-d)}
 .card .clienttoggle.on{background:var(--brand-soft);border-style:solid;border-color:var(--brand)}
 .card .clienttoggle:hover{border-color:var(--brand)}
+/* ad-hoc selection */
+.card .selbox{flex:none;display:inline-flex;margin-top:2px}
+.card .selbox input{width:17px;height:17px;accent-color:var(--brand);cursor:pointer}
+.card.sel{outline:2px solid var(--brand);outline-offset:-2px}
+th.selcol,td.selcol{width:34px;text-align:center;padding-left:12px;padding-right:2px}
+td.selcol input{width:16px;height:16px;accent-color:var(--brand);cursor:pointer;vertical-align:middle}
+tr.sel{background:var(--brand-soft)}
+.selpill{display:inline-flex;align-items:center;gap:8px;background:var(--ink);border:1px solid var(--ink);color:#fff;font-weight:600;font-size:12.5px;padding:4px 5px 4px 12px;border-radius:20px}
+.selpill .sp-btn{border:none;background:#33506e;color:#fff;border-radius:14px;padding:3px 11px;font-weight:600;font-size:12px}
+.selpill .sp-btn:hover{background:#3f6488}
+.selpill .sp-x{border:none;background:#fff;color:var(--ink);border-radius:14px;width:22px;height:22px;font-size:15px;line-height:1;padding:0}
 /* client profile — large centered modal */
 .cmodal{position:fixed;inset:0;background:rgba(20,38,58,.55);z-index:95;display:none;padding:24px}
 .cmodal.on{display:grid;place-items:center}
@@ -352,6 +363,7 @@ svg .pin:hover{stroke:var(--ink);stroke-width:2}
   <span class="lead">Filters</span>
   <div id="chips" style="display:flex;gap:8px;flex-wrap:wrap"></div>
   <button class="linkbtn" id="clearBtn" style="display:none">Clear all</button>
+  <span id="selBar"></span>
   <span id="clientBar"></span>
   <span class="countpill"><b id="count">0</b> of 61 subdivisions</span>
 </div>
@@ -629,6 +641,7 @@ function render(){
   // wire clicks
   $$('[data-open]').forEach(el=> el.onclick=()=>openPanel(el.getAttribute('data-open')) );
   $$('[data-client-add]').forEach(b=> b.onclick=e=>{ e.stopPropagation(); toggleClientCommunity(activeClientId, b.getAttribute('data-client-add')); });
+  $$('input[data-sel]').forEach(cb=>{ cb.onclick=e=>e.stopPropagation(); cb.onchange=()=>toggleSelected(cb.getAttribute('data-sel')); });
   if(state.view==='table') wireTableSort();
 }
 
@@ -636,10 +649,10 @@ function cardHTML(s){
   const r=RECORDS[s.id]||{}, inc=(r.incentives||[]).length, notes=(r.notes||[]).length, rate=r.rating?r.rating.value:0;
   const col=GROUP_COLOR[s.group];
   const ac=activeClient(), inList=clientHas(ac,s.id);
-  return `<div class="card" data-open="${s.id}">
+  return `<div class="card ${SELECTED.has(s.id)?'sel':''}" data-open="${s.id}">
     <div class="stripe" style="background:${col}"></div>
     <div class="body">
-      <div class="top"><div class="topleft"><div class="name">${s.sub}</div><div class="builder">${s.builder}</div></div>
+      <div class="top"><label class="selbox" title="Select for report"><input type="checkbox" data-sel="${s.id}" ${SELECTED.has(s.id)?'checked':''}></label><div class="topleft"><div class="name">${s.sub}</div><div class="builder">${s.builder}</div></div>
         <div class="topright"><span class="badge ${s.type==='Attached'?'att':'det'}">${s.type==='Attached'?'Townhome':'Detached'}</span><span class="tag mp gtag">${s.group}</span></div></div>
       <div class="price tnum">${money(s.lo)} <span style="color:var(--muted);font-weight:600;font-size:14px">– ${money(s.hi)}</span></div>
       <div class="meta">
@@ -661,9 +674,10 @@ let tableRows=[];
 function tableHTML(rows){
   tableRows=rows;
   const head=[['sub','Subdivision'],['builder','Builder'],['type','Type'],['lo','Price'],['maxSqft','Sq ft'],['standing','Standing'],['ytd','YTD'],['group','Master plan'],['rating','Rating']];
-  return `<div class="tablewrap"><table><thead><tr>${head.map(h=>`<th data-sort="${h[0]}">${h[1]}</th>`).join('')}</tr></thead><tbody>
+  return `<div class="tablewrap"><table><thead><tr><th class="selcol"></th>${head.map(h=>`<th data-sort="${h[0]}">${h[1]}</th>`).join('')}</tr></thead><tbody>
     ${rows.map(s=>{const rate=ratingOf(s.id);const col=GROUP_COLOR[s.group];
-      return `<tr data-open="${s.id}">
+      return `<tr class="${SELECTED.has(s.id)?'sel':''}" data-open="${s.id}">
+        <td class="selcol"><input type="checkbox" data-sel="${s.id}" ${SELECTED.has(s.id)?'checked':''}></td>
         <td><span class="nm">${s.sub}</span></td>
         <td>${s.builder}</td>
         <td><span class="cellbadge ${s.type==='Attached'?'att':'det'}" style="background:${s.type==='Attached'?'#fff1e2':'#eef4ff'};color:${s.type==='Attached'?'#a5621a':'#2a53a8'}">${s.type==='Attached'?'TH':'SFR'}</span></td>
@@ -1272,6 +1286,58 @@ async function buildClientReport(cid){
   setTimeout(()=>window.print(),80);
 }
 
+/* ============ AD-HOC SELECTION (report without a client) ============ */
+let SELECTED = new Set((sget('selection',[])||[]).filter(id=>SUBS.some(s=>s.id===id)));
+function saveSelection(){ sset('selection',[...SELECTED]); }
+function selectedSubs(){ return [...SELECTED].map(id=>SUBS.find(s=>s.id===id)).filter(Boolean); }
+function toggleSelected(id){
+  if(SELECTED.has(id)) SELECTED.delete(id); else SELECTED.add(id);
+  saveSelection();
+  const on=SELECTED.has(id);
+  $$('input[data-sel="'+id+'"]').forEach(cb=>{ cb.checked=on; const host=cb.closest('.card,tr'); if(host) host.classList.toggle('sel',on); });
+  refreshSelectionBar();
+}
+function clearSelection(){ SELECTED.clear(); saveSelection(); refreshSelectionBar(); render(); }
+function refreshSelectionBar(){
+  const el=$('#selBar'); if(!el) return;
+  const n=SELECTED.size;
+  if(!n){ el.innerHTML=''; return; }
+  el.innerHTML=`<span class="selpill">${n} selected <button class="sp-btn" id="selReport">Report</button><button class="sp-btn" id="selCSV">CSV</button><button class="sp-x" id="selClear" title="Clear selection">×</button></span>`;
+  $('#selReport').onclick=async()=>{ const b=$('#selReport'); const t=b.textContent; b.disabled=true; b.textContent='…'; try{ await buildSelectionReport(); } finally { b.disabled=false; b.textContent=t; } };
+  $('#selCSV').onclick=exportSelectionCSV;
+  $('#selClear').onclick=clearSelection;
+}
+async function buildSelectionReport(){
+  const subs=selectedSubs(); if(!subs.length) return;
+  const entries=subs.map(s=>({snap:s}));
+  const items=subs.map((s,i)=>prepItemHTML(s,null,i+1)).join('');
+  let mapBlock='';
+  const mapUrl=await staticOSMMap(entries,760,420);
+  if(mapUrl) mapBlock=`<div class="creport-map"><img src="${mapUrl}" style="display:block;width:100%"/><div class="cm-cap">Numbered pins correspond to the communities listed below · map data © OpenStreetMap contributors.</div></div>`;
+  else { const svg=reportMapSVG(entries); if(svg) mapBlock=`<div class="creport-map">${svg}<div class="cm-cap">Numbered pins correspond to the communities listed below · gray dots are other nearby subdivisions for context.</div></div>`; }
+  const when=new Date().toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'});
+  $('#printReport').innerHTML=`
+    <div class="creport-band">
+      <img src="Buyer%202%20Builder%20Logo_Wht.png" alt="Buyer2Builder.com — Your New Home Source"/>
+      <span class="cb-t">Market Watch<br>Selected Communities</span>
+    </div>
+    <div class="creport-client"><span class="cc-nm">Selected communities</span></div>
+    <div class="creport-meta">Prepared by ${esc(IDENTITY?IDENTITY.name:'—')} · ${when} · ${subs.length} communit${subs.length===1?'y':'ies'}</div>
+    ${mapBlock}
+    ${items}`;
+  setTimeout(()=>window.print(),80);
+}
+function exportSelectionCSV(){
+  const subs=selectedSubs(); if(!subs.length) return;
+  const cols=['#','Subdivision','Builder','Type','Master Plan','Low Price','High Price','Min Sqft','Max Sqft','Standing','YTD Sold','Address','Website'];
+  const q=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"';
+  const lines=[cols.join(',')];
+  subs.forEach((s,i)=>lines.push([i+1,s.sub,s.builder,s.type,s.group,s.lo,s.hi,s.minSqft,s.maxSqft,s.standing,s.ytd,s.address,s.website].map(q).join(',')));
+  const blob=new Blob([lines.join('\n')],{type:'text/csv'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download='selected-communities-'+new Date().toISOString().slice(0,10)+'.csv'; a.click();
+}
+
 /* ============ CONTROLS SYNC + WIRING ============ */
 function buildRail(){
   const gc=$('#groupChecks');
@@ -1303,7 +1369,7 @@ $('#q').addEventListener('keydown',e=>{ if(e.key==='Enter'){ clearTimeout(qTimer
 /* ============ INIT ============ */
 migrateClients();
 if(activeClientId && !clientOf(activeClientId)) activeClientId=null;
-buildRail(); syncControls(); refreshWho(); refreshClientBar(); render();
+buildRail(); syncControls(); refreshWho(); refreshClientBar(); refreshSelectionBar(); render();
 document.getElementById('buildStamp').textContent = 'Build '+BUILD+' · '+BUILD_DATE;
 if(!IDENTITY){ openIdModal(); }
 </script>

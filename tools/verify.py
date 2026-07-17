@@ -76,6 +76,30 @@ with sync_playwright() as p:
     pg.click("#pclose"); pg.wait_for_timeout(150)
     check("subdivision modal closes", pg.locator("#subModal.on").count()==0)
 
+    # ad-hoc selection (no client) from cards + table
+    selA, selB = cardIds[0], cardIds[1]
+    pg.check(f'.card input[data-sel="{selA}"]'); pg.wait_for_timeout(150)
+    check("card selection shows selection bar", "1 selected" in pg.inner_text("#selBar"))
+    check("selected card highlighted", pg.locator(f'.card.sel input[data-sel="{selA}"]').count()==1)
+    pg.click('[data-v="table"]'); pg.wait_for_timeout(200)
+    check("selection persists into table (checked)", pg.is_checked(f'tr input[data-sel="{selA}"]'))
+    pg.check(f'tr input[data-sel="{selB}"]'); pg.wait_for_timeout(150)
+    check("table selection updates bar to 2", "2 selected" in pg.inner_text("#selBar"))
+    # selection report (no client)
+    pg.evaluate("buildSelectionReport()"); pg.wait_for_timeout(300)
+    srep2 = pg.inner_text("#printReport")
+    check("selection report: branding + preparer + count",
+          "Selected Communities" in srep2 and "Prepared by Alex Tester" in srep2 and "2 communities" in srep2)
+    check("selection report: map + 2 numbered items",
+          pg.locator("#printReport .creport-map img, #printReport .creport-map svg").count()>=1 and pg.locator("#printReport .pi-num").count()==2)
+    with pg.expect_download() as di2:
+        pg.click("#selCSV")
+    scsv = open(di2.value.path(), encoding="utf-8").read()
+    check("selection CSV has 2 rows", len([l for l in scsv.strip().splitlines() if l])==3)
+    pg.click("#selClear"); pg.wait_for_timeout(200)
+    check("clear selection empties bar", pg.inner_text("#selBar").strip()=="")
+    pg.click('[data-v="cards"]'); pg.wait_for_timeout(150)
+
     pg.click("#clientsBtn"); pg.wait_for_timeout(150)
     pg.fill("#ncName","Jordan Fisher"); pg.fill("#ncPhone","(702) 555-0134"); pg.fill("#ncEmail","jordan@example.com")
     pg.click("#ncCreate"); pg.wait_for_timeout(300)
