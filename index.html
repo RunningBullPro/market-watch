@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Market Watch — Henderson New-Home Intelligence · Buyer2Builder</title>
+<title>Market Watch · Henderson New-Home Intelligence · Buyer2Builder</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -279,7 +279,7 @@ tr.sel{background:var(--brand-soft)}
 .selpill .sp-btn{border:none;background:#33506e;color:#fff;border-radius:14px;padding:3px 11px;font-weight:600;font-size:12px}
 .selpill .sp-btn:hover{background:#3f6488}
 .selpill .sp-x{border:none;background:#fff;color:var(--ink);border-radius:14px;width:22px;height:22px;font-size:15px;line-height:1;padding:0}
-/* client profile — large centered modal */
+/* client profile · large centered modal */
 .cmodal{position:fixed;inset:0;background:rgba(20,38,58,.55);z-index:95;display:none;padding:24px}
 .cmodal.on{display:grid;place-items:center}
 .cmodal-card{background:var(--surface);border-radius:16px;width:min(960px,96vw);max-height:90vh;display:flex;flex-direction:column;box-shadow:0 24px 70px rgba(0,0,0,.35);overflow:hidden}
@@ -346,7 +346,7 @@ tr.sel{background:var(--brand-soft)}
 </div>
 
 <div class="topbar">
-  <div class="brand"><img class="logo" src="Buyer%202%20Builder%20Logo_Wht.png" alt="Buyer2Builder.com — Your New Home Source" /><span class="sub">Market Watch</span></div>
+  <div class="brand"><img class="logo" src="Buyer%202%20Builder%20Logo_Wht.png" alt="Buyer2Builder.com · Your New Home Source" /><span class="sub">Market Watch</span></div>
   <div class="qwrap">
     <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>
     <input id="q" placeholder='Ask: "townhomes 350 to 400k"  ·  "detached under 500k in Cadence"  ·  "Lennar available"' autocomplete="off" />
@@ -434,7 +434,7 @@ tr.sel{background:var(--brand-soft)}
 <div class="storewarn" id="storeWarn">Preview mode: changes you make here won't be saved. Once this file is hosted on your site, notes, incentives, and ratings will persist in the browser.</div>
 
 <div class="footer">
-  <span>Data: Home Builders Research — Weekly Traffic &amp; Sales Watch, week ending 07/12/2026</span>
+  <span>Data: Home Builders Research · Weekly Traffic &amp; Sales Watch, week ending 07/12/2026</span>
   <span class="dotsep"></span><span>61 Henderson subdivisions</span>
   <span class="dotsep"></span><span>saved in this browser · team sync via Supabase next</span>
   <span class="dotsep"></span><span id="buildStamp" style="font-weight:600;color:var(--ink2)"></span>
@@ -510,7 +510,7 @@ const state = {
 
 /* ============ HELPERS ============ */
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
-const money=n=> (n||n===0)? '$'+Number(n).toLocaleString() : '—';
+const money=n=> (n||n===0)? '$'+Number(n).toLocaleString() : '-';
 const moneyK=n=> Math.round(n/1000)+'k';
 const initials=nm=> (nm||'?').trim().split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase();
 
@@ -656,9 +656,9 @@ function cardHTML(s){
         <div class="topright"><span class="badge ${s.type==='Attached'?'att':'det'}">${s.type==='Attached'?'Townhome':'Detached'}</span><span class="tag mp gtag">${s.group}</span></div></div>
       <div class="price tnum">${money(s.lo)} <span style="color:var(--muted);font-weight:600;font-size:14px">– ${money(s.hi)}</span></div>
       <div class="meta">
-        <span><b>${s.minSqft?s.minSqft.toLocaleString():'—'}–${s.maxSqft?s.maxSqft.toLocaleString():'—'}</b> sq ft</span>
-        <span>Standing <b>${s.standing??'—'}</b></span>
-        <span>YTD sold <b>${s.ytd??'—'}</b></span>
+        <span><b>${s.minSqft?s.minSqft.toLocaleString():'-'}–${s.maxSqft?s.maxSqft.toLocaleString():'-'}</b> sq ft</span>
+        <span>Standing <b>${s.standing??'-'}</b></span>
+        <span>YTD sold <b>${s.ytd??'-'}</b></span>
       </div>
       <div class="tags">
         ${rate?`<span class="tag rate">★ ${rate}</span>`:''}
@@ -682,11 +682,11 @@ function tableHTML(rows){
         <td>${s.builder}</td>
         <td><span class="cellbadge ${s.type==='Attached'?'att':'det'}" style="background:${s.type==='Attached'?'#fff1e2':'#eef4ff'};color:${s.type==='Attached'?'#a5621a':'#2a53a8'}">${s.type==='Attached'?'TH':'SFR'}</span></td>
         <td class="tnum">${money(s.lo)}<span style="color:var(--muted)"> – ${money(s.hi)}</span></td>
-        <td class="tnum">${s.maxSqft?s.maxSqft.toLocaleString():'—'}</td>
-        <td class="tnum">${s.standing??'—'}</td>
-        <td class="tnum">${s.ytd??'—'}</td>
+        <td class="tnum">${s.maxSqft?s.maxSqft.toLocaleString():'-'}</td>
+        <td class="tnum">${s.standing??'-'}</td>
+        <td class="tnum">${s.ytd??'-'}</td>
         <td><span style="display:inline-flex;align-items:center;gap:6px"><span class="dot" style="width:8px;height:8px;border-radius:50%;background:${col}"></span>${s.group}</span></td>
-        <td style="color:var(--star)">${rate?starRow(rate):'<span style="color:var(--line)">—</span>'}</td>
+        <td style="color:var(--star)">${rate?starRow(rate):'<span style="color:var(--line)">-</span>'}</td>
       </tr>`;}).join('')}
   </tbody></table></div>`;
 }
@@ -701,7 +701,7 @@ function wireTableSort(){
 /* ---- map (schematic SVG, no tiles) ---- */
 function mapHTML(rows){
   const legend=GROUPS.map(g=>`<span><span class="dot" style="background:${GROUP_COLOR[g]}"></span>${g}</span>`).join('');
-  return `<div class="mapwrap"><div class="maplegend">${legend}<span style="margin-left:auto;color:var(--muted);font-weight:500">Live map — scroll or use + / − to zoom, drag to pan · click a pin for detail</span></div>
+  return `<div class="mapwrap"><div class="maplegend">${legend}<span style="margin-left:auto;color:var(--muted);font-weight:500">Live map · scroll or use + / − to zoom, drag to pan · click a pin for detail</span></div>
     <div id="mapcanvas"></div></div>`;
 }
 
@@ -721,7 +721,7 @@ function initMap(rows){
     const i=seen[key]-1, r=i?0.00045*Math.ceil(i/6):0, ang=i*2.4;
     const lat=s.lat+Math.sin(ang)*r, lng=s.lng+Math.cos(ang)*r;
     const m=L.circleMarker([lat,lng],{radius:7,color:'#fff',weight:1.5,fillColor:GROUP_COLOR[s.group],fillOpacity:0.9});
-    m.bindTooltip(`${s.sub} — ${s.builder} · ${money(s.lo)}`);
+    m.bindTooltip(`${s.sub} · ${s.builder} · ${money(s.lo)}`);
     m.on('click',()=>openPanel(s.id));
     m.addTo(leafletMap); markers.push(m);
   });
@@ -776,13 +776,13 @@ function openPanel(id){
          <h5>At a glance</h5>
          <div class="snapgrid">
            ${snap('Price',money(s.lo)+' – '+money(s.hi))}
-           ${snap('Square feet',(s.minSqft?s.minSqft.toLocaleString():'—')+'–'+(s.maxSqft?s.maxSqft.toLocaleString():'—'))}
-           ${snap('Standing unsold',s.standing??'—')}
-           ${snap('Unsold lots',s.unsold??'—')}
-           ${snap('YTD net sold',s.ytd??'—')}
-           ${snap('Weekly traffic',s.traffic??'—')}
-           ${snap('Total lots',s.totalLot??'—')}
-           ${snap('Open since',s.opened||'—')}
+           ${snap('Square feet',(s.minSqft?s.minSqft.toLocaleString():'-')+'–'+(s.maxSqft?s.maxSqft.toLocaleString():'-'))}
+           ${snap('Standing unsold',s.standing??'-')}
+           ${snap('Unsold lots',s.unsold??'-')}
+           ${snap('YTD net sold',s.ytd??'-')}
+           ${snap('Weekly traffic',s.traffic??'-')}
+           ${snap('Total lots',s.totalLot??'-')}
+           ${snap('Open since',s.opened||'-')}
          </div>
        </section>
        <section>
@@ -795,7 +795,7 @@ function openPanel(id){
        </section>
      </div>
      <div class="cmodal-col">
-       ${(()=>{const ac=activeClient(); if(!ac)return ''; const on=clientHas(ac,id); return `<section><h5>Client profile</h5><button class="savebtn" id="pClientToggle" style="width:100%;background:${on?'var(--good)':'var(--brand)'}">${on?'✓ In '+esc(ac.name)+'’s list — tap to remove':'＋ Add to '+esc(ac.name)+'’s list'}</button></section>`;})()}
+       ${(()=>{const ac=activeClient(); if(!ac)return ''; const on=clientHas(ac,id); return `<section><h5>Client profile</h5><button class="savebtn" id="pClientToggle" style="width:100%;background:${on?'var(--good)':'var(--brand)'}">${on?'✓ In '+esc(ac.name)+'’s list · tap to remove':'＋ Add to '+esc(ac.name)+'’s list'}</button></section>`;})()}
        <section>
          <h5>Your rating</h5>
          <div class="stars" id="stars">${[1,2,3,4,5].map(i=>`<button data-star="${i}" class="${r.rating&&i<=r.rating.value?'lit':''}">★</button>`).join('')}</div>
@@ -907,7 +907,7 @@ function buildPrintReport(){
   $('#printReport').innerHTML=`
     <div class="prep-head">
       <div class="prep-title">Henderson New-Home Watch</div>
-      <div class="prep-sub">Buyer2Builder · Market Watch — generated ${nowStr()}${IDENTITY?' by '+IDENTITY.name:''} · ${rows.length} subdivision${rows.length!==1?'s':''}</div>
+      <div class="prep-sub">Buyer2Builder · Market Watch · generated ${nowStr()}${IDENTITY?' by '+IDENTITY.name:''} · ${rows.length} subdivision${rows.length!==1?'s':''}</div>
       <div class="prep-query"><span class="pi-lbl" style="margin-right:8px">Query</span>${qsum}</div>
     </div>${items}`;
 }
@@ -918,14 +918,14 @@ function prepItemHTML(s, captured, num){
   const inc=(r.incentives||[]);
   const c=r.contact||{}; const contact=[c.name,c.phone,c.email].filter(Boolean).join(' · ');
   return `<div class="prep-item">
-    <div class="pi-top"><span>${num?`<span class="pi-num">${num}</span>`:''}${esc(s.sub)} — ${esc(s.builder)}</span><span>${money(s.lo)} – ${money(s.hi)}</span></div>
+    <div class="pi-top"><span>${num?`<span class="pi-num">${num}</span>`:''}${esc(s.sub)} · ${esc(s.builder)}</span><span>${money(s.lo)} – ${money(s.hi)}</span></div>
     ${captured?`<div class="pi-grid"><span style="color:#888">Saved to profile ${captured}</span></div>`:''}
     <div class="pi-grid">
       <span>${s.type==='Attached'?'Townhome':'Detached'}</span>
       <span>${s.group}</span>
-      <span>${s.minSqft?s.minSqft.toLocaleString():'—'}–${s.maxSqft?s.maxSqft.toLocaleString():'—'} sq ft</span>
-      <span>Standing ${s.standing??'—'}</span>
-      <span>YTD ${s.ytd??'—'}</span>
+      <span>${s.minSqft?s.minSqft.toLocaleString():'-'}–${s.maxSqft?s.maxSqft.toLocaleString():'-'} sq ft</span>
+      <span>Standing ${s.standing??'-'}</span>
+      <span>YTD ${s.ytd??'-'}</span>
       ${r.rating?`<span>Rated ${r.rating.value}/5</span>`:''}
     </div>
     <div class="pi-grid"><span>${esc(s.address)}</span></div>
@@ -943,7 +943,7 @@ function clientOf(id){ return CLIENTS.find(c=>c.id===id); }
 function activeClient(){ const c=activeClientId?clientOf(activeClientId):null; return c||null; }
 function setActiveClient(id){ activeClientId=id||null; sset("activeClient",activeClientId); if(!activeClientId) state.clientOnly=false; refreshClientBar(); render(); }
 /* Each community a client selects is stored as a FROZEN snapshot of the dataset row
-   at selection time — so pushing a new SUBS dataset never alters a saved client report. */
+   at selection time · so pushing a new SUBS dataset never alters a saved client report. */
 function clientHas(c,sid){ return !!(c && (c.communities||[]).some(e=> e && e.id===sid)); }
 function clientEntry(c,sid){ return (c&&c.communities||[]).find(e=> e && e.id===sid); }
 function snapDiffers(snap){ const s=SUBS.find(x=>x.id===snap.id); if(!s)return false;
@@ -997,7 +997,7 @@ function renderClientList(){
   el.innerHTML = CLIENTS.length ? CLIENTS.map(c=>{
     const contact=[c.phone,c.email].filter(Boolean).map(esc).join(' · ')||'No contact info';
     return `<div class="cl-row ${activeClientId===c.id?'active':''}" data-client="${c.id}">
-      <div><div class="cl-nm">${esc(c.name)}</div><div class="cl-meta">${contact} · by ${esc(c.createdBy||'—')} ${c.createdAt||''}</div></div>
+      <div><div class="cl-nm">${esc(c.name)}</div><div class="cl-meta">${contact} · by ${esc(c.createdBy||'-')} ${c.createdAt||''}</div></div>
       <span class="cl-cnt">${(c.communities||[]).length} comm.</span>
       <button class="cl-del" data-client-del="${c.id}" title="Delete profile">×</button>
     </div>`;}).join('') : `<div style="color:var(--muted);font-size:13px;padding:10px 0">No client profiles yet. Create one above.</div>`;
@@ -1017,11 +1017,11 @@ $('#clientsBtn').onclick=openClientsModal;
 /* ---- client panel ---- */
 function commItemHTML(e){
   const s=e.snap||{id:e.id}; const live=SUBS.find(x=>x.id===e.id);
-  const status = !live ? `<span class="commtag miss">Not in latest dataset — kept from snapshot</span>`
+  const status = !live ? `<span class="commtag miss">Not in latest dataset · kept from snapshot</span>`
     : snapDiffers(s) ? `<span class="commtag upd">Latest data differs</span><button class="commsync" data-comm-sync="${e.id}">Update to latest</button>` : '';
   return `<div class="comm"><span class="dotcol" style="background:${GROUP_COLOR[s.group]||'#94a3b8'}"></span>
     <div style="min-width:0"><div class="c-nm">${esc(s.sub||e.id)}</div>
-      <div class="c-sub">${esc(s.builder||'—')} · ${money(s.lo)}–${money(s.hi)} · <span style="color:var(--muted)">saved ${e.addedAt||'—'}</span></div>
+      <div class="c-sub">${esc(s.builder||'-')} · ${money(s.lo)}–${money(s.hi)} · <span style="color:var(--muted)">saved ${e.addedAt||'-'}</span></div>
       ${status?`<div style="margin-top:5px">${status}</div>`:''}
     </div>
     <button class="c-x" data-comm-x="${e.id}" title="Remove">×</button></div>`;
@@ -1041,7 +1041,7 @@ function renderClientPanel(cid){
   $('#clientPanelInner').innerHTML=`
    <div class="cmodal-head">
      <div><div class="cmodal-title">${esc(c.name)}</div>
-       <div class="cmodal-sub">Client profile · <span id="cmCount">${n} communit${n===1?'y':'ies'}</span> · created by ${esc(c.createdBy||'—')} · ${c.createdAt||'—'}${c.updatedAt?(' · updated '+c.updatedAt):''}</div></div>
+       <div class="cmodal-sub">Client profile · <span id="cmCount">${n} communit${n===1?'y':'ies'}</span> · created by ${esc(c.createdBy||'-')} · ${c.createdAt||'-'}${c.updatedAt?(' · updated '+c.updatedAt):''}</div></div>
      <button class="pclose" id="clpclose">×</button>
    </div>
    <div class="cmodal-body">
@@ -1056,7 +1056,7 @@ function renderClientPanel(cid){
        <section>
          <h5>Client notes</h5>
          <div class="itemlist" id="clNoteList">${clientNoteItems(c)}</div>
-         <div class="addrow"><textarea id="clNoteInput" rows="2" placeholder="Notes specific to this client — preferences, budget, timeline…"></textarea><button class="addbtn" id="clNoteAdd">Add</button></div>
+         <div class="addrow"><textarea id="clNoteInput" rows="2" placeholder="Notes specific to this client · preferences, budget, timeline…"></textarea><button class="addbtn" id="clNoteAdd">Add</button></div>
        </section>
      </div>
      <div class="cmodal-col">
@@ -1208,10 +1208,10 @@ async function buildSubReport(id){
   const stat=(k,v)=>`<div class="sr-stat"><div class="sr-k">${k}</div><div class="sr-v">${v}</div></div>`;
   const c=r.contact||{}; const contact=[c.name,c.phone,c.email].filter(Boolean).join(' · ');
   const incs=(r.incentives||[]), notes=(r.notes||[]);
-  const noteBlock=(lbl,arr)=>`<div class="creport-notes"><span class="pi-lbl">${lbl}</span>${arr.length?arr.map(it=>`<div class="crnote">• ${esc(it.text)} <span style="color:#888">— ${esc(it.by)}, ${it.at}</span></div>`).join(''):'<div class="crnote" style="color:#888">None logged.</div>'}</div>`;
+  const noteBlock=(lbl,arr)=>`<div class="creport-notes"><span class="pi-lbl">${lbl}</span>${arr.length?arr.map(it=>`<div class="crnote">• ${esc(it.text)} <span style="color:#888">· ${esc(it.by)}, ${it.at}</span></div>`).join(''):'<div class="crnote" style="color:#888">None logged.</div>'}</div>`;
   $('#printReport').innerHTML=`
     <div class="creport-band">
-      <img src="Buyer%202%20Builder%20Logo_Wht.png" alt="Buyer2Builder.com — Your New Home Source"/>
+      <img src="Buyer%202%20Builder%20Logo_Wht.png" alt="Buyer2Builder.com · Your New Home Source"/>
       <span class="cb-t">Market Watch<br>Subdivision Report</span>
     </div>
     <div class="creport-client">
@@ -1219,19 +1219,19 @@ async function buildSubReport(id){
       <span class="cc-ct">${esc(s.builder)} · ${s.group} · ${s.type==='Attached'?'Townhome':'Detached'}</span>
     </div>
     <div class="creport-meta">
-      Prepared by ${esc(IDENTITY?IDENTITY.name:'—')} · ${when}${r.rating?' · Your rating '+r.rating.value+'/5':''}<br>
+      Prepared by ${esc(IDENTITY?IDENTITY.name:'-')} · ${when}${r.rating?' · Your rating '+r.rating.value+'/5':''}<br>
       ${esc(s.address)}${s.webDomain?' · '+esc(s.webDomain):''}
     </div>
     ${mapBlock}
     <div class="sr-stats">
       ${stat('Price',money(s.lo)+' – '+money(s.hi))}
-      ${stat('Square feet',(s.minSqft?s.minSqft.toLocaleString():'—')+'–'+(s.maxSqft?s.maxSqft.toLocaleString():'—'))}
-      ${stat('Standing unsold',s.standing??'—')}
-      ${stat('Unsold lots',s.unsold??'—')}
-      ${stat('YTD net sold',s.ytd??'—')}
-      ${stat('Weekly traffic',s.traffic??'—')}
-      ${stat('Total lots',s.totalLot??'—')}
-      ${stat('Open since',s.opened||'—')}
+      ${stat('Square feet',(s.minSqft?s.minSqft.toLocaleString():'-')+'–'+(s.maxSqft?s.maxSqft.toLocaleString():'-'))}
+      ${stat('Standing unsold',s.standing??'-')}
+      ${stat('Unsold lots',s.unsold??'-')}
+      ${stat('YTD net sold',s.ytd??'-')}
+      ${stat('Weekly traffic',s.traffic??'-')}
+      ${stat('Total lots',s.totalLot??'-')}
+      ${stat('Open since',s.opened||'-')}
     </div>
     ${contact?`<div class="creport-notes"><span class="pi-lbl">Sales contact</span><div class="crnote">${esc(contact)}</div></div>`:''}
     ${noteBlock('Builder incentives',incs)}
@@ -1263,12 +1263,12 @@ async function buildClientReport(cid){
   const mapUrl = await staticOSMMap(entries,760,420);
   if(mapUrl){ mapBlock=`<div class="creport-map"><img src="${mapUrl}" style="display:block;width:100%"/><div class="cm-cap">Numbered pins correspond to the communities listed below · map data © OpenStreetMap contributors.</div></div>`; }
   else { const mapSVG=reportMapSVG(entries); if(mapSVG) mapBlock=`<div class="creport-map">${mapSVG}<div class="cm-cap">Numbered pins correspond to the communities listed below · gray dots are other nearby subdivisions for context.</div></div>`; }
-  const notesBlock = (c.notes&&c.notes.length) ? `<div class="creport-notes"><span class="pi-lbl">Client notes</span>${c.notes.map(nt=>`<div class="crnote">• ${esc(nt.text)} <span style="color:#888">— ${esc(nt.by)}, ${nt.at}</span></div>`).join('')}</div>` : '';
+  const notesBlock = (c.notes&&c.notes.length) ? `<div class="creport-notes"><span class="pi-lbl">Client notes</span>${c.notes.map(nt=>`<div class="crnote">• ${esc(nt.text)} <span style="color:#888">· ${esc(nt.by)}, ${nt.at}</span></div>`).join('')}</div>` : '';
   const when=new Date().toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'});
   const contact=[c.phone,c.email].filter(Boolean).join(' · ');
   $('#printReport').innerHTML=`
     <div class="creport-band">
-      <img src="Buyer%202%20Builder%20Logo_Wht.png" alt="Buyer2Builder.com — Your New Home Source"/>
+      <img src="Buyer%202%20Builder%20Logo_Wht.png" alt="Buyer2Builder.com · Your New Home Source"/>
       <span class="cb-t">Market Watch<br>Community Report</span>
     </div>
     <div class="creport-client">
@@ -1276,8 +1276,8 @@ async function buildClientReport(cid){
       ${contact?`<span class="cc-ct">${esc(contact)}</span>`:''}
     </div>
     <div class="creport-meta">
-      Prepared by ${esc(IDENTITY?IDENTITY.name:'—')} · ${when} · ${entries.length} communit${entries.length===1?'y':'ies'}<br>
-      Profile created by ${esc(c.createdBy||'—')} · ${c.createdAt||'—'}<br>
+      Prepared by ${esc(IDENTITY?IDENTITY.name:'-')} · ${when} · ${entries.length} communit${entries.length===1?'y':'ies'}<br>
+      Profile created by ${esc(c.createdBy||'-')} · ${c.createdAt||'-'}<br>
       <span style="color:#666">Community details reflect the dataset captured when each was added to this profile.</span>
     </div>
     ${mapBlock}
@@ -1318,11 +1318,11 @@ async function buildSelectionReport(){
   const when=new Date().toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'});
   $('#printReport').innerHTML=`
     <div class="creport-band">
-      <img src="Buyer%202%20Builder%20Logo_Wht.png" alt="Buyer2Builder.com — Your New Home Source"/>
+      <img src="Buyer%202%20Builder%20Logo_Wht.png" alt="Buyer2Builder.com · Your New Home Source"/>
       <span class="cb-t">Market Watch<br>Selected Communities</span>
     </div>
     <div class="creport-client"><span class="cc-nm">Selected communities</span></div>
-    <div class="creport-meta">Prepared by ${esc(IDENTITY?IDENTITY.name:'—')} · ${when} · ${subs.length} communit${subs.length===1?'y':'ies'}</div>
+    <div class="creport-meta">Prepared by ${esc(IDENTITY?IDENTITY.name:'-')} · ${when} · ${subs.length} communit${subs.length===1?'y':'ies'}</div>
     ${mapBlock}
     ${items}`;
   setTimeout(()=>window.print(),80);
