@@ -403,6 +403,10 @@ tr.sel{background:var(--brand-soft)}
       <div id="groupChecks"></div>
     </div>
     <div class="fgroup">
+      <label class="eyebrow" style="display:block;margin-bottom:9px">Master plan</label>
+      <div id="mpChecks" style="max-height:170px;overflow:auto"></div>
+    </div>
+    <div class="fgroup">
       <label class="eyebrow" style="display:block;margin-bottom:9px">Builder</label>
       <div id="builderChecks" style="max-height:190px;overflow:auto"></div>
     </div>
@@ -476,6 +480,7 @@ const SUBS = [{"id": "rosa-point", "builder": "Beazer Homes", "sub": "Rosa Point
 const GROUPS = ["Northwest", "Henderson", "Southwest", "North Las Vegas", "South", "East", "Boulder City", "Mesquite", "Pahrump"];
 const GROUP_COLOR = {"Northwest": "#2e6bd6", "Henderson": "#0f9b6c", "Southwest": "#e0731e", "North Las Vegas": "#8b5cf6", "South": "#d6459b", "East": "#0891b2", "Boulder City": "#ca8a04", "Mesquite": "#dc2626", "Pahrump": "#64748b"};
 const BUILDERS = [...new Set(SUBS.map(s=>s.builder))].sort();
+const MASTERPLANS = [...new Set(SUBS.map(s=>s.mp).filter(Boolean))].sort();
 SUBS.forEach(s=>{ s.group = s.area; });  // area is the primary lens; group aliases area
 /* Bump these two on each deploy so you can confirm the live page updated */
 const BUILD = "2.0";
@@ -508,7 +513,7 @@ function uid(){ return Math.random().toString(36).slice(2,9); }
 const state = {
   view:"cards", sort:"price-asc",
   type:"all", priceMin:null, priceMax:null, sqftMin:null, sqftMax:null,
-  groups:new Set(), builders:new Set(), hasStanding:false,
+  groups:new Set(), mps:new Set(), builders:new Set(), hasStanding:false,
   text:"", chips:[], clientOnly:false
 };
 
@@ -553,7 +558,9 @@ function parseQuery(raw){
     if(ar&&f.priceMin==null&&f.priceMax==null){const c=money2(ar[1]); if(c!=null){f.priceMin=c-25000;f.priceMax=c+25000;chips.push('~$'+moneyK(c));}}
   }
   if(/\b(available|move[\s-]?in|standing|in stock|quick move|ready)\b/.test(q)){f.hasStanding=true;chips.push('Has standing inventory');}
-  GROUPS.forEach(g=>{ if(q.includes(g.toLowerCase())){f.groups=f.groups||[];f.groups.push(g);chips.push(g);} });
+  const termIn=(term)=>{ try{ return new RegExp('\\b'+term.toLowerCase().trim().replace(/[^a-z0-9]+/g,'\\s+')+'\\b').test(q); }catch(e){ return q.includes(term.toLowerCase()); } };
+  GROUPS.forEach(g=>{ if(termIn(g)){f.groups=f.groups||[]; if(!f.groups.includes(g)){f.groups.push(g);chips.push(g);}} });
+  MASTERPLANS.forEach(m=>{ if(termIn(m)){f.mps=f.mps||[]; if(!f.mps.includes(m)){f.mps.push(m);chips.push(m);}} });
   BUILDERS.forEach(b=>{const key=b.toLowerCase().replace(/[.\/]/g,'').split(' ')[0];
     if(key.length>=2 && new RegExp('\\b'+key+'\\b').test(q)){f.builders=f.builders||[]; if(!f.builders.includes(b)){f.builders.push(b);chips.push(b);}}});
   return {filters:f,chips};
@@ -569,6 +576,7 @@ function applyParsedQuery(raw){
   state.sqftMax = f.sqftMax??null;
   state.hasStanding = !!f.hasStanding;
   state.groups = new Set(f.groups||[]);
+  state.mps = new Set(f.mps||[]);
   state.builders = new Set(f.builders||[]);
   state.text = raw.trim();
   syncControls();
@@ -584,6 +592,7 @@ function filtered(){
     if(state.sqftMin!=null && (s.maxSqft==null || s.maxSqft < state.sqftMin)) return false;
     if(state.sqftMax!=null && (s.minSqft==null || s.minSqft > state.sqftMax)) return false;
     if(state.groups.size && !state.groups.has(s.group)) return false;
+    if(state.mps.size && !state.mps.has(s.mp)) return false;
     if(state.builders.size && !state.builders.has(s.builder)) return false;
     if(state.hasStanding && !(Number(s.standing)>0)) return false;
     return true;
@@ -619,12 +628,13 @@ function renderChips(){
   else{ if(state.sqftMin!=null) add('≥ '+state.sqftMin.toLocaleString()+' sq ft',()=>{state.sqftMin=null;syncControls();render();});
         if(state.sqftMax!=null) add('≤ '+state.sqftMax.toLocaleString()+' sq ft',()=>{state.sqftMax=null;syncControls();render();}); }
   state.groups.forEach(g=> add(g,()=>{state.groups.delete(g);syncControls();render();}));
+  state.mps.forEach(m=> add(m,()=>{state.mps.delete(m);syncControls();render();}));
   state.builders.forEach(b=> add(b,()=>{state.builders.delete(b);syncControls();render();}));
   if(state.hasStanding) add('Has standing inventory',()=>{state.hasStanding=false;syncControls();render();});
-  const any = state.type!=='all'||state.priceMin!=null||state.priceMax!=null||state.sqftMin!=null||state.sqftMax!=null||state.groups.size||state.builders.size||state.hasStanding;
+  const any = state.type!=='all'||state.priceMin!=null||state.priceMax!=null||state.sqftMin!=null||state.sqftMax!=null||state.groups.size||state.mps.size||state.builders.size||state.hasStanding;
   $('#clearBtn').style.display=any?'inline':'none';
 }
-function clearAll(){ state.type='all';state.priceMin=state.priceMax=state.sqftMin=state.sqftMax=null;state.groups=new Set();state.builders=new Set();state.hasStanding=false;state.text='';$('#q').value=''; syncControls(); render(); }
+function clearAll(){ state.type='all';state.priceMin=state.priceMax=state.sqftMin=state.sqftMax=null;state.groups=new Set();state.mps=new Set();state.builders=new Set();state.hasStanding=false;state.text='';$('#q').value=''; syncControls(); render(); }
 
 /* ============ RENDER: views ============ */
 function ratingOf(id){const r=RECORDS[id];return r&&r.rating?r.rating.value:0;}
@@ -1354,8 +1364,10 @@ function exportSelectionCSV(){
 function buildRail(){
   const gc=$('#groupChecks');
   gc.innerHTML=GROUPS.map(g=>`<label class="checkline"><input type="checkbox" data-group="${g}"><span class="dot" style="background:${GROUP_COLOR[g]}"></span>${g}</label>`).join('');
+  $('#mpChecks').innerHTML=MASTERPLANS.map(m=>`<label class="checkline"><input type="checkbox" data-mp="${m}">${m}</label>`).join('');
   $('#builderChecks').innerHTML=BUILDERS.map(b=>`<label class="checkline"><input type="checkbox" data-builder="${b}">${b}</label>`).join('');
   $$('[data-group]').forEach(cb=> cb.onchange=()=>{ cb.checked?state.groups.add(cb.getAttribute('data-group')):state.groups.delete(cb.getAttribute('data-group')); render(); });
+  $$('[data-mp]').forEach(cb=> cb.onchange=()=>{ cb.checked?state.mps.add(cb.getAttribute('data-mp')):state.mps.delete(cb.getAttribute('data-mp')); render(); });
   $$('[data-builder]').forEach(cb=> cb.onchange=()=>{ cb.checked?state.builders.add(cb.getAttribute('data-builder')):state.builders.delete(cb.getAttribute('data-builder')); render(); });
 }
 function syncControls(){
@@ -1363,6 +1375,7 @@ function syncControls(){
   $('#priceMin').value=state.priceMin??''; $('#priceMax').value=state.priceMax??''; $('#sqftMin').value=state.sqftMin??''; $('#sqftMax').value=state.sqftMax??'';
   $('#invSwitch').classList.toggle('on',state.hasStanding);
   $$('[data-group]').forEach(cb=> cb.checked=state.groups.has(cb.getAttribute('data-group')));
+  $$('[data-mp]').forEach(cb=> cb.checked=state.mps.has(cb.getAttribute('data-mp')));
   $$('[data-builder]').forEach(cb=> cb.checked=state.builders.has(cb.getAttribute('data-builder')));
 }
 $$('#segType button').forEach(b=> b.onclick=()=>{ state.type=b.getAttribute('data-v'); syncControls(); render(); });

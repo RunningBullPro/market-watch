@@ -56,6 +56,14 @@ with sync_playwright() as p:
     hend = str(pg.evaluate("SUBS.filter(s=>s.area==='Henderson').length"))
     check("Area-of-town filter narrows to Henderson", pg.inner_text("#count").strip()==hend, f"count={pg.inner_text('#count')} expected={hend}")
     pg.uncheck('[data-group="Henderson"]'); pg.wait_for_timeout(150)
+    # master plan as a secondary filter + search
+    mp0 = pg.evaluate("MASTERPLANS[0]")
+    pg.check(f'[data-mp="{mp0}"]'); pg.wait_for_timeout(200)
+    mpc = str(pg.evaluate("m=>SUBS.filter(s=>s.mp===m).length", mp0))
+    check("master-plan filter narrows", pg.inner_text("#count").strip()==mpc, f"count={pg.inner_text('#count')} expected={mpc} ({mp0})")
+    pg.uncheck(f'[data-mp="{mp0}"]'); pg.wait_for_timeout(150)
+    check("master-plan parses from search", pg.evaluate("()=>(parseQuery('townhomes in Summerlin').filters.mps||[]).includes('Summerlin')"))
+    check("'southwest' search doesn't also match 'South'", pg.evaluate("()=>{const g=parseQuery('southwest homes').filters.groups||[]; return g.includes('Southwest') && !g.includes('South');}"))
 
     check("map is real Leaflet + OSM tiles", (pg.click('[data-v="map"]'), pg.wait_for_timeout(1500),
           pg.locator("#mapcanvas.leaflet-container").count()==1 and pg.locator("#mapcanvas img.leaflet-tile").count()>0)[-1])
