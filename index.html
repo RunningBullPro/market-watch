@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline' https://unpkg.com https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.tile.openstreetmap.org https://unpkg.com; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline' https://unpkg.com https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.tile.openstreetmap.org https://unpkg.com; connect-src 'self' https://kjsezbjoabtsllakwvgr.supabase.co wss://kjsezbjoabtsllakwvgr.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'" />
 <title>Market Watch · Las Vegas Valley New-Home Intelligence · Buyer2Builder</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,6 +13,7 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha384-pmjIAcz2bAn0xukfxADbZIb3t8oRT9Sv0rvO+BR5Csr6Dhqq+nZs59P0pPKQJkEV" crossorigin="anonymous" />
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" integrity="sha384-wgw+aLYNQ7dlhK47ZPK7FRACiq7ROZwgFNg0m04avm4CaXS+Z9Y7nMu8yNjBKYC+" crossorigin="anonymous" />
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js" integrity="sha384-eXVCORTRlv4FUUgS/xmOyr66XBVraen8ATNLMESp92FKXLAMiKkerixTiBvXriZr" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@supabase/supabase-js@2.45.4/dist/umd/supabase.js" integrity="sha384-0w2KAL2YHP6wKOkUDzkCDGgVvfmHnj02DHeQ6XcHOgTfFsGyonKOpShMH1x6nk9o" crossorigin="anonymous"></script>
 <style>
 :root{
   --ink:#14263a; --ink2:#3a4a60; --muted:#6b7a8d;
@@ -382,6 +383,22 @@ tr.sel{background:var(--brand-soft)}
     <p>Your name stamps the notes and incentives you add, so the team knows who logged what.</p>
     <input id="idInput" placeholder="Your name" autocomplete="name" />
     <button class="go" id="idGo">Start</button>
+    <div id="syncBox" style="margin-top:18px;padding-top:16px;border-top:1px solid var(--line);text-align:left">
+      <div style="font-weight:700;font-size:13px;color:var(--ink)">Team sync <span id="syncState" style="font-weight:600;color:var(--muted)">off</span></div>
+      <p style="font-size:12px;color:var(--muted);margin:6px 0 10px">Sign in with your work email to share client profiles and manual subdivisions with your team. Only approved emails can access; your notes stay attributed to you.</p>
+      <div id="syncStep1">
+        <input id="syncEmail" type="email" placeholder="you@company.com" autocomplete="email" style="width:100%;margin-bottom:8px" />
+        <button class="go" id="syncSend" style="background:var(--ink)">Email me a code</button>
+      </div>
+      <div id="syncStep2" style="display:none">
+        <input id="syncCode" inputmode="numeric" placeholder="6-digit code" autocomplete="one-time-code" style="width:100%;margin-bottom:8px" />
+        <button class="go" id="syncVerify" style="background:var(--good)">Verify &amp; sync</button>
+      </div>
+      <div id="syncSignedIn" style="display:none;font-size:12.5px;color:var(--ink2)">
+        <span id="syncWho"></span> &middot; <button id="syncOut" style="background:none;border:none;color:var(--brand-d);cursor:pointer;padding:0;font:inherit;text-decoration:underline">Sign out</button>
+      </div>
+      <div id="syncMsg" style="font-size:12px;color:var(--muted);margin-top:8px;min-height:1em"></div>
+    </div>
   </div>
 </div>
 
@@ -1030,10 +1047,108 @@ function refreshWho(){
   if(IDENTITY&&IDENTITY.name){ $('#whoNm').textContent=IDENTITY.name; $('#whoAv').textContent=initials(IDENTITY.name); }
   else { $('#whoNm').textContent='Sign in'; $('#whoAv').textContent='?'; }
 }
-function openIdModal(){ $('#idModal').classList.add('on'); const i=$('#idInput'); i.value=IDENTITY?IDENTITY.name:''; setTimeout(()=>i.focus(),50); }
+function openIdModal(){ $('#idModal').classList.add('on'); const i=$('#idInput'); i.value=IDENTITY?IDENTITY.name:''; if(typeof refreshSyncUI==='function') refreshSyncUI(); setTimeout(()=>i.focus(),50); }
 $('#idGo').onclick=()=>{ const v=$('#idInput').value.trim(); if(!v){$('#idInput').focus();return;} IDENTITY={name:v}; sset('identity',IDENTITY); refreshWho(); $('#idModal').classList.remove('on'); if(openId)openPanel(openId); };
 $('#idInput')&&$('#idInput').addEventListener('keydown',e=>{if(e.key==='Enter')$('#idGo').click();});
 $('#whoBtn').onclick=openIdModal;
+
+/* ============ TEAM SYNC (Supabase, email OTP; RLS-gated to allow-listed members) ============
+   Data integrity: the whole client / manual-sub object is stored verbatim in a jsonb column, so
+   frozen client snapshots are never mutated field-by-field. Merge is last-write-wins by a numeric
+   _rev stamp, deletes are soft, and local data is never dropped except by a newer remote tombstone.
+   Everything below is a no-op until a member signs in, so the offline/local experience is unchanged. */
+const SUPA_URL='https://kjsezbjoabtsllakwvgr.supabase.co';
+const SUPA_KEY='sb_publishable_qSnIAUxHAoytm3Fh-Oxn6w_QYM1PsnD';
+let sb=null, sbSession=null, sbEmail=null;
+const _pushCache={cli:{},man:{}};
+function sbReady(){ return !!(sb && sbSession); }
+function syncMsg(t,err){ const m=$('#syncMsg'); if(m){ m.textContent=t||''; m.style.color=err?'var(--danger)':'var(--muted)'; } }
+function refreshSyncUI(){
+  const s1=$('#syncStep1'); if(!s1) return;
+  const on=sbReady(), st=$('#syncState');
+  s1.style.display = on?'none':'block';
+  $('#syncStep2').style.display='none';
+  $('#syncSignedIn').style.display = on?'block':'none';
+  if(on){ $('#syncWho').textContent='Synced as '+sbEmail; st.textContent='on'; st.style.color='var(--good)'; }
+  else { st.textContent='off'; st.style.color='var(--muted)'; }
+}
+function sbInit(){
+  if(sb) return;
+  if(typeof supabase==='undefined' || !supabase.createClient) return; // library absent -> stay local-only
+  try{ sb=supabase.createClient(SUPA_URL,SUPA_KEY,{auth:{persistSession:true,autoRefreshToken:true,storageKey:'mw_sb_auth'}}); }catch(e){ sb=null; return; }
+  sb.auth.getSession().then(({data})=>{ if(data&&data.session){ sbSession=data.session; sbEmail=data.session.user.email; onSignedIn(); } refreshSyncUI(); });
+  sb.auth.onAuthStateChange((_e,s)=>{ sbSession=s||null; sbEmail=s?s.user.email:null; refreshSyncUI(); });
+}
+async function onSignedIn(){
+  try{ const {data:mem}=await sb.rpc('mw_is_member'); if(mem===false){ syncMsg('This email is not on the team allow-list yet - ask an admin to add you.',true); } }catch(e){}
+  if(!IDENTITY||!IDENTITY.name){ IDENTITY={name:sbEmail}; sset('identity',IDENTITY); refreshWho(); }
+  await sbPull(); refreshSyncUI();
+}
+async function sbSendCode(){
+  const email=($('#syncEmail').value||'').trim().toLowerCase(); if(!email){ $('#syncEmail').focus(); return; }
+  if(!sb) sbInit(); if(!sb){ syncMsg('Team sync is unavailable right now.',true); return; }
+  syncMsg('Sending code...');
+  const {error}=await sb.auth.signInWithOtp({email,options:{shouldCreateUser:true}});
+  if(error){ syncMsg(error.message,true); return; }
+  sbEmail=email; $('#syncStep1').style.display='none'; $('#syncStep2').style.display='block';
+  syncMsg('Code sent to '+email+'. Enter it below.'); setTimeout(()=>{const c=$('#syncCode'); if(c)c.focus();},50);
+}
+async function sbVerifyCode(){
+  const token=($('#syncCode').value||'').trim(); if(!token){ $('#syncCode').focus(); return; }
+  syncMsg('Verifying...');
+  const {data,error}=await sb.auth.verifyOtp({email:sbEmail,token,type:'email'});
+  if(error){ syncMsg(error.message,true); return; }
+  sbSession=data.session; syncMsg('Signed in - syncing...'); await onSignedIn();
+}
+async function sbSignOut(){ if(sb){ try{await sb.auth.signOut();}catch(e){} } sbSession=null; sbEmail=null; _pushCache.cli={}; _pushCache.man={}; refreshSyncUI(); syncMsg('Signed out. Data on this device is unchanged.'); }
+function _rev(o){ return (o&&o._rev)||0; }
+function _base(o){ return JSON.stringify(Object.assign({},o,{_rev:undefined})); }
+async function sbPull(){
+  if(!sbReady()) return;
+  try{
+    const [cr,mr]=await Promise.all([
+      sb.from('mw_clients').select('id,data,deleted'),
+      sb.from('mw_manual_subs').select('id,data,deleted')
+    ]);
+    if(cr.error){ syncMsg('Not authorized to read team data.',true); return; }
+    (cr.data||[]).forEach(row=>{ const loc=CLIENTS.find(c=>c.id===row.id);
+      if(row.deleted){ if(loc && _rev(row.data)>=_rev(loc)) CLIENTS=CLIENTS.filter(c=>c.id!==row.id); return; }
+      if(!loc){ CLIENTS.push(row.data); _pushCache.cli[row.id]=JSON.stringify(row.data); }
+      else if(_rev(row.data)>_rev(loc)){ CLIENTS[CLIENTS.findIndex(c=>c.id===row.id)]=row.data; _pushCache.cli[row.id]=JSON.stringify(row.data); } });
+    (mr.data||[]).forEach(row=>{ const loc=MANUAL_SUBS.find(m=>m.id===row.id);
+      if(row.deleted){ if(loc && _rev(row.data)>=_rev(loc)) MANUAL_SUBS=MANUAL_SUBS.filter(m=>m.id!==row.id); return; }
+      if(!loc){ MANUAL_SUBS.push(row.data); _pushCache.man[row.id]=JSON.stringify(row.data); }
+      else if(_rev(row.data)>_rev(loc)){ MANUAL_SUBS[MANUAL_SUBS.findIndex(m=>m.id===row.id)]=row.data; _pushCache.man[row.id]=JSON.stringify(row.data); } });
+    sset('clients',CLIENTS); sset('manualSubs',MANUAL_SUBS);
+    sbSyncClients(true); sbSyncManual(true); // push any local-only / newer-local rows up
+    if(activeClientId && !clientOf(activeClientId)) activeClientId=null;
+    mergeManualSubs(); recomputeFacets(); buildRail(); syncControls(); refreshClientBar(); render();
+  }catch(e){ console.warn('sbPull',e); }
+}
+function sbSyncClients(silent){
+  if(!sbReady()) return; const ids=new Set();
+  CLIENTS.forEach(c=>{ ids.add(c.id);
+    if(_pushCache.cli[c.id]==null || _base(JSON.parse(_pushCache.cli[c.id]))!==_base(c)){
+      c._rev=Date.now(); _pushCache.cli[c.id]=JSON.stringify(c);
+      sb.from('mw_clients').upsert({id:c.id,name:c.name||null,data:c,updated_by:sbEmail,deleted:false}).then(r=>{ if(r.error&&!silent)syncMsg('Client sync failed: '+r.error.message,true); }); } });
+  Object.keys(_pushCache.cli).forEach(id=>{ if(!ids.has(id)){ delete _pushCache.cli[id];
+    sb.from('mw_clients').update({deleted:true,updated_by:sbEmail}).eq('id',id).then(()=>{}); } });
+}
+function sbSyncManual(silent){
+  if(!sbReady()) return; const ids=new Set();
+  MANUAL_SUBS.forEach(m=>{ ids.add(m.id);
+    if(_pushCache.man[m.id]==null || _base(JSON.parse(_pushCache.man[m.id]))!==_base(m)){
+      m._rev=Date.now(); _pushCache.man[m.id]=JSON.stringify(m);
+      sb.from('mw_manual_subs').upsert({id:m.id,builder:m.builder||null,sub:m.sub||null,data:m,updated_by:sbEmail,deleted:false}).then(r=>{ if(r.error&&!silent)syncMsg('Manual-sub sync failed: '+r.error.message,true); }); } });
+  Object.keys(_pushCache.man).forEach(id=>{ if(!ids.has(id)){ delete _pushCache.man[id];
+    sb.from('mw_manual_subs').update({deleted:true,updated_by:sbEmail}).eq('id',id).then(()=>{}); } });
+}
+$('#syncSend')&&($('#syncSend').onclick=sbSendCode);
+$('#syncVerify')&&($('#syncVerify').onclick=sbVerifyCode);
+$('#syncOut')&&($('#syncOut').onclick=sbSignOut);
+$('#syncCode')&&$('#syncCode').addEventListener('keydown',e=>{if(e.key==='Enter')sbVerifyCode();});
+$('#syncEmail')&&$('#syncEmail').addEventListener('keydown',e=>{if(e.key==='Enter')sbSendCode();});
+sbInit();
 
 /* ============ EXPORT CSV ============ */
 function exportCSV(){
@@ -1093,7 +1208,7 @@ function prepItemHTML(s, captured, num){
 let CLIENTS = sget("clients",[]);
 let activeClientId = sget("activeClient",null);
 let openClientId = null;
-function saveClients(){ sset("clients",CLIENTS); }
+function saveClients(){ sset("clients",CLIENTS); if(typeof sbReady==='function'&&sbReady()) sbSyncClients(); }
 function clientOf(id){ return CLIENTS.find(c=>c.id===id); }
 function activeClient(){ const c=activeClientId?clientOf(activeClientId):null; return c||null; }
 function setActiveClient(id){ activeClientId=id||null; sset("activeClient",activeClientId); if(!activeClientId) state.clientOnly=false; refreshClientBar(); render(); }
@@ -1499,7 +1614,7 @@ function exportSelectionCSV(){
 }
 
 /* ============ MANUAL ADD SUBDIVISION (on-site; localStorage; push-safe) ============ */
-function saveManual(){ sset('manualSubs', MANUAL_SUBS); }
+function saveManual(){ sset('manualSubs', MANUAL_SUBS); if(typeof sbReady==='function'&&sbReady()) sbSyncManual(); }
 function slugId(sub){ const base='m-'+nrm(sub).slice(0,24); let id=base,i=2; const ids=new Set(SUBS.map(s=>s.id)); while(ids.has(id)) id=base+'-'+(i++); return id; }
 let addRowSeq=0;
 function addRowHTML(){ const i=++addRowSeq; return `<div class="arow" data-arow="${i}">
