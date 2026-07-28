@@ -127,7 +127,7 @@ with sync_playwright() as p:
     pg.click("#cpFilter"); pg.wait_for_timeout(250)
     check("client filter refines count to 3", pg.inner_text("#count").strip()=="3", pg.inner_text("#count"))
     pg.click('[data-v="map"]'); pg.wait_for_timeout(1600)
-    check("map shows only client's 3 pins", pg.locator("#mapcanvas path.leaflet-interactive").count()==3)
+    check("map shows only client's 3 markers", pg.evaluate("mapMarkerCount")==3, str(pg.evaluate("mapMarkerCount")))
     pg.click('[data-v="cards"]'); pg.wait_for_timeout(120)
     pg.click("#cpFilter"); pg.wait_for_timeout(200)
     total = str(pg.evaluate("SUBS.length"))

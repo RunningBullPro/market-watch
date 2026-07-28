@@ -9,6 +9,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
 <style>
 :root{
   --ink:#14263a; --ink2:#3a4a60; --muted:#6b7a8d;
@@ -434,7 +437,7 @@ tr.sel{background:var(--brand-soft)}
 <div class="storewarn" id="storeWarn">Preview mode: changes you make here won't be saved. Once this file is hosted on your site, notes, incentives, and ratings will persist in the browser.</div>
 
 <div class="footer">
-  <span>Data: Home Builders Research · Weekly Traffic &amp; Sales Watch, week ending 07/19/2026</span>
+  <span>Data week ending 07/19/2026</span>
   <span class="dotsep"></span><span id="footTotal">Las Vegas Valley subdivisions</span>
   <span class="dotsep"></span><span>saved in this browser · team sync via Supabase next</span>
   <span class="dotsep"></span><span id="buildStamp" style="font-weight:600;color:var(--ink2)"></span>
@@ -706,7 +709,7 @@ function mapHTML(rows){
     <div id="mapcanvas"></div></div>`;
 }
 
-let leafletMap=null;
+let leafletMap=null, mapMarkerCount=0;
 function initMap(rows){
   const el=document.getElementById('mapcanvas');
   if(!el || typeof L==='undefined') return;
@@ -724,9 +727,17 @@ function initMap(rows){
     const m=L.circleMarker([lat,lng],{radius:7,color:'#fff',weight:1.5,fillColor:GROUP_COLOR[s.group],fillOpacity:0.9});
     m.bindTooltip(`${s.sub} · ${s.builder} · ${money(s.lo)}`);
     m.on('click',()=>openPanel(s.id));
-    m.addTo(leafletMap); markers.push(m);
+    markers.push(m);
   });
-  if(markers.length){ leafletMap.fitBounds(L.featureGroup(markers).getBounds().pad(0.15)); }
+  mapMarkerCount=markers.length;
+  let layer;
+  if(L.markerClusterGroup){
+    layer=L.markerClusterGroup({maxClusterRadius:48,showCoverageOnHover:false,spiderfyOnMaxZoom:true,chunkedLoading:true});
+    markers.forEach(m=>layer.addLayer(m)); leafletMap.addLayer(layer);
+  } else {
+    layer=L.featureGroup(markers).addTo(leafletMap);
+  }
+  if(markers.length){ leafletMap.fitBounds(layer.getBounds().pad(0.12)); }
   else { leafletMap.setView([36.03,-114.98],11); }
   setTimeout(()=>{ if(leafletMap) leafletMap.invalidateSize(); },60);
 }
