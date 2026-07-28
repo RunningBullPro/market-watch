@@ -150,6 +150,10 @@ td .nm{font-weight:600;color:var(--ink)}
 .maplegend{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:12px;font-size:12.5px;font-weight:600;color:var(--ink2)}
 .maplegend span{display:inline-flex;align-items:center;gap:6px}
 .maplegend .dot{width:10px;height:10px;border-radius:50%}
+.maptoggle{margin-left:auto;border:1px solid var(--line);background:var(--surface);color:var(--ink2);border-radius:20px;padding:4px 12px;font-weight:600;font-size:12px}
+.maptoggle:hover{border-color:var(--brand);color:var(--brand-d)}
+.barrow:hover .bar{opacity:.8}
+.barrow:hover .barlbl{font-weight:700}
 #mapcanvas{position:relative;z-index:0;height:clamp(380px,62vh,640px);width:100%;border-radius:10px;overflow:hidden;border:1px solid var(--line)}
 #mapcanvas.leaflet-container{background:#eef2f7;font-family:inherit}
 .leaflet-tooltip{font-weight:600;font-size:12px;color:var(--ink);border-radius:6px}
@@ -656,6 +660,7 @@ function render(){
   $$('[data-open]').forEach(el=> el.onclick=()=>openPanel(el.getAttribute('data-open')) );
   $$('[data-client-add]').forEach(b=> b.onclick=e=>{ e.stopPropagation(); toggleClientCommunity(activeClientId, b.getAttribute('data-client-add')); });
   $$('input[data-sel]').forEach(cb=>{ cb.onclick=e=>e.stopPropagation(); cb.onchange=()=>toggleSelected(cb.getAttribute('data-sel')); });
+  $$('[data-ak]').forEach(el=> el.onclick=()=>applyChartFilter(el.dataset));
   if(state.view==='table') wireTableSort();
 }
 
@@ -715,11 +720,11 @@ function wireTableSort(){
 /* ---- map (schematic SVG, no tiles) ---- */
 function mapHTML(rows){
   const legend=GROUPS.map(g=>`<span><span class="dot" style="background:${GROUP_COLOR[g]}"></span>${g}</span>`).join('');
-  return `<div class="mapwrap"><div class="maplegend">${legend}<span style="margin-left:auto;color:var(--muted);font-weight:500">Live map · scroll or use + / − to zoom, drag to pan · click a pin for detail</span></div>
+  return `<div class="mapwrap"><div class="maplegend">${legend}<button class="maptoggle" id="clusterToggle" title="Toggle clustered vs individual pins">Pins: ${mapClustered?'Clustered':'Individual'}</button><span style="color:var(--muted);font-weight:500">click a pin for detail</span></div>
     <div id="mapcanvas"></div></div>`;
 }
 
-let leafletMap=null, mapMarkerCount=0;
+let leafletMap=null, mapMarkerCount=0, mapClustered=sget('mapClustered',true);
 function initMap(rows){
   const el=document.getElementById('mapcanvas');
   if(!el || typeof L==='undefined') return;
@@ -741,7 +746,7 @@ function initMap(rows){
   });
   mapMarkerCount=markers.length;
   let layer;
-  if(L.markerClusterGroup){
+  if(mapClustered && L.markerClusterGroup){
     layer=L.markerClusterGroup({maxClusterRadius:48,showCoverageOnHover:false,spiderfyOnMaxZoom:true,chunkedLoading:true});
     markers.forEach(m=>layer.addLayer(m)); leafletMap.addLayer(layer);
   } else {
@@ -749,29 +754,43 @@ function initMap(rows){
   }
   if(markers.length){ leafletMap.fitBounds(layer.getBounds().pad(0.12)); }
   else { leafletMap.setView([36.03,-114.98],11); }
+  const ct=document.getElementById('clusterToggle');
+  if(ct) ct.onclick=()=>{ mapClustered=!mapClustered; sset('mapClustered',mapClustered); render(); };
   setTimeout(()=>{ if(leafletMap) leafletMap.invalidateSize(); },60);
 }
 
 /* ---- charts ---- */
+function applyChartFilter(ds){
+  if(ds.ak==='area'){ state.groups=new Set([ds.av]); }
+  else if(ds.ak==='builder'){ state.builders=new Set([ds.av]); }
+  else if(ds.ak==='type'){ state.type=ds.av; }
+  else if(ds.ak==='price'){ state.priceMin=(+ds.alo>0)?+ds.alo:null; state.priceMax=(+ds.ahi<1e12)?+ds.ahi:null; }
+  else return;
+  state.view='cards';
+  $$('#tabs button').forEach(x=>x.classList.toggle('on', x.getAttribute('data-v')==='cards'));
+  syncControls(); render();
+}
 function barChart(title,data,fmt){
   const W=360,rowH=30,H=data.length*rowH+16, max=Math.max(1,...data.map(d=>d.v)), lblW=118, barW=W-lblW-52;
   const bars=data.map((d,i)=>{const y=i*rowH+8, w=Math.max(2,d.v/max*barW);
-    return `<text class="barlbl" x="0" y="${y+15}">${d.k}</text>
+    const act=d.ak?` class="barrow" data-ak="${d.ak}"${d.av!=null?` data-av="${esc(String(d.av))}"`:''}${d.alo!=null?` data-alo="${d.alo}"`:''}${d.ahi!=null?` data-ahi="${d.ahi}"`:''} style="cursor:pointer"`:'';
+    return `<g${act}><rect x="0" y="${y-4}" width="${W}" height="${rowH}" fill="transparent"></rect>
+      <text class="barlbl" x="0" y="${y+15}">${d.k}</text>
       <rect class="bar" x="${lblW}" y="${y+4}" width="${w.toFixed(1)}" height="16" rx="3" fill="${d.c||'var(--brand)'}"></rect>
-      <text class="barval" x="${lblW+w+6}" y="${y+15}">${fmt?fmt(d.v):d.v}</text>`;}).join('');
+      <text class="barval" x="${lblW+w+6}" y="${y+15}">${fmt?fmt(d.v):d.v}</text></g>`;}).join('');
   return `<div class="chartcard"><h4>${title}</h4><svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto">${bars}</svg></div>`;
 }
 function chartsHTML(rows){
   // price bands
   const bands=[['< $350k',0,350000],['$350–450k',350000,450000],['$450–550k',450000,550000],['$550–700k',550000,700000],['$700k–1M',700000,1000000],['$1M+',1000000,1e12]];
-  const priceData=bands.map(b=>({k:b[0],v:rows.filter(s=>s.lo>=b[1]&&s.lo<b[2]).length}));
+  const priceData=bands.map(b=>({k:b[0],v:rows.filter(s=>s.lo>=b[1]&&s.lo<b[2]).length,ak:'price',alo:b[1],ahi:b[2]}));
   // by group
-  const groupData=GROUPS.map(g=>({k:g,v:rows.filter(s=>s.group===g).length,c:GROUP_COLOR[g]})).filter(d=>d.v);
+  const groupData=GROUPS.map(g=>({k:g,v:rows.filter(s=>s.group===g).length,c:GROUP_COLOR[g],ak:'area',av:g})).filter(d=>d.v);
   // by builder
   const bcount={}; rows.forEach(s=>bcount[s.builder]=(bcount[s.builder]||0)+1);
-  const builderData=Object.entries(bcount).map(([k,v])=>({k,v})).sort((a,b)=>b.v-a.v);
+  const builderData=Object.entries(bcount).map(([k,v])=>({k,v,ak:'builder',av:k})).sort((a,b)=>b.v-a.v);
   // avg price by type
-  const typeData=['Detached','Attached'].map(t=>{const g=rows.filter(s=>s.type===t&&s.lo);const avg=g.length?Math.round(g.reduce((a,s)=>a+s.lo,0)/g.length):0;return{k:t==='Attached'?'Townhome':'Detached',v:avg,c:t==='Attached'?'#e08a1e':'#2e6bd6'};}).filter(d=>d.v);
+  const typeData=['Detached','Attached'].map(t=>{const g=rows.filter(s=>s.type===t&&s.lo);const avg=g.length?Math.round(g.reduce((a,s)=>a+s.lo,0)/g.length):0;return{k:t==='Attached'?'Townhome':'Detached',v:avg,c:t==='Attached'?'#e08a1e':'#2e6bd6',ak:'type',av:t};}).filter(d=>d.v);
   return `<div class="chartwrap"><div class="chartgrid">
     ${barChart('Entry price distribution',priceData)}
     ${barChart('Subdivisions by area of town',groupData)}

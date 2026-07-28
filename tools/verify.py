@@ -67,6 +67,18 @@ with sync_playwright() as p:
 
     check("map is real Leaflet + OSM tiles", (pg.click('[data-v="map"]'), pg.wait_for_timeout(1500),
           pg.locator("#mapcanvas.leaflet-container").count()==1 and pg.locator("#mapcanvas img.leaflet-tile").count()>0)[-1])
+    # cluster toggle
+    pg.wait_for_timeout(600)
+    pg.click("#clusterToggle"); pg.wait_for_timeout(1300)
+    check("cluster toggle -> individual pins", pg.evaluate("mapClustered")==False and pg.locator("#mapcanvas path.leaflet-interactive").count()>=50, str(pg.locator("#mapcanvas path.leaflet-interactive").count()))
+    pg.click("#clusterToggle"); pg.wait_for_timeout(1000)
+    check("cluster toggle -> back to clustered", pg.evaluate("mapClustered")==True and pg.locator("#mapcanvas .marker-cluster").count()>0)
+    # clickable chart
+    pg.click('[data-v="charts"]'); pg.wait_for_timeout(300)
+    pg.click('[data-ak="area"][data-av="Henderson"]'); pg.wait_for_timeout(300)
+    hcnt = str(pg.evaluate("SUBS.filter(s=>s.area==='Henderson').length"))
+    check("chart click -> cards view filtered to Henderson", pg.evaluate("state.view")=="cards" and pg.inner_text("#count").strip()==hcnt, f"view={pg.evaluate('state.view')} count={pg.inner_text('#count')} expected={hcnt}")
+    pg.evaluate("clearAll()"); pg.wait_for_timeout(150)
     pg.click('[data-v="cards"]'); pg.wait_for_timeout(200)
 
     ids = pg.evaluate("SUBS.slice().sort((a,b)=>a.sub.localeCompare(b.sub)).map(s=>s.id)")
