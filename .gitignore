@@ -10,3 +10,6 @@ Masterplans/
 
 # converter working dir
 tools/_work/
+
+# internal docs: security audit, white paper, pitch one-pager (keep out of public Pages repo)
+docs/

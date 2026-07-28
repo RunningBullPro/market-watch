@@ -3,15 +3,16 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline' https://unpkg.com https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://*.tile.openstreetmap.org https://unpkg.com; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'" />
 <title>Market Watch · Las Vegas Valley New-Home Intelligence · Buyer2Builder</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
-<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
-<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" integrity="sha384-pmjIAcz2bAn0xukfxADbZIb3t8oRT9Sv0rvO+BR5Csr6Dhqq+nZs59P0pPKQJkEV" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" integrity="sha384-wgw+aLYNQ7dlhK47ZPK7FRACiq7ROZwgFNg0m04avm4CaXS+Z9Y7nMu8yNjBKYC+" crossorigin="anonymous" />
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js" integrity="sha384-eXVCORTRlv4FUUgS/xmOyr66XBVraen8ATNLMESp92FKXLAMiKkerixTiBvXriZr" crossorigin="anonymous"></script>
 <style>
 :root{
   --ink:#14263a; --ink2:#3a4a60; --muted:#6b7a8d;
@@ -677,7 +678,7 @@ function filtered(){
 function renderChips(){
   const box=$('#chips'); box.innerHTML='';
   const add=(label,onx)=>{ const c=document.createElement('span'); c.className='chip';
-    c.innerHTML=label+' <button>×</button>'; c.querySelector('button').onclick=onx; box.appendChild(c); };
+    c.innerHTML=esc(label)+' <button>×</button>'; c.querySelector('button').onclick=onx; box.appendChild(c); };
   if(state.type!=='all') add(state.type==='Attached'?'Townhome / attached':'Detached',()=>{state.type='all';syncControls();render();});
   if(state.priceMin!=null&&state.priceMax!=null) add('$'+moneyK(state.priceMin)+' – $'+moneyK(state.priceMax),()=>{state.priceMin=state.priceMax=null;syncControls();render();});
   else{ if(state.priceMin!=null) add('≥ $'+moneyK(state.priceMin),()=>{state.priceMin=null;syncControls();render();});
@@ -729,8 +730,8 @@ function cardHTML(s){
   return `<div class="card ${SELECTED.has(s.id)?'sel':''}" data-open="${s.id}">
     <div class="stripe" style="background:${col}"></div>
     <div class="body">
-      <div class="top"><label class="selbox" title="Select for report"><input type="checkbox" data-sel="${s.id}" ${SELECTED.has(s.id)?'checked':''}></label><div class="topleft"><div class="name">${s.sub}</div><div class="builder">${s.builder}</div></div>
-        <div class="topright"><span class="badge ${s.type==='Attached'?'att':'det'}">${s.type==='Attached'?'Townhome':'Detached'}</span><span class="tag mp gtag">${s.group}</span></div></div>
+      <div class="top"><label class="selbox" title="Select for report"><input type="checkbox" data-sel="${s.id}" ${SELECTED.has(s.id)?'checked':''}></label><div class="topleft"><div class="name">${esc(s.sub)}</div><div class="builder">${esc(s.builder)}</div></div>
+        <div class="topright"><span class="badge ${s.type==='Attached'?'att':'det'}">${s.type==='Attached'?'Townhome':'Detached'}</span><span class="tag mp gtag">${esc(s.group)}</span></div></div>
       <div class="price tnum">${money(s.lo)} <span style="color:var(--muted);font-weight:600;font-size:14px">– ${money(s.hi)}</span></div>
       <div class="meta">
         <span><b>${s.minSqft?s.minSqft.toLocaleString():'-'}–${s.maxSqft?s.maxSqft.toLocaleString():'-'}</b> sq ft</span>
@@ -741,7 +742,7 @@ function cardHTML(s){
         ${rate?`<span class="tag rate">★ ${rate}</span>`:''}
         ${inc?`<span class="tag inc">${inc} incentive${inc>1?'s':''}</span>`:''}
         ${notes?`<span class="tag vis">✎ ${notes} note${notes>1?'s':''}</span>`:''}
-        ${s.mp?`<span class="tag mp">${s.mp}</span>`:''}
+        ${s.mp?`<span class="tag mp">${esc(s.mp)}</span>`:''}
         ${s._manual?'<span class="tag man">Manual</span>':''}
       </div>
       ${ac?`<button class="clienttoggle ${inList?'on':''}" data-client-add="${s.id}">${inList?'✓ In '+esc(ac.name)+'’s list':'＋ Add to '+esc(ac.name)+'’s list'}</button>`:''}
@@ -756,14 +757,14 @@ function tableHTML(rows){
     ${rows.map(s=>{const rate=ratingOf(s.id);const col=GROUP_COLOR[s.group];
       return `<tr class="${SELECTED.has(s.id)?'sel':''}" data-open="${s.id}">
         <td class="selcol"><input type="checkbox" data-sel="${s.id}" ${SELECTED.has(s.id)?'checked':''}></td>
-        <td><span class="nm">${s.sub}</span></td>
-        <td>${s.builder}</td>
+        <td><span class="nm">${esc(s.sub)}</span></td>
+        <td>${esc(s.builder)}</td>
         <td><span class="cellbadge ${s.type==='Attached'?'att':'det'}" style="background:${s.type==='Attached'?'#fff1e2':'#eef4ff'};color:${s.type==='Attached'?'#a5621a':'#2a53a8'}">${s.type==='Attached'?'TH':'SFR'}</span></td>
         <td class="tnum">${money(s.lo)}<span style="color:var(--muted)"> – ${money(s.hi)}</span></td>
         <td class="tnum">${s.maxSqft?s.maxSqft.toLocaleString():'-'}</td>
         <td class="tnum">${s.standing??'-'}</td>
         <td class="tnum">${s.ytd??'-'}</td>
-        <td><span style="display:inline-flex;align-items:center;gap:6px"><span class="dot" style="width:8px;height:8px;border-radius:50%;background:${col}"></span>${s.group}</span></td>
+        <td><span style="display:inline-flex;align-items:center;gap:6px"><span class="dot" style="width:8px;height:8px;border-radius:50%;background:${col}"></span>${esc(s.group)}</span></td>
         <td style="color:var(--star)">${rate?starRow(rate):'<span style="color:var(--line)">-</span>'}</td>
       </tr>`;}).join('')}
   </tbody></table></div>`;
@@ -799,7 +800,7 @@ function initMap(rows){
     const i=seen[key]-1, r=i?0.00045*Math.ceil(i/6):0, ang=i*2.4;
     const lat=s.lat+Math.sin(ang)*r, lng=s.lng+Math.cos(ang)*r;
     const m=L.circleMarker([lat,lng],{radius:7,color:'#fff',weight:1.5,fillColor:GROUP_COLOR[s.group],fillOpacity:0.9});
-    m.bindTooltip(`${s.sub} · ${s.builder} · ${money(s.lo)}`);
+    m.bindTooltip(`${esc(s.sub)} · ${esc(s.builder)} · ${money(s.lo)}`);
     m.on('click',()=>openPanel(s.id));
     markers.push(m);
   });
@@ -861,14 +862,14 @@ function chartsHTML(rows){
 /* ---- incentives + standing-inventory reports (builder-published, refreshed twice-weekly) ---- */
 function invFor(id){ return INVENTORY[id]||{incentives:[],standingHomes:[]}; }
 function homeLink(h,s){ return (h&&h.url)||(s&&s.website)||''; }
-function linkStatus(h,s){ const st=esc(h&&h.status||'-'); const L=homeLink(h,s); return L?st.replace(/\(see builder site\)/i,'(<a href="'+L+'" target="_blank" rel="noopener">see builder site</a>)'):st; }
+function linkStatus(h,s){ const st=esc(h&&h.status||'-'); const L=homeLink(h,s); return L?st.replace(/\(see builder site\)/i,'(<a href="'+safeUrl(L)+'" target="_blank" rel="noopener">see builder site</a>)'):st; }
 const REPBTN='<svg viewBox="0 0 24 24"><path d="M6 9V3h12v6"/><path d="M6 18H4a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8" rx="1"/></svg>Print / PDF';
 function repTop(title,btnId){ return `<div class="rep-top"><div><h3 class="rep-title">${title}</h3><span class="asof">Builder-published · as of ${esc(PROMO_ASOF)}</span></div><button class="tbtn primary" id="${btnId}">${REPBTN}</button></div>`; }
 function repEmpty(what){ return `<div class="rep-empty">No published ${what} on file for the current filter.<br><span style="color:var(--muted);font-size:13px">Coverage expands as the twice-weekly refresh runs.</span></div>`; }
 function incentivesHTML(rows){
   const builders=[...new Set(rows.map(s=>s.builder))].filter(b=>PROMOS[b]).sort();
-  const promoRows=builders.map(b=>`<div class="offer"><div class="offer-b">${esc(b)}</div><div class="offer-t">${esc(PROMOS[b].text||'')}</div>${PROMOS[b].url?`<a class="offer-l" href="${PROMOS[b].url}" target="_blank" rel="noopener">View offer ↗</a>`:''}</div>`).join('');
-  const commRows=rows.filter(s=>(invFor(s.id).incentives||[]).length).map(s=>`<div class="offer" data-open="${s.id}"><div class="offer-b">${esc(s.sub)} <span style="color:var(--muted);font-weight:500">· ${esc(s.builder)} · ${s.area}</span></div>${invFor(s.id).incentives.map(i=>`<div class="offer-t">• ${esc(i.text)}${i.url?` <a href="${i.url}" target="_blank" rel="noopener">↗</a>`:''}</div>`).join('')}</div>`).join('');
+  const promoRows=builders.map(b=>`<div class="offer"><div class="offer-b">${esc(b)}</div><div class="offer-t">${esc(PROMOS[b].text||'')}</div>${PROMOS[b].url?`<a class="offer-l" href="${safeUrl(PROMOS[b].url)}" target="_blank" rel="noopener">View offer ↗</a>`:''}</div>`).join('');
+  const commRows=rows.filter(s=>(invFor(s.id).incentives||[]).length).map(s=>`<div class="offer" data-open="${s.id}"><div class="offer-b">${esc(s.sub)} <span style="color:var(--muted);font-weight:500">· ${esc(s.builder)} · ${esc(s.area)}</span></div>${invFor(s.id).incentives.map(i=>`<div class="offer-t">• ${esc(i.text)}${i.url?` <a href="${safeUrl(i.url)}" target="_blank" rel="noopener">↗</a>`:''}</div>`).join('')}</div>`).join('');
   const body=(promoRows||commRows)?`${promoRows?`<h4 class="rep-h">Builder promotions</h4><div class="offergrid">${promoRows}</div>`:''}${commRows?`<h4 class="rep-h">Community-specific offers</h4><div class="offergrid">${commRows}</div>`:''}`:repEmpty('offers');
   return `<div class="repwrap">${repTop('Incentives','incReportBtn')}${body}</div>`;
 }
@@ -877,8 +878,8 @@ function inventoryHTML(rows){
   const total=withHomes.reduce((a,x)=>a+x.homes.length,0);
   const body=withHomes.length?withHomes.map(({s,homes})=>{
     const flag=(typeof s.standing==='number'&&s.standing!==homes.length)?`<span class="qmi-flag">WTSW standing ${s.standing} vs ${homes.length} listed</span>`:'';
-    const hr=homes.map(h=>`<tr><td>${esc(h.plan||'-')}</td><td class="tnum">${h.price?money(h.price):'-'}</td><td class="tnum">${h.sqft?Number(h.sqft).toLocaleString():'-'}</td><td>${[h.beds&&h.beds+'bd',h.baths&&h.baths+'ba',h.garage].filter(Boolean).join(' · ')||'-'}</td><td>${esc(h.homesite||'-')}</td><td>${linkStatus(h,s)}</td><td>${homeLink(h,s)?`<a href="${homeLink(h,s)}" target="_blank" rel="noopener" title="View on builder site">↗</a>`:''}</td></tr>`).join('');
-    return `<div class="qmi-group"><div class="qmi-head"><span data-open="${s.id}" style="cursor:pointer">${esc(s.sub)} <span style="color:var(--muted);font-weight:500">· ${esc(s.builder)} · ${s.area}</span></span> <span class="qmi-n">${homes.length} available</span> ${flag}</div><div class="tablewrap"><table class="qmi-t"><thead><tr><th>Plan</th><th>Price</th><th>Sq ft</th><th>Beds/Baths</th><th>Homesite</th><th>Status</th><th></th></tr></thead><tbody>${hr}</tbody></table></div></div>`;
+    const hr=homes.map(h=>`<tr><td>${esc(h.plan||'-')}</td><td class="tnum">${h.price?money(h.price):'-'}</td><td class="tnum">${h.sqft?Number(h.sqft).toLocaleString():'-'}</td><td>${[h.beds&&h.beds+'bd',h.baths&&h.baths+'ba',h.garage].filter(Boolean).join(' · ')||'-'}</td><td>${esc(h.homesite||'-')}</td><td>${linkStatus(h,s)}</td><td>${homeLink(h,s)?`<a href="${safeUrl(homeLink(h,s))}" target="_blank" rel="noopener" title="View on builder site">↗</a>`:''}</td></tr>`).join('');
+    return `<div class="qmi-group"><div class="qmi-head"><span data-open="${s.id}" style="cursor:pointer">${esc(s.sub)} <span style="color:var(--muted);font-weight:500">· ${esc(s.builder)} · ${esc(s.area)}</span></span> <span class="qmi-n">${homes.length} available</span> ${flag}</div><div class="tablewrap"><table class="qmi-t"><thead><tr><th>Plan</th><th>Price</th><th>Sq ft</th><th>Beds/Baths</th><th>Homesite</th><th>Status</th><th></th></tr></thead><tbody>${hr}</tbody></table></div></div>`;
   }).join(''):repEmpty('move-in-ready homes');
   return `<div class="repwrap">${repTop('Standing inventory'+(total?` · ${total} homes`:''),'invReportBtn')}${body}</div>`;
 }
@@ -890,7 +891,7 @@ function buildOffersReport(kind){
     title='Incentives Report';
     const builders=[...new Set(rows.map(s=>s.builder))].filter(b=>PROMOS[b]).sort();
     const bw=builders.map(b=>`<div class="prep-item"><div class="pi-top"><span>${esc(b)}</span></div><div class="pi-grid"><span>${esc(PROMOS[b].text||'')}</span></div></div>`).join('');
-    const cs=rows.filter(s=>(invFor(s.id).incentives||[]).length).map(s=>`<div class="prep-item"><div class="pi-top"><span>${esc(s.sub)} — ${esc(s.builder)}</span><span>${s.area}</span></div>${invFor(s.id).incentives.map(i=>`<div class="pi-grid"><span>• ${esc(i.text)}</span></div>`).join('')}</div>`).join('');
+    const cs=rows.filter(s=>(invFor(s.id).incentives||[]).length).map(s=>`<div class="prep-item"><div class="pi-top"><span>${esc(s.sub)} — ${esc(s.builder)}</span><span>${esc(s.area)}</span></div>${invFor(s.id).incentives.map(i=>`<div class="pi-grid"><span>• ${esc(i.text)}</span></div>`).join('')}</div>`).join('');
     body=(bw||cs)?`${bw?'<div class="pi-lbl">Builder promotions</div>'+bw:''}${cs?'<div class="pi-lbl" style="margin-top:10px">Community offers</div>'+cs:''}`:'<div style="color:#555;font-size:12px">No published offers for the current filter.</div>';
   } else {
     title='Standing Inventory Report';
@@ -913,7 +914,7 @@ function openPanel(id){
   const inner=`
    <div class="cmodal-head" style="border-top:4px solid ${col}">
      <div><div class="cmodal-title">${esc(s.sub)}</div>
-       <div class="cmodal-sub">${esc(s.builder)} · <span style="color:${col};font-weight:600">${s.group}</span> · ${s.type==='Attached'?'Townhome / attached':'Detached'}</div></div>
+       <div class="cmodal-sub">${esc(s.builder)} · <span style="color:${col};font-weight:600">${esc(s.group)}</span> · ${s.type==='Attached'?'Townhome / attached':'Detached'}</div></div>
      <button class="pclose" id="pclose">×</button>
    </div>
    <div class="cmodal-body">
@@ -935,16 +936,16 @@ function openPanel(id){
          <h5>Location</h5>
          <div class="reportmap" id="subMap"></div>
          <div class="linkline" style="margin-top:8px"><svg viewBox="0 0 24 24"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>
-           <a href="${s.mapUrl}" target="_blank" rel="noopener">${esc(s.address)}</a></div>
+           <a href="${safeUrl(s.mapUrl)}" target="_blank" rel="noopener">${esc(s.address)}</a></div>
          <div class="linkline"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18Z"/></svg>
-           <a href="${s.website}" target="_blank" rel="noopener">${esc(s.webDomain)}</a><span class="webtype">${esc(s.webType)}</span></div>
+           <a href="${safeUrl(s.website)}" target="_blank" rel="noopener">${esc(s.webDomain)}</a><span class="webtype">${esc(s.webType)}</span></div>
        </section>
        ${(()=>{const p=PROMOS[s.builder]; const iv=invFor(id); const incs=iv.incentives||[], homes=iv.standingHomes||[];
          if(!p && !incs.length && !homes.length) return '';
          return `<section><h5>Builder offers <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--muted)">as of ${esc(PROMO_ASOF)}</span></h5>
-           ${p?`<div class="boffer"><b>${esc(s.builder)}:</b> ${esc(p.text||'')}${p.url?` <a href="${p.url}" target="_blank" rel="noopener">↗</a>`:''}</div>`:''}
+           ${p?`<div class="boffer"><b>${esc(s.builder)}:</b> ${esc(p.text||'')}${p.url?` <a href="${safeUrl(p.url)}" target="_blank" rel="noopener">↗</a>`:''}</div>`:''}
            ${incs.map(i=>`<div class="boffer">• ${esc(i.text)}</div>`).join('')}
-           ${homes.length?`<div style="margin-top:9px;font-weight:600;font-size:12.5px">${homes.length} move-in-ready home${homes.length>1?'s':''}:</div>${homes.map(h=>`<div class="bhome">${esc(h.plan||'Home')} · ${h.price?money(h.price):'-'}${h.sqft?' · '+Number(h.sqft).toLocaleString()+' sf':''}${h.status?' · '+linkStatus(h,s):''}${homeLink(h,s)?` <a href="${homeLink(h,s)}" target="_blank" rel="noopener" title="View on builder site">↗</a>`:''}</div>`).join('')}`:''}
+           ${homes.length?`<div style="margin-top:9px;font-weight:600;font-size:12.5px">${homes.length} move-in-ready home${homes.length>1?'s':''}:</div>${homes.map(h=>`<div class="bhome">${esc(h.plan||'Home')} · ${h.price?money(h.price):'-'}${h.sqft?' · '+Number(h.sqft).toLocaleString()+' sf':''}${h.status?' · '+linkStatus(h,s):''}${homeLink(h,s)?` <a href="${safeUrl(homeLink(h,s))}" target="_blank" rel="noopener" title="View on builder site">↗</a>`:''}</div>`).join('')}`:''}
          </section>`;})()}
      </div>
      <div class="cmodal-col">
@@ -956,9 +957,9 @@ function openPanel(id){
        </section>
        <section>
          <h5>Sales contact</h5>
-         <div class="field"><label>Sales manager</label><input id="cName" placeholder="Name" value="${(r.contact.name||'').replace(/"/g,'&quot;')}"></div>
-         <div class="field"><label>Phone</label><input id="cPhone" placeholder="(702) 000-0000" value="${(r.contact.phone||'').replace(/"/g,'&quot;')}"></div>
-         <div class="field"><label>Email</label><input id="cEmail" placeholder="name@builder.com" value="${(r.contact.email||'').replace(/"/g,'&quot;')}"></div>
+         <div class="field"><label>Sales manager</label><input id="cName" placeholder="Name" value="${esc(r.contact.name||'')}"></div>
+         <div class="field"><label>Phone</label><input id="cPhone" placeholder="(702) 000-0000" value="${esc(r.contact.phone||'')}"></div>
+         <div class="field"><label>Email</label><input id="cEmail" placeholder="name@builder.com" value="${esc(r.contact.email||'')}"></div>
          <div style="display:flex;align-items:center;gap:12px"><button class="savebtn" id="cSave">Save contact</button><span class="savedhint" id="cHint">Saved ✓</span></div>
        </section>
        <section>
@@ -979,10 +980,11 @@ function openPanel(id){
   wirePanel(id);
   renderSubMap(s);
 }
-function incItems(r){ return (r.incentives||[]).map(it=>`<div class="item inc"><button class="del" data-delinc="${it.id}">×</button><div class="txt">${esc(it.text)}</div><div class="by">${it.by} · ${it.at}</div></div>`).join('') || `<div style="color:var(--muted);font-size:13px">No incentives logged yet.</div>`; }
-function noteItems(r){ return (r.notes||[]).map(it=>`<div class="item"><button class="del" data-delnote="${it.id}">×</button><div class="txt">${esc(it.text)}</div><div class="by">${it.by} · ${it.at}</div></div>`).join('') || `<div style="color:var(--muted);font-size:13px">No notes yet.</div>`; }
-function lastEdited(r){ if(!r.updatedBy)return 'Not yet annotated'; return 'Last updated by '+r.updatedBy+' · '+r.updatedAt; }
-function esc(s){return String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
+function incItems(r){ return (r.incentives||[]).map(it=>`<div class="item inc"><button class="del" data-delinc="${it.id}">×</button><div class="txt">${esc(it.text)}</div><div class="by">${esc(it.by)} · ${it.at}</div></div>`).join('') || `<div style="color:var(--muted);font-size:13px">No incentives logged yet.</div>`; }
+function noteItems(r){ return (r.notes||[]).map(it=>`<div class="item"><button class="del" data-delnote="${it.id}">×</button><div class="txt">${esc(it.text)}</div><div class="by">${esc(it.by)} · ${it.at}</div></div>`).join('') || `<div style="color:var(--muted);font-size:13px">No notes yet.</div>`; }
+function lastEdited(r){ if(!r.updatedBy)return 'Not yet annotated'; return 'Last updated by '+esc(r.updatedBy)+' · '+r.updatedAt; }
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function safeUrl(u){ u=String(u==null?'':u).trim(); return /^(https?:|mailto:|tel:)/i.test(u)?esc(u):(/^[\/#?]/.test(u)?esc(u):'#'); }
 function touch(r){ r.updatedBy=IDENTITY?IDENTITY.name:'Unknown'; r.updatedAt=nowStr(); }
 
 function wirePanel(id){
@@ -1037,7 +1039,7 @@ $('#whoBtn').onclick=openIdModal;
 function exportCSV(){
   const rows=filtered();
   const cols=['Subdivision','Builder','Type','Master Plan','Low Price','High Price','Min Sqft','Max Sqft','Standing Unsold','Unsold Lots','YTD Net Sold','Address','Website','Your Rating','Incentives','Sales Contact','Notes'];
-  const q=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"';
+  const q=v=>{let x=String(v==null?'':v); if(/^[=+\-@\t\r]/.test(x)) x="'"+x; return '"'+x.replace(/"/g,'""')+'"';};
   const lines=[cols.join(',')];
   rows.forEach(s=>{const r=RECORDS[s.id]||{};
     const inc=(r.incentives||[]).map(i=>i.text+' ('+i.by+')').join(' | ');
@@ -1060,7 +1062,7 @@ function buildPrintReport(){
   $('#printReport').innerHTML=`
     <div class="prep-head">
       <div class="prep-title">Las Vegas Valley New-Home Watch</div>
-      <div class="prep-sub">Buyer2Builder · Market Watch · generated ${nowStr()}${IDENTITY?' by '+IDENTITY.name:''} · ${rows.length} subdivision${rows.length!==1?'s':''}</div>
+      <div class="prep-sub">Buyer2Builder · Market Watch · generated ${nowStr()}${IDENTITY?' by '+esc(IDENTITY.name):''} · ${rows.length} subdivision${rows.length!==1?'s':''}</div>
       <div class="prep-query"><span class="pi-lbl" style="margin-right:8px">Query</span>${qsum}</div>
     </div>${items}`;
 }
@@ -1075,7 +1077,7 @@ function prepItemHTML(s, captured, num){
     ${captured?`<div class="pi-grid"><span style="color:#888">Saved to profile ${captured}</span></div>`:''}
     <div class="pi-grid">
       <span>${s.type==='Attached'?'Townhome':'Detached'}</span>
-      <span>${s.group}</span>
+      <span>${esc(s.group)}</span>
       <span>${s.minSqft?s.minSqft.toLocaleString():'-'}–${s.maxSqft?s.maxSqft.toLocaleString():'-'} sq ft</span>
       <span>Standing ${s.standing??'-'}</span>
       <span>YTD ${s.ytd??'-'}</span>
@@ -1372,7 +1374,7 @@ async function buildSubReport(id){
     </div>
     <div class="creport-client">
       <span class="cc-nm">${esc(s.sub)}</span>
-      <span class="cc-ct">${esc(s.builder)} · ${s.group} · ${s.type==='Attached'?'Townhome':'Detached'}</span>
+      <span class="cc-ct">${esc(s.builder)} · ${esc(s.group)} · ${s.type==='Attached'?'Townhome':'Detached'}</span>
     </div>
     <div class="creport-meta">
       Prepared by ${esc(IDENTITY?IDENTITY.name:'-')} · ${when}${r.rating?' · Your rating '+r.rating.value+'/5':''}<br>
@@ -1399,7 +1401,7 @@ async function buildSubReport(id){
 function exportClientCSV(cid){
   const c=clientOf(cid); if(!c)return;
   const cols=['#','Subdivision','Builder','Type','Master Plan','Low Price','High Price','Min Sqft','Max Sqft','Standing','YTD Sold','Address','Saved (snapshot date)','Latest dataset status'];
-  const q=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"';
+  const q=v=>{let x=String(v==null?'':v); if(/^[=+\-@\t\r]/.test(x)) x="'"+x; return '"'+x.replace(/"/g,'""')+'"';};
   const lines=[cols.join(',')];
   (c.communities||[]).forEach((e,i)=>{const s=e.snap||{};
     const live=SUBS.find(x=>x.id===e.id); const status=!live?'removed from dataset':(snapDiffers(s)?'differs from latest':'current');
@@ -1488,7 +1490,7 @@ async function buildSelectionReport(){
 function exportSelectionCSV(){
   const subs=selectedSubs(); if(!subs.length) return;
   const cols=['#','Subdivision','Builder','Type','Master Plan','Low Price','High Price','Min Sqft','Max Sqft','Standing','YTD Sold','Address','Website'];
-  const q=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"';
+  const q=v=>{let x=String(v==null?'':v); if(/^[=+\-@\t\r]/.test(x)) x="'"+x; return '"'+x.replace(/"/g,'""')+'"';};
   const lines=[cols.join(',')];
   subs.forEach((s,i)=>lines.push([i+1,s.sub,s.builder,s.type,s.group,s.lo,s.hi,s.minSqft,s.maxSqft,s.standing,s.ytd,s.address,s.website].map(q).join(',')));
   const blob=new Blob([lines.join('\n')],{type:'text/csv'});
@@ -1509,7 +1511,7 @@ function addRowHTML(){ const i=++addRowSeq; return `<div class="arow" data-arow=
   <button class="ar-del" title="Remove">×</button></div>`; }
 function renderAddSub(){
   const dl=(id,arr)=>`<datalist id="${id}">${arr.map(x=>`<option value="${esc(x)}">`).join('')}</datalist>`;
-  const ml=MANUAL_SUBS.length?`<section><h5>Your manual subdivisions (${MANUAL_SUBS.length})</h5>${MANUAL_SUBS.map(m=>`<div class="mrow"><span>${esc(m.sub)} <span style="color:var(--muted)">· ${esc(m.builder)} · ${m.area}</span>${m.lat==null?' <span style="color:#9a6410;font-size:11px">location pending research</span>':''}</span><button class="mrow-del" data-mdel="${m.id}" title="Remove">×</button></div>`).join('')}</section>`:'';
+  const ml=MANUAL_SUBS.length?`<section><h5>Your manual subdivisions (${MANUAL_SUBS.length})</h5>${MANUAL_SUBS.map(m=>`<div class="mrow"><span>${esc(m.sub)} <span style="color:var(--muted)">· ${esc(m.builder)} · ${esc(m.area)}</span>${m.lat==null?' <span style="color:#9a6410;font-size:11px">location pending research</span>':''}</span><button class="mrow-del" data-mdel="${m.id}" title="Remove">×</button></div>`).join('')}</section>`:'';
   $('#addSubInner').innerHTML=`
    <div class="cmodal-head"><div><div class="cmodal-title">Add subdivisions</div>
      <div class="cmodal-sub">From an on-site visit · enter what you observed · location &amp; website get researched afterward</div></div>
@@ -1569,9 +1571,9 @@ $('#addSubModal').addEventListener('click',e=>{ if(e.target.id==='addSubModal') 
 /* ============ CONTROLS SYNC + WIRING ============ */
 function buildRail(){
   const gc=$('#groupChecks');
-  gc.innerHTML=GROUPS.map(g=>`<label class="checkline"><input type="checkbox" data-group="${g}"><span class="dot" style="background:${GROUP_COLOR[g]}"></span>${g}</label>`).join('');
-  $('#mpChecks').innerHTML=MASTERPLANS.map(m=>`<label class="checkline"><input type="checkbox" data-mp="${m}">${m}</label>`).join('');
-  $('#builderChecks').innerHTML=BUILDERS.map(b=>`<label class="checkline"><input type="checkbox" data-builder="${b}">${b}</label>`).join('');
+  gc.innerHTML=GROUPS.map(g=>`<label class="checkline"><input type="checkbox" data-group="${esc(g)}"><span class="dot" style="background:${GROUP_COLOR[g]}"></span>${esc(g)}</label>`).join('');
+  $('#mpChecks').innerHTML=MASTERPLANS.map(m=>`<label class="checkline"><input type="checkbox" data-mp="${esc(m)}">${esc(m)}</label>`).join('');
+  $('#builderChecks').innerHTML=BUILDERS.map(b=>`<label class="checkline"><input type="checkbox" data-builder="${esc(b)}">${esc(b)}</label>`).join('');
   $$('[data-group]').forEach(cb=> cb.onchange=()=>{ cb.checked?state.groups.add(cb.getAttribute('data-group')):state.groups.delete(cb.getAttribute('data-group')); render(); });
   $$('[data-mp]').forEach(cb=> cb.onchange=()=>{ cb.checked?state.mps.add(cb.getAttribute('data-mp')):state.mps.delete(cb.getAttribute('data-mp')); render(); });
   $$('[data-builder]').forEach(cb=> cb.onchange=()=>{ cb.checked?state.builders.add(cb.getAttribute('data-builder')):state.builders.delete(cb.getAttribute('data-builder')); render(); });
