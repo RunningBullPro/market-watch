@@ -1,67 +1,82 @@
-# Buyer2Builder — Market Watch
+# Buyer2Builder - Market Watch
 
-An internal tool for querying the Henderson new-home market, viewing results visually,
-printing reports, and annotating each subdivision with sales contacts, site-visit notes,
-builder incentives, and a star rating.
+A new-home market-intelligence web app for the **entire Las Vegas Valley**. Market Watch
+lets an agent explore every actively-selling new-home subdivision by area of town, track
+builder incentives and move-in-ready inventory, and generate branded, client-ready reports.
 
-Data source: Home Builders Research *Weekly Traffic & Sales Watch*, week ending 07/12/2026 —
-61 Henderson subdivisions (AREA = H).
+**Live:** https://runningbullpro.github.io/market-watch
 
-## What it does (v1)
+Data source: Home Builders Research *Weekly Traffic & Sales Watch* (WTSW), refreshed weekly.
+Current coverage: **224 subdivisions across 16 builders and 9 areas of town.**
 
-- **Ask in plain English** — e.g. `townhomes 350 to 400k`, `detached under 500k in Cadence`,
-  `Lennar available`, `2000+ sqft`. The query bar turns phrases into filter chips.
-- **Structured filters** — home type, price range, min sq ft, master plan, builder, standing inventory.
-- **Four views** — cards, sortable table, schematic map (color-coded by master plan), and charts.
-- **Annotate a record** — click any subdivision to add a sales contact (name / phone / email),
-  builder incentives, site-visit notes, and a 1–5 star rating. Every entry is stamped with
-  who added it and when.
-- **Print report** — the "Print report" button produces a clean, print/PDF-ready report of the
-  **current filtered set**, including incentives and contacts.
-- **Export CSV** — download the current results with your annotations.
+## What it does
 
-## Deploy
+- **Area of town is the primary lens** - Northwest, Henderson, Southwest, North Las Vegas,
+  South, East, Boulder City, Mesquite, and Pahrump - with secondary filters for builder,
+  master plan, home type, price, square footage, and standing inventory.
+- **Ask in plain English** - e.g. `townhomes 350 to 400k`, `detached under 500k in Cadence`,
+  `Lennar available`, `2000 to 3000 sq ft`. The query bar turns phrases into filter chips.
+- **Six views** - Cards, sortable Table, an interactive **Map** (Leaflet + OpenStreetMap with a
+  cluster/individual-pin toggle), clickable **Charts** (click a bar to filter to those
+  subdivisions), an **Incentives** report, and a standing-**Inventory** report.
+- **Incentives & standing inventory** - builder-wide and community-specific offers, covering both
+  financial incentives (rate buydowns, closing-cost credits, down-payment assistance, flex cash,
+  price cuts) and non-financial ones (design/appliance/upgrade credits, included solar, military
+  and first-responder programs, grand-opening and model-home offers). Every offer links to the
+  builder's actual published offer page. Refreshed twice weekly.
+- **Subdivision detail** - click any subdivision for an at-a-glance panel, an OSM map snapshot,
+  builder offers and move-in-ready homes, a star rating, sales contact, builder incentives, and
+  site-visit notes. Each annotation is stamped with who added it and when.
+- **Client profiles** - create a client (name, phone, email, notes), add selected communities to
+  the profile, and generate a branded, printable/PDF report with a map, numbered communities, and
+  notes. Community data is **frozen as a snapshot** when added, so pushing a new dataset never
+  changes a report you already delivered. CSV export included.
+- **Ad-hoc selection** - check any subdivisions (no client needed) and produce a report or CSV.
+- **Manual add-subdivision** - enter on-site finds through the grouped **+ Add** modal (shared
+  community fields plus one row per subdivision). Manual entries are stored separately and
+  **survive weekly dataset pushes**; location and website are researched and folded in afterward.
 
-This is a single static file — no build step.
+## Architecture
 
-**Option A — subfolder on buyer2builder.com**
-1. Put `index.html` at `https://www.buyer2builder.com/watch/index.html`.
-2. Protect `/watch/` with your host's password (e.g. `.htpasswd` on Apache, or your host's
-   password-protect setting).
-
-**Option B — GitHub + static host**
-1. Commit `index.html` and `README.md` to a repo.
-2. Deploy via GitHub Pages, Netlify, Vercel, or Cloudflare Pages, then point a subdomain
-   (`watch.buyer2builder.com`) at it and gate it with the host's access control.
+A single self-contained `index.html` (HTML / CSS / inline JS), deployed on GitHub Pages - no
+build step. Map tiles come from OpenStreetMap; Leaflet and MarkerCluster load from unpkg with
+Subresource Integrity. A Content-Security-Policy, an HTML-escaping layer, a URL allow-list, and
+CSV-injection guards harden the client.
 
 ## Data persistence
 
-v1 saves annotations in the **browser** (`localStorage`) on whatever device/browser is used,
-namespaced under `b2b_watch_v1`. That means each person's notes live on their own machine.
-When previewing inside Claude, storage is disabled by the sandbox, so it runs in-memory and
-shows a banner — on your hosted site it persists normally.
+Annotations, client profiles, manual subdivisions, and preferences are saved in the **browser**
+(`localStorage`, namespaced `b2b_watch_v1`) on the device in use. When previewed inside a sandbox
+that disables storage, the app runs in-memory and shows a banner; on the hosted site it persists
+normally. Client-report snapshots are frozen and never re-resolved against a newer dataset.
 
-## Roadmap → v2 (shared)
+## Deploy
 
-Phase two swaps the browser-storage layer for **Supabase** so the whole team sees the same
-incentives, notes, contacts, and ratings, with individual logins (each entry attributed to a
-real account). The data model is already shaped for it:
+`index.html` is the whole app. Commit to `main` and GitHub Pages redeploys automatically.
+Bump `BUILD` / `BUILD_DATE` near the bottom of the file to confirm a live update.
 
-```
-records[subdivision_id] = {
-  contact:   { name, phone, email },
-  rating:    { value, by, at },
-  incentives:[ { id, text, by, at } ],
-  notes:     [ { id, text, by, at } ],
-  updatedBy, updatedAt
-}
-```
+## Tooling (`tools/`)
 
-Suggested tables: `subdivisions` (the 61 records, refreshed weekly), `annotations`
-(contact/rating), `incentives`, `notes`, and `profiles` for logins — with row-level security so
-edits are attributed. Weekly refresh re-imports the HBR file and re-geocodes only new subdivisions.
+- `build_dataset.py` - weekly WTSW converter: parse the new HBR Excel, carry over enrichment
+  (address, lat/lng, website, map URL), verify, and inject the refreshed `SUBS` array.
+- `verify.py` - a Playwright suite (55/55) that drives the app headless and checks rendering,
+  filtering, the map, client snapshots/reports, CSV, and manual-add push-safety.
+
+Incentive and inventory data is gathered on the dev side (builder-site scraping) and injected as
+the twice-weekly `PROMOS` / `INVENTORY` refresh. Raw HBR files and marketing assets are kept out
+of the public repo (see `.gitignore`).
+
+## Roadmap
+
+- **Supabase team-sync** - move manual subdivisions and client profiles to Supabase so the whole
+  team shares them with individual logins, while preserving frozen client snapshots and dataset
+  integrity.
+- **Automated twice-weekly incentive refresh** - scheduled scrape + rebuild + deploy, applying the
+  full financial + non-financial incentive taxonomy and verifying every offer link resolves.
+- **Full per-home quick-move-in detail** - richer standing-inventory listings as scraping coverage
+  expands.
 
 ## Refresh cadence
 
-The dataset is a snapshot. Each week's HBR file can be re-processed to update prices, inventory,
-and new/closed subdivisions, and to re-resolve any moved sales offices or builder pages.
+- **Dataset (SUBS):** weekly, from the HBR WTSW file.
+- **Incentives & inventory (PROMOS / INVENTORY):** twice weekly.
