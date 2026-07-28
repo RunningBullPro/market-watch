@@ -49,6 +49,14 @@ with sync_playwright() as p:
     check("price range still parses as price", pg.evaluate("()=>parseQuery('350 to 400k').filters").get('priceMin')==350000)
     pg.evaluate("clearAll()"); pg.wait_for_timeout(100)
 
+    # valley scale + area-of-town lens
+    check("valley scale (>=200 communities)", pg.evaluate("SUBS.length")>=200, str(pg.evaluate("SUBS.length")))
+    check("areas are the lens", pg.evaluate("GROUPS.includes('Henderson') && GROUPS.includes('Northwest') && GROUPS.includes('Southwest')"))
+    pg.check('[data-group="Henderson"]'); pg.wait_for_timeout(200)
+    hend = str(pg.evaluate("SUBS.filter(s=>s.area==='Henderson').length"))
+    check("Area-of-town filter narrows to Henderson", pg.inner_text("#count").strip()==hend, f"count={pg.inner_text('#count')} expected={hend}")
+    pg.uncheck('[data-group="Henderson"]'); pg.wait_for_timeout(150)
+
     check("map is real Leaflet + OSM tiles", (pg.click('[data-v="map"]'), pg.wait_for_timeout(1500),
           pg.locator("#mapcanvas.leaflet-container").count()==1 and pg.locator("#mapcanvas img.leaflet-tile").count()>0)[-1])
     pg.click('[data-v="cards"]'); pg.wait_for_timeout(200)
@@ -122,7 +130,8 @@ with sync_playwright() as p:
     check("map shows only client's 3 pins", pg.locator("#mapcanvas path.leaflet-interactive").count()==3)
     pg.click('[data-v="cards"]'); pg.wait_for_timeout(120)
     pg.click("#cpFilter"); pg.wait_for_timeout(200)
-    check("client filter off -> all 61", pg.inner_text("#count").strip()=="61")
+    total = str(pg.evaluate("SUBS.length"))
+    check("client filter off -> all communities", pg.inner_text("#count").strip()==total, f"count={pg.inner_text('#count')} total={total}")
 
     pg.click("#cpOpen"); pg.wait_for_timeout(300)
     check("profile has 3 communities", pg.locator("#commList .comm").count()==3)

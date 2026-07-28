@@ -2,3 +2,8 @@ __pycache__/
 *.pyc
 .verify-out/
 mw-verify-*/
+# raw proprietary HBR source files and marketing assets — do not publish
+*.xlsx
+*.xls
+Ads/
+Masterplans/
