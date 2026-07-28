@@ -81,6 +81,22 @@ with sync_playwright() as p:
     pg.evaluate("clearAll()"); pg.wait_for_timeout(150)
     pg.click('[data-v="cards"]'); pg.wait_for_timeout(200)
 
+    # incentives + standing-inventory report views (Stage A)
+    pg.click('[data-v="incentives"]'); pg.wait_for_timeout(300)
+    check("incentives view shows offers", pg.locator(".repwrap .offer").count()>=1 and pg.locator("#incReportBtn").count()==1)
+    pg.evaluate("buildOffersReport('incentives')"); pg.wait_for_timeout(200)
+    check("incentives report branded", "Incentives Report" in pg.inner_text("#printReport") and "Prepared by Alex Tester" in pg.inner_text("#printReport"))
+    pg.click('[data-v="inventory"]'); pg.wait_for_timeout(300)
+    check("inventory view lists QMI homes", pg.locator(".qmi-group").count()>=1 and pg.locator(".qmi-t tbody tr").count()>=1)
+    pg.evaluate("buildOffersReport('inventory')"); pg.wait_for_timeout(200)
+    check("inventory report branded", "Standing Inventory Report" in pg.inner_text("#printReport"))
+    sid=pg.evaluate("Object.keys(INVENTORY).find(k=>INVENTORY[k].standingHomes.length)")
+    pg.evaluate("id=>openPanel(id)", sid); pg.wait_for_timeout(300)
+    _mt=pg.inner_text("#subModal").lower()
+    check("subdivision modal shows builder offers + homes", ("builder offers" in _mt) and ("move-in-ready home" in _mt))
+    pg.click("#pclose"); pg.wait_for_timeout(150)
+    pg.click('[data-v="cards"]'); pg.wait_for_timeout(150)
+
     ids = pg.evaluate("SUBS.slice().sort((a,b)=>a.sub.localeCompare(b.sub)).map(s=>s.id)")
     pickA = ids[0]
     cardIds = pg.evaluate("() => [...document.querySelectorAll('.card[data-open]')].map(c=>c.getAttribute('data-open'))")

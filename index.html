@@ -147,6 +147,29 @@ td .nm{font-weight:600;color:var(--ink)}
 
 /* map */
 .mapwrap,.chartwrap{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
+/* incentives + standing-inventory report views */
+.repwrap{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px 20px}
+.rep-top{display:flex;align-items:flex-start;gap:14px;margin-bottom:6px}
+.rep-title{margin:0;font-size:18px;font-weight:700;color:var(--ink)}
+.rep-top .tbtn{margin-left:auto}
+.asof{font-size:12px;color:var(--muted);font-weight:600}
+.rep-h{margin:18px 0 10px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--ink2)}
+.rep-empty{padding:36px 10px;text-align:center;color:var(--ink2);font-weight:600}
+.offergrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.offer{border:1px solid var(--line);border-radius:11px;padding:12px 14px;background:var(--surface2)}
+.offer[data-open]{cursor:pointer}.offer[data-open]:hover{border-color:var(--brand)}
+.offer-b{font-weight:700;color:var(--ink);margin-bottom:5px}
+.offer-t{font-size:13px;color:var(--ink2);margin-top:2px}
+.offer-l{font-size:12px;font-weight:600;display:inline-block;margin-top:7px}
+.qmi-group{border:1px solid var(--line);border-radius:11px;margin-bottom:14px;overflow:hidden}
+.qmi-head{padding:11px 14px;font-weight:700;color:var(--ink);background:var(--surface2);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.qmi-n{font-size:12px;font-weight:700;color:var(--brand-d);background:var(--brand-soft);border:1px solid #c5d9f6;border-radius:20px;padding:2px 10px}
+.qmi-flag{font-size:11px;font-weight:700;color:#9a6410;background:#fff6e6;border:1px solid #f0dca6;border-radius:20px;padding:2px 9px}
+.qmi-t{width:100%;border-collapse:collapse;font-size:13px}
+.qmi-t th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);padding:8px 12px;border-bottom:1px solid var(--line)}
+.qmi-t td{padding:8px 12px;border-bottom:1px solid var(--surface2)}
+.boffer{font-size:13px;color:var(--ink);margin-top:5px}
+.bhome{font-size:12.5px;color:var(--ink2);margin-top:3px}
 .maplegend{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:12px;font-size:12.5px;font-weight:600;color:var(--ink2)}
 .maplegend span{display:inline-flex;align-items:center;gap:6px}
 .maplegend .dot{width:10px;height:10px;border-radius:50%}
@@ -425,6 +448,8 @@ tr.sel{background:var(--brand-soft)}
       <button data-v="table"><svg viewBox="0 0 24 24"><path d="M3 5h18M3 12h18M3 19h18"/></svg>Table</button>
       <button data-v="map"><svg viewBox="0 0 24 24"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2Z"/><path d="M9 4v14M15 6v14"/></svg>Map</button>
       <button data-v="charts"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Charts</button>
+      <button data-v="incentives"><svg viewBox="0 0 24 24"><path d="M20 12v10H4V12"/><path d="M2 7h20v5H2z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>Incentives</button>
+      <button data-v="inventory"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>Inventory</button>
     </div>
     <div class="sortbar" id="sortbar">
       <span>Sort</span>
@@ -485,6 +510,10 @@ const GROUPS = ["Northwest", "Henderson", "Southwest", "North Las Vegas", "South
 const GROUP_COLOR = {"Northwest": "#2e6bd6", "Henderson": "#0f9b6c", "Southwest": "#e0731e", "North Las Vegas": "#8b5cf6", "South": "#d6459b", "East": "#0891b2", "Boulder City": "#ca8a04", "Mesquite": "#dc2626", "Pahrump": "#64748b"};
 const BUILDERS = [...new Set(SUBS.map(s=>s.builder))].sort();
 const MASTERPLANS = [...new Set(SUBS.map(s=>s.mp).filter(Boolean))].sort();
+/* Builder promotions + move-in-ready inventory (refreshed twice-weekly; seeded from pilot). */
+const PROMO_ASOF = "2026-07-27 (pilot: Lennar + Touchstone only)";
+const PROMOS = {"Lennar":{"text":"Las Vegas Valley promotion (umbrella: 'Own Your Dream' Q3 2026). Most recently published Valley-wide financing offer: 7/6 Adjustable-Rate Mortgage fixed at 3.99% (6.496% APR) for the first 7 years on select new homes, for purchase agreements signed 07/20/26-07/26/26 and closing by 08/28/26, via Lennar Mortgage. Lennar rotates these limited-time rate/closing-cost offers week to week; a comparable new week's offer is expected to be live now.","url":"https://www.lennar.com/new-homes/nevada/las-vegas/promo/nevlen_oydq326"},"Touchstone Living":{"text":"$0 Down + $0 Closing Costs + No Interest for 5 Months. Under the \"Strong Start\" program, buyers put $0 down, Touchstone pays 100% of closing costs, and Touchstone pays the interest portion of the primary mortgage for the first 5 months (30-yr fixed, example rate 5.25% after promo period). Requires FHA/qualifying financing through preferred lender Guild Mortgage (OAC). Limited-time, select homes across all communities, valid until funds are exhausted; no fixed expiration published.","url":"https://touchstoneliving.com/offers"}};
+const INVENTORY = {"alia-estates":{"incentives":[],"standingHomes":[{"plan":"Kathryn NextGen w/RV","price":1081343,"sqft":null,"beds":null,"baths":null,"garage":"RV garage","homesite":null,"status":"Move-in ready","url":"https://www.lennar.com/new-homes/nevada/las-vegas/las-vegas/alia-at-sunstone/alia-estates/kathryn-nextgen-w-rv/32674510252"},{"plan":"William","price":987895,"sqft":null,"beds":4,"baths":null,"garage":null,"homesite":null,"status":"Move-in ready","url":"https://www.lennar.com/new-homes/nevada/las-vegas/las-vegas/alia-at-sunstone/alia-estates/william/32674510253"}]},"alia-pointe":{"incentives":[],"standingHomes":[{"plan":null,"price":702990,"sqft":2469,"beds":4,"baths":3,"garage":null,"homesite":null,"status":"Quick move-in","url":"https://www.lennar.com/new-homes/nevada/las-vegas/las-vegas/sunstone/alia-pointe"}]},"asher":{"incentives":[],"standingHomes":[{"plan":"Cooper","price":484942,"sqft":null,"beds":3,"baths":null,"garage":null,"homesite":null,"status":"Move-in ready","url":"https://www.lennar.com/new-homes/nevada/las-vegas/las-vegas/sunstone/asher/cooper/32551510066"}]},"avery-pointe":{"incentives":[],"standingHomes":[{"plan":"Evan","price":774729,"sqft":2448,"beds":3,"baths":2.5,"garage":null,"homesite":null,"status":"Move-in ready","url":"https://www.lennar.com/new-homes/nevada/las-vegas/las-vegas/avery-pointe/evan/32598510025"},{"plan":"Evan","price":760010,"sqft":2448,"beds":3,"baths":2.5,"garage":null,"homesite":"#0156 / 10910 Lewis Pointe Ave","status":"Move-in ready","url":"https://www.lennar.com/new-homes/nevada/las-vegas/las-vegas/avery-pointe/evan"},{"plan":"Pioneer NextGen","price":699777,"sqft":2469,"beds":4,"baths":3,"garage":"RV/NextGen","homesite":"10850 Lewis Pointe Ave","status":"Move-in ready","url":"https://www.lennar.com/new-homes/nevada/las-vegas/las-vegas/avery-pointe/pioneer-nextgen/32598510147"},{"plan":"Pioneer NextGen","price":692990,"sqft":2469,"beds":4,"baths":3,"garage":"RV/NextGen","homesite":null,"status":"Under construction","url":"https://www.lennar.com/new-homes/nevada/las-vegas/las-vegas/avery-pointe/pioneer-nextgen/32598510026"}]},"black-mtn-ranch-landmark-86":{"incentives":[],"standingHomes":[{"plan":"Diana","price":607491,"sqft":null,"beds":null,"baths":null,"garage":null,"homesite":null,"status":"Move-in ready","url":"https://www.lennar.com/new-homes/nevada/las-vegas/henderson/landmark-at-black-mt-ranch/diana/32576510149"},{"plan":"Nora","price":null,"sqft":2704,"beds":4,"baths":3,"garage":null,"homesite":"289 Mount Denali Ave","status":"Move-in ready","url":"https://www.lennar.com/new-homes/nevada/las-vegas/henderson/landmark-at-black-mt-ranch/nora"}]}};
 SUBS.forEach(s=>{ s.group = s.area; });  // area is the primary lens; group aliases area
 /* Bump these two on each deploy so you can confirm the live page updated */
 const BUILD = "2.0";
@@ -655,9 +684,13 @@ function render(){
   if(state.view==='cards') host.innerHTML=`<div class="cards">${rows.map(cardHTML).join('')}</div>`;
   else if(state.view==='table') host.innerHTML=tableHTML(rows);
   else if(state.view==='map'){ host.innerHTML=mapHTML(rows); initMap(rows); }
+  else if(state.view==='incentives') host.innerHTML=incentivesHTML(rows);
+  else if(state.view==='inventory') host.innerHTML=inventoryHTML(rows);
   else host.innerHTML=chartsHTML(rows);
   // wire clicks
   $$('[data-open]').forEach(el=> el.onclick=()=>openPanel(el.getAttribute('data-open')) );
+  const irb=$('#incReportBtn'); if(irb) irb.onclick=()=>buildOffersReport('incentives');
+  const vrb=$('#invReportBtn'); if(vrb) vrb.onclick=()=>buildOffersReport('inventory');
   $$('[data-client-add]').forEach(b=> b.onclick=e=>{ e.stopPropagation(); toggleClientCommunity(activeClientId, b.getAttribute('data-client-add')); });
   $$('input[data-sel]').forEach(cb=>{ cb.onclick=e=>e.stopPropagation(); cb.onchange=()=>toggleSelected(cb.getAttribute('data-sel')); });
   $$('[data-ak]').forEach(el=> el.onclick=()=>applyChartFilter(el.dataset));
@@ -799,6 +832,50 @@ function chartsHTML(rows){
   </div></div>`;
 }
 
+/* ---- incentives + standing-inventory reports (builder-published, refreshed twice-weekly) ---- */
+function invFor(id){ return INVENTORY[id]||{incentives:[],standingHomes:[]}; }
+const REPBTN='<svg viewBox="0 0 24 24"><path d="M6 9V3h12v6"/><path d="M6 18H4a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8" rx="1"/></svg>Print / PDF';
+function repTop(title,btnId){ return `<div class="rep-top"><div><h3 class="rep-title">${title}</h3><span class="asof">Builder-published · as of ${esc(PROMO_ASOF)}</span></div><button class="tbtn primary" id="${btnId}">${REPBTN}</button></div>`; }
+function repEmpty(what){ return `<div class="rep-empty">No published ${what} on file for the current filter.<br><span style="color:var(--muted);font-size:13px">Coverage expands as the twice-weekly refresh runs.</span></div>`; }
+function incentivesHTML(rows){
+  const builders=[...new Set(rows.map(s=>s.builder))].filter(b=>PROMOS[b]).sort();
+  const promoRows=builders.map(b=>`<div class="offer"><div class="offer-b">${esc(b)}</div><div class="offer-t">${esc(PROMOS[b].text||'')}</div>${PROMOS[b].url?`<a class="offer-l" href="${PROMOS[b].url}" target="_blank" rel="noopener">View offer ↗</a>`:''}</div>`).join('');
+  const commRows=rows.filter(s=>(invFor(s.id).incentives||[]).length).map(s=>`<div class="offer" data-open="${s.id}"><div class="offer-b">${esc(s.sub)} <span style="color:var(--muted);font-weight:500">· ${esc(s.builder)} · ${s.area}</span></div>${invFor(s.id).incentives.map(i=>`<div class="offer-t">• ${esc(i.text)}${i.url?` <a href="${i.url}" target="_blank" rel="noopener">↗</a>`:''}</div>`).join('')}</div>`).join('');
+  const body=(promoRows||commRows)?`${promoRows?`<h4 class="rep-h">Builder promotions</h4><div class="offergrid">${promoRows}</div>`:''}${commRows?`<h4 class="rep-h">Community-specific offers</h4><div class="offergrid">${commRows}</div>`:''}`:repEmpty('offers');
+  return `<div class="repwrap">${repTop('Incentives','incReportBtn')}${body}</div>`;
+}
+function inventoryHTML(rows){
+  const withHomes=rows.map(s=>({s,homes:invFor(s.id).standingHomes||[]})).filter(x=>x.homes.length).sort((a,b)=>b.homes.length-a.homes.length);
+  const total=withHomes.reduce((a,x)=>a+x.homes.length,0);
+  const body=withHomes.length?withHomes.map(({s,homes})=>{
+    const flag=(typeof s.standing==='number'&&s.standing!==homes.length)?`<span class="qmi-flag">WTSW standing ${s.standing} vs ${homes.length} listed</span>`:'';
+    const hr=homes.map(h=>`<tr><td>${esc(h.plan||'-')}</td><td class="tnum">${h.price?money(h.price):'-'}</td><td class="tnum">${h.sqft?Number(h.sqft).toLocaleString():'-'}</td><td>${[h.beds&&h.beds+'bd',h.baths&&h.baths+'ba',h.garage].filter(Boolean).join(' · ')||'-'}</td><td>${esc(h.homesite||'-')}</td><td>${esc(h.status||'-')}</td><td>${h.url?`<a href="${h.url}" target="_blank" rel="noopener">↗</a>`:''}</td></tr>`).join('');
+    return `<div class="qmi-group"><div class="qmi-head"><span data-open="${s.id}" style="cursor:pointer">${esc(s.sub)} <span style="color:var(--muted);font-weight:500">· ${esc(s.builder)} · ${s.area}</span></span> <span class="qmi-n">${homes.length} available</span> ${flag}</div><div class="tablewrap"><table class="qmi-t"><thead><tr><th>Plan</th><th>Price</th><th>Sq ft</th><th>Beds/Baths</th><th>Homesite</th><th>Status</th><th></th></tr></thead><tbody>${hr}</tbody></table></div></div>`;
+  }).join(''):repEmpty('move-in-ready homes');
+  return `<div class="repwrap">${repTop('Standing inventory'+(total?` · ${total} homes`:''),'invReportBtn')}${body}</div>`;
+}
+function buildOffersReport(kind){
+  const rows=filtered();
+  const when=new Date().toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'});
+  let title,body;
+  if(kind==='incentives'){
+    title='Incentives Report';
+    const builders=[...new Set(rows.map(s=>s.builder))].filter(b=>PROMOS[b]).sort();
+    const bw=builders.map(b=>`<div class="prep-item"><div class="pi-top"><span>${esc(b)}</span></div><div class="pi-grid"><span>${esc(PROMOS[b].text||'')}</span></div></div>`).join('');
+    const cs=rows.filter(s=>(invFor(s.id).incentives||[]).length).map(s=>`<div class="prep-item"><div class="pi-top"><span>${esc(s.sub)} — ${esc(s.builder)}</span><span>${s.area}</span></div>${invFor(s.id).incentives.map(i=>`<div class="pi-grid"><span>• ${esc(i.text)}</span></div>`).join('')}</div>`).join('');
+    body=(bw||cs)?`${bw?'<div class="pi-lbl">Builder promotions</div>'+bw:''}${cs?'<div class="pi-lbl" style="margin-top:10px">Community offers</div>'+cs:''}`:'<div style="color:#555;font-size:12px">No published offers for the current filter.</div>';
+  } else {
+    title='Standing Inventory Report';
+    const wh=rows.map(s=>({s,homes:invFor(s.id).standingHomes||[]})).filter(x=>x.homes.length);
+    body=wh.length?wh.map(({s,homes})=>`<div class="prep-item"><div class="pi-top"><span>${esc(s.sub)} — ${esc(s.builder)}</span><span>${homes.length} homes</span></div>${homes.map(h=>`<div class="pi-grid"><span>${esc(h.plan||'Home')} · ${h.price?money(h.price):'-'}${h.sqft?' · '+Number(h.sqft).toLocaleString()+' sf':''}${h.status?' · '+esc(h.status):''}</span></div>`).join('')}</div>`).join(''):'<div style="color:#555;font-size:12px">No published move-in-ready homes for the current filter.</div>';
+  }
+  $('#printReport').innerHTML=`
+    <div class="creport-band"><img src="Buyer%202%20Builder%20Logo_Wht.png" alt="Buyer2Builder.com — Your New Home Source"/><span class="cb-t">Market Watch<br>${title}</span></div>
+    <div class="creport-meta">Prepared by ${esc(IDENTITY?IDENTITY.name:'-')} · ${when}<br>Builder-published data as of ${esc(PROMO_ASOF)} · ${rows.length} communit${rows.length===1?'y':'ies'} in view</div>
+    ${body}`;
+  setTimeout(()=>window.print(),80);
+}
+
 /* ============ DETAIL PANEL ============ */
 let openId=null;
 function openPanel(id){
@@ -834,6 +911,13 @@ function openPanel(id){
          <div class="linkline"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18Z"/></svg>
            <a href="${s.website}" target="_blank" rel="noopener">${esc(s.webDomain)}</a><span class="webtype">${esc(s.webType)}</span></div>
        </section>
+       ${(()=>{const p=PROMOS[s.builder]; const iv=invFor(id); const incs=iv.incentives||[], homes=iv.standingHomes||[];
+         if(!p && !incs.length && !homes.length) return '';
+         return `<section><h5>Builder offers <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--muted)">as of ${esc(PROMO_ASOF)}</span></h5>
+           ${p?`<div class="boffer"><b>${esc(s.builder)}:</b> ${esc(p.text||'')}${p.url?` <a href="${p.url}" target="_blank" rel="noopener">↗</a>`:''}</div>`:''}
+           ${incs.map(i=>`<div class="boffer">• ${esc(i.text)}</div>`).join('')}
+           ${homes.length?`<div style="margin-top:9px;font-weight:600;font-size:12.5px">${homes.length} move-in-ready home${homes.length>1?'s':''}:</div>${homes.map(h=>`<div class="bhome">${esc(h.plan||'Home')} · ${h.price?money(h.price):'-'}${h.sqft?' · '+Number(h.sqft).toLocaleString()+' sf':''}${h.status?' · '+esc(h.status):''}</div>`).join('')}`:''}
+         </section>`;})()}
      </div>
      <div class="cmodal-col">
        ${(()=>{const ac=activeClient(); if(!ac)return ''; const on=clientHas(ac,id); return `<section><h5>Client profile</h5><button class="savebtn" id="pClientToggle" style="width:100%;background:${on?'var(--good)':'var(--brand)'}">${on?'✓ In '+esc(ac.name)+'’s list · tap to remove':'＋ Add to '+esc(ac.name)+'’s list'}</button></section>`;})()}
@@ -1250,6 +1334,9 @@ async function buildSubReport(id){
   const c=r.contact||{}; const contact=[c.name,c.phone,c.email].filter(Boolean).join(' · ');
   const incs=(r.incentives||[]), notes=(r.notes||[]);
   const noteBlock=(lbl,arr)=>`<div class="creport-notes"><span class="pi-lbl">${lbl}</span>${arr.length?arr.map(it=>`<div class="crnote">• ${esc(it.text)} <span style="color:#888">· ${esc(it.by)}, ${it.at}</span></div>`).join(''):'<div class="crnote" style="color:#888">None logged.</div>'}</div>`;
+  const _p=PROMOS[s.builder], _iv=invFor(id), _pi=_iv.incentives||[], _ph=_iv.standingHomes||[];
+  const offBlock=(_p||_pi.length)?`<div class="creport-notes"><span class="pi-lbl">Builder offers (as of ${esc(PROMO_ASOF)})</span>${_p?`<div class="crnote">${esc(s.builder)}: ${esc(_p.text||'')}</div>`:''}${_pi.map(i=>`<div class="crnote">• ${esc(i.text)}</div>`).join('')}</div>`:'';
+  const homeBlock=_ph.length?`<div class="creport-notes"><span class="pi-lbl">Move-in-ready homes (as of ${esc(PROMO_ASOF)})</span>${_ph.map(h=>`<div class="crnote">${esc(h.plan||'Home')} · ${h.price?money(h.price):'-'}${h.sqft?' · '+Number(h.sqft).toLocaleString()+' sf':''}${h.status?' · '+esc(h.status):''}</div>`).join('')}</div>`:'';
   $('#printReport').innerHTML=`
     <div class="creport-band">
       <img src="Buyer%202%20Builder%20Logo_Wht.png" alt="Buyer2Builder.com · Your New Home Source"/>
@@ -1275,6 +1362,8 @@ async function buildSubReport(id){
       ${stat('Open since',s.opened||'-')}
     </div>
     ${contact?`<div class="creport-notes"><span class="pi-lbl">Sales contact</span><div class="crnote">${esc(contact)}</div></div>`:''}
+    ${offBlock}
+    ${homeBlock}
     ${noteBlock('Builder incentives',incs)}
     ${noteBlock('Site-visit notes',notes)}`;
   setTimeout(()=>window.print(),80);
