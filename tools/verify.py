@@ -144,6 +144,26 @@ with sync_playwright() as p:
     check("clear selection empties bar", pg.inner_text("#selBar").strip()=="")
     pg.click('[data-v="cards"]'); pg.wait_for_timeout(150)
 
+    # manual add subdivision (on-site) + non-overwrite
+    pg.on("dialog", lambda d: d.accept())
+    base_n = pg.evaluate("SUBS.length")
+    pg.click("#addSubBtn"); pg.wait_for_timeout(200)
+    check("add-subdivision modal opens", pg.locator("#addSubModal.on .cmodal-card").count()==1)
+    pg.select_option("#asArea", "Northwest")
+    pg.fill("#asBuilder", "On-Site Builder Co"); pg.fill("#asMp", "Test Master Plan")
+    pg.fill("#addRows .arow .ar-sub", "Sunset Ridge TEST")
+    pg.fill("#addRows .arow .ar-lo", "455000"); pg.fill("#addRows .arow .ar-hi", "525000")
+    pg.click("#asSave"); pg.wait_for_timeout(300)
+    check("manual sub added to market", pg.evaluate("SUBS.length")==base_n+1 and pg.evaluate("SUBS.some(s=>s.sub==='Sunset Ridge TEST' && s._manual)"))
+    check("manual builder appears in filter facets", pg.evaluate("BUILDERS.includes('On-Site Builder Co')"))
+    # non-overwrite: reload = a fresh deploy with regenerated inline SUBS; manual sub re-merges from localStorage
+    pg.reload(); pg.wait_for_load_state("networkidle"); pg.wait_for_timeout(400)
+    check("manual sub survives a dataset push (reload)", pg.evaluate("SUBS.some(s=>s.sub==='Sunset Ridge TEST' && s._manual)"))
+    pg.click("#addSubBtn"); pg.wait_for_timeout(200)
+    pg.click('#addSubInner [data-mdel]'); pg.wait_for_timeout(300)
+    check("manual sub removable", not pg.evaluate("(JSON.parse(localStorage.getItem('b2b_watch_v1_manualSubs')||'[]')).some(s=>s.sub==='Sunset Ridge TEST')"))
+    pg.evaluate("document.getElementById('addSubModal').classList.remove('on')"); pg.wait_for_timeout(120)
+
     pg.click("#clientsBtn"); pg.wait_for_timeout(150)
     pg.fill("#ncName","Jordan Fisher"); pg.fill("#ncPhone","(702) 555-0134"); pg.fill("#ncEmail","jordan@example.com")
     pg.click("#ncCreate"); pg.wait_for_timeout(300)
