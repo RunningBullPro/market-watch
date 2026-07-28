@@ -1,0 +1,73 @@
+name: Incentive & link refresh
+
+# Twice-weekly monitor: re-scrapes every builder/community offer link stored in the app,
+# verifies each still resolves and shows an offer, flags changed terms, and opens an issue
+# with the findings so the incentive update is targeted. Requires a repo secret MONID_API_KEY.
+
+on:
+  schedule:
+    - cron: '0 15 * * 1,4'   # Mondays and Thursdays, 15:00 UTC
+  workflow_dispatch: {}       # allow manual runs from the Actions tab
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Monid CLI
+        run: npm install -g @monid-ai/cli
+
+      - name: Configure Monid key
+        env:
+          MONID_API_KEY: ${{ secrets.MONID_API_KEY }}
+        run: |
+          if [ -z "$MONID_API_KEY" ]; then
+            echo "::error::MONID_API_KEY secret is not set. Add it in Settings > Secrets and variables > Actions."
+            exit 1
+          fi
+          NO_COLOR=1 monid keys add -k "$MONID_API_KEY" -l main || true
+          NO_COLOR=1 monid keys activate -l main || true
+
+      - name: Run incentive monitor
+        env:
+          NO_COLOR: '1'
+        run: python tools/incentive_monitor.py
+
+      - name: Upload report artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: refresh-report
+          path: tools/_work/refresh_report.md
+          if-no-files-found: warn
+
+      - name: Open issue if findings
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ -f tools/_work/HAS_FINDINGS ]; then
+            DATE=$(date +%Y-%m-%d)
+            gh issue create \
+              --title "Incentive refresh - links/terms need review ($DATE)" \
+              --body-file tools/_work/refresh_report.md \
+              --label "incentives" || \
+            gh issue create \
+              --title "Incentive refresh - links/terms need review ($DATE)" \
+              --body-file tools/_work/refresh_report.md
+          else
+            echo "No findings - all offer links resolve and terms still present."
+          fi
