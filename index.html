@@ -388,7 +388,7 @@ tr.sel{background:var(--brand-soft)}
       <p style="font-size:12px;color:var(--muted);margin:6px 0 10px">Sign in with your work email to share client profiles and manual subdivisions with your team. Only approved emails can access; your notes stay attributed to you.</p>
       <div id="syncStep1">
         <input id="syncEmail" type="email" placeholder="you@company.com" autocomplete="email" style="width:100%;margin-bottom:8px" />
-        <button class="go" id="syncSend" style="background:var(--ink)">Email me a code</button>
+        <button class="go" id="syncSend" style="background:var(--ink)">Email me a sign-in link</button>
       </div>
       <div id="syncStep2" style="display:none">
         <input id="syncCode" inputmode="numeric" placeholder="6-digit code" autocomplete="one-time-code" style="width:100%;margin-bottom:8px" />
@@ -1075,9 +1075,9 @@ function refreshSyncUI(){
 function sbInit(){
   if(sb) return;
   if(typeof supabase==='undefined' || !supabase.createClient) return; // library absent -> stay local-only
-  try{ sb=supabase.createClient(SUPA_URL,SUPA_KEY,{auth:{persistSession:true,autoRefreshToken:true,storageKey:'mw_sb_auth'}}); }catch(e){ sb=null; return; }
+  try{ sb=supabase.createClient(SUPA_URL,SUPA_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,flowType:'implicit',storageKey:'mw_sb_auth'}}); }catch(e){ sb=null; return; }
   sb.auth.getSession().then(({data})=>{ if(data&&data.session){ sbSession=data.session; sbEmail=data.session.user.email; onSignedIn(); } refreshSyncUI(); });
-  sb.auth.onAuthStateChange((_e,s)=>{ sbSession=s||null; sbEmail=s?s.user.email:null; refreshSyncUI(); });
+  sb.auth.onAuthStateChange((ev,s)=>{ sbSession=s||null; sbEmail=s?s.user.email:null; if(s && /access_token=/.test(location.hash)){ try{history.replaceState(null,'',location.pathname+location.search);}catch(e){} onSignedIn(); } refreshSyncUI(); });
 }
 async function onSignedIn(){
   try{ const {data:mem}=await sb.rpc('mw_is_member'); if(mem===false){ syncMsg('This email is not on the team allow-list yet - ask an admin to add you.',true); } }catch(e){}
@@ -1087,16 +1087,17 @@ async function onSignedIn(){
 async function sbSendCode(){
   const email=($('#syncEmail').value||'').trim().toLowerCase(); if(!email){ $('#syncEmail').focus(); return; }
   if(!sb) sbInit(); if(!sb){ syncMsg('Team sync is unavailable right now.',true); return; }
-  syncMsg('Sending code...');
-  const {error}=await sb.auth.signInWithOtp({email,options:{shouldCreateUser:true}});
+  syncMsg('Sending sign-in email...');
+  const {error}=await sb.auth.signInWithOtp({email,options:{shouldCreateUser:true,emailRedirectTo:location.origin+location.pathname}});
   if(error){ syncMsg(error.message,true); return; }
   sbEmail=email; $('#syncStep1').style.display='none'; $('#syncStep2').style.display='block';
-  syncMsg('Code sent to '+email+'. Enter it below.'); setTimeout(()=>{const c=$('#syncCode'); if(c)c.focus();},50);
+  syncMsg('Check your email and click the sign-in link - this page signs you in automatically. Or, if the email shows a 6-digit code, enter it below.'); setTimeout(()=>{const c=$('#syncCode'); if(c)c.focus();},50);
 }
 async function sbVerifyCode(){
   const token=($('#syncCode').value||'').trim(); if(!token){ $('#syncCode').focus(); return; }
   syncMsg('Verifying...');
-  const {data,error}=await sb.auth.verifyOtp({email:sbEmail,token,type:'email'});
+  let {data,error}=await sb.auth.verifyOtp({email:sbEmail,token,type:'email'});
+  if(error){ const r=await sb.auth.verifyOtp({email:sbEmail,token,type:'signup'}); data=r.data; error=r.error; }
   if(error){ syncMsg(error.message,true); return; }
   sbSession=data.session; syncMsg('Signed in - syncing...'); await onSignedIn();
 }
