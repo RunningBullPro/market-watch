@@ -370,6 +370,12 @@ tr.sel{background:var(--brand-soft)}
   .sr-stat{min-width:110px}
   .sr-stat .sr-k{font-size:9px;text-transform:uppercase;letter-spacing:.05em;color:#666;font-weight:700}
   .sr-stat .sr-v{font-size:13px;font-weight:700;color:#000;margin-top:1px}
+  .ds-lead{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:#555;font-weight:700;margin-bottom:8px}
+  .sub-detail-page{page-break-before:always;padding-top:2px}
+  .sd-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 16px;margin-bottom:2px}
+  .sd-head .sd-name{font-family:'Fraunces';font-size:18px;font-weight:700;color:#000}
+  .sd-head .sd-sub{font-size:11.5px;color:#333}
+  .sd-meta{font-size:10.5px;color:#333;margin:2px 0 12px;border-bottom:1px solid #ddd;padding-bottom:8px}
   *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
 </style>
@@ -1530,6 +1536,38 @@ function exportClientCSV(cid){
 }
 function closeOverlays(){ $('#subModal').classList.remove('on'); $('#clientModal').classList.remove('on'); openId=null; openClientId=null; }
 
+/* one detailed community page, rendered from a frozen snapshot, appended to a client report */
+function clientSubDetail(s, mapUrl, lead){
+  const r=RECORDS[s.id]||{};
+  const stat=(k,v)=>`<div class="sr-stat"><div class="sr-k">${k}</div><div class="sr-v">${v}</div></div>`;
+  const c=r.contact||{}; const contact=[c.name,c.phone,c.email].filter(Boolean).join(' · ');
+  const incs=(r.incentives||[]), notes=(r.notes||[]);
+  const noteBlock=(lbl,arr)=> arr.length?`<div class="creport-notes"><span class="pi-lbl">${lbl}</span>${arr.map(it=>`<div class="crnote">• ${esc(it.text)} <span style="color:#888">· ${esc(it.by)}, ${it.at}</span></div>`).join('')}</div>`:'';
+  const p=PROMOS[s.builder], iv=invFor(s.id), pi=iv.incentives||[], ph=iv.standingHomes||[];
+  const offBlock=(p||pi.length)?`<div class="creport-notes"><span class="pi-lbl">Builder offers (as of ${esc(PROMO_ASOF)})</span>${p?`<div class="crnote">${esc(s.builder)}: ${esc(p.text||'')}</div>`:''}${pi.map(i=>`<div class="crnote">• ${esc(i.text)}</div>`).join('')}</div>`:'';
+  const homeBlock=ph.length?`<div class="creport-notes"><span class="pi-lbl">Move-in-ready homes (as of ${esc(PROMO_ASOF)})</span>${ph.map(h=>`<div class="crnote">${esc(h.plan||'Home')} · ${h.price?money(h.price):'-'}${h.sqft?' · '+Number(h.sqft).toLocaleString()+' sf':''}${h.status?' · '+esc(h.status):''}</div>`).join('')}</div>`:'';
+  const mapB = mapUrl?`<div class="creport-map"><img src="${mapUrl}" style="display:block;width:100%"/><div class="cm-cap">Location of ${esc(s.sub)} · map data © OpenStreetMap contributors.</div></div>`:'';
+  const grp=s.group||s.area||'';
+  return `<div class="sub-detail-page">${lead||''}
+    <div class="sd-head"><span class="sd-name">${esc(s.sub)}</span><span class="sd-sub">${esc(s.builder)}${grp?' · '+esc(grp):''}${s.type?' · '+(s.type==='Attached'?'Townhome':'Detached'):''}</span></div>
+    <div class="sd-meta">${esc(s.address||'')}${s.webDomain?' · '+esc(s.webDomain):''}</div>
+    ${mapB}
+    <div class="sr-stats">
+      ${stat('Price',money(s.lo)+' – '+money(s.hi))}
+      ${stat('Square feet',(s.minSqft?s.minSqft.toLocaleString():'-')+'–'+(s.maxSqft?s.maxSqft.toLocaleString():'-'))}
+      ${stat('Standing unsold',s.standing??'-')}
+      ${stat('Unsold lots',s.unsold??'-')}
+      ${stat('YTD net sold',s.ytd??'-')}
+      ${stat('Weekly traffic',s.traffic??'-')}
+      ${stat('Total lots',s.totalLot??'-')}
+      ${stat('Open since',s.opened||'-')}
+    </div>
+    ${offBlock}${homeBlock}
+    ${contact?`<div class="creport-notes"><span class="pi-lbl">Sales contact</span><div class="crnote">${esc(contact)}</div></div>`:''}
+    ${noteBlock('Builder incentives',incs)}
+    ${noteBlock('Site-visit notes',notes)}</div>`;
+}
+
 /* ---- client report ---- */
 async function buildClientReport(cid){
   const c=clientOf(cid); if(!c)return;
@@ -1542,6 +1580,9 @@ async function buildClientReport(cid){
   const notesBlock = (c.notes&&c.notes.length) ? `<div class="creport-notes"><span class="pi-lbl">Client notes</span>${c.notes.map(nt=>`<div class="crnote">• ${esc(nt.text)} <span style="color:#888">· ${esc(nt.by)}, ${nt.at}</span></div>`).join('')}</div>` : '';
   const when=new Date().toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'});
   const contact=[c.phone,c.email].filter(Boolean).join(' · ');
+  // detailed page per community (from each frozen snapshot), appended after the summary
+  const detailMaps = await Promise.all(entries.map(e=> staticOSMMap([{snap:e.snap||{id:e.id}}],760,300,{numbered:false}).catch(()=>null)));
+  const detailBlocks = entries.map((e,i)=> clientSubDetail(e.snap||{id:e.id}, detailMaps[i], i===0?'<div class="ds-lead">Detailed community pages</div>':'')).join('');
   $('#printReport').innerHTML=`
     <div class="creport-band">
       <img src="Buyer%202%20Builder%20Logo_Wht.png" alt="Buyer2Builder.com · Your New Home Source"/>
@@ -1558,7 +1599,8 @@ async function buildClientReport(cid){
     </div>
     ${mapBlock}
     ${items}
-    ${notesBlock}`;
+    ${notesBlock}
+    ${detailBlocks}`;
   setTimeout(()=>window.print(),80);
 }
 

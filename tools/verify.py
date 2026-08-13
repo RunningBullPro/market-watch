@@ -213,10 +213,11 @@ with sync_playwright() as p:
     rep = pg.inner_text("#printReport")
     check("report shows snapshot price, not new", ("$"+format(snapLo,",")) in rep and ("$"+format(newLo,",")) not in rep)
     check("report has client name + preparer", "Jordan Fisher" in rep and "Prepared by Alex Tester" in rep)
-    check("report has a map + numbered items + notes",
+    check("report has a map + numbered items + notes + detail pages",
           pg.locator("#printReport .creport-map img, #printReport .creport-map svg").count()>=1
           and pg.locator("#printReport .pi-num").count()==3
-          and pg.locator("#printReport .creport-notes").count()==1 and "3-car garage" in rep)
+          and pg.locator("#printReport .creport-notes").count()>=1
+          and pg.locator("#printReport .sub-detail-page").count()==3 and "3-car garage" in rep)
     check("main card reflects new live price", pg.evaluate(f"document.body.innerHTML.includes({('$'+format(newLo,',')) !r})"))
 
     pg.reload(); pg.wait_for_load_state("networkidle"); pg.wait_for_timeout(400)
