@@ -52,7 +52,7 @@ COL = dict(builder=0, sub=1, area=2, ptype=3, traffic=4, ytd=9, totalLot=10,
            unsold=12, opened=14, standing=18, minSqft=19, maxSqft=20, lo=21, hi=22, mp=23)
 KEYS = ["id","builder","sub","area","mp","type","lo","hi","minSqft","maxSqft","standing","unsold",
         "ytd","traffic","totalLot","opened","address","lat","lng","mapUrl","website","webDomain",
-        "webType","geoNote"]
+        "webType","geoNote","es","ms","hs"]
 
 def norm(x): return re.sub(r"[^a-z0-9]", "", str(x).lower())
 def tc(s): return " ".join(w.capitalize() for w in str(s).split())
@@ -123,7 +123,8 @@ def parse_mode(xlsx):
              "address": ex.get('address','') if ex else "", "lat": ex.get('lat') if ex else None,
              "lng": ex.get('lng') if ex else None, "mapUrl": ex.get('mapUrl','') if ex else "",
              "website": ex.get('website','') if ex else "", "webDomain": ex.get('webDomain','') if ex else "",
-             "webType": ex.get('webType','') if ex else "", "geoNote": ex.get('geoNote','') if ex else ""}
+             "webType": ex.get('webType','') if ex else "", "geoNote": ex.get('geoNote','') if ex else "",
+             "es": ex.get('es','') if ex else "", "ms": ex.get('ms','') if ex else "", "hs": ex.get('hs','') if ex else ""}
         if not (ex and ex.get('lat') is not None):
             need.append(rec)
         out.append(rec)

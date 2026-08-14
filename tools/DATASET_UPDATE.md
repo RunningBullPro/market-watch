@@ -59,7 +59,11 @@ Run **builder-batched research** (one research subagent per builder, split build
 - Produce a **review list** of all medium/low-confidence and any out-of-bounds/area-mismatch rows for a human spot-check before shipping.
 
 ## 7. Build & ship
-- Emit `data.json` (the app loads this) and rebuild.
+- `python tools/build_dataset.py apply` injects `SUBS` into index.html + bumps BUILD_DATE / footer week-ending.
+- `python tools/schools.py` assigns CCSD zoned schools (`es`/`ms`/`hs`) to every subdivision via
+  point-in-polygon against Clark County NV ArcGIS attendance boundaries, and geocodes the referenced
+  schools for the map's school toggle (`SCHOOLS_GEO`). Idempotent; auto-zones new communities. (es/ms/hs
+  also carry over week to week via build_dataset, so this only strictly needs re-running when coords change.)
 - Run `python tools/verify.py` (Playwright browser suite) — must be green.
 - Commit + push `main`; GitHub Pages auto-deploys.
 
