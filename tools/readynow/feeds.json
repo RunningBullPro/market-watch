@@ -1,0 +1,87 @@
+{
+ "_note": "Weekly Ready Now web pull. `start` is where the crawl begins; context.dev follows the builder's own internal links to reach the quick move-in listings, so a landing page is enough and a changed URL path does not break the pull. Keep maxPages SMALL (3): a deeper crawl wanders onto individual home pages and returns fewer homes, not more. Set `skip` with a reason to park a builder. URLs verified to resolve 2026-08-19; re-check with tools/readynow/find_feeds.py when a builder returns 0 homes two weeks running.",
+ "Beazer Homes": {
+  "start": "https://www.beazer.com/las-vegas-NV",
+  "maxPages": 6,
+  "perCommunity": true,
+  "communityLimit": 12
+ },
+ "Century Communities": {
+  "start": "https://www.centurycommunities.com/find-your-new-home/nevada/las-vegas-metro/?moveInReady=true",
+  "maxPages": 3,
+  "perCommunity": true,
+  "communityLimit": 12
+ },
+ "D.R. Horton": {
+  "start": "https://www.drhorton.com/nevada/las-vegas",
+  "maxPages": 3
+ },
+ "KB Home": {
+  "start": "https://www.kbhome.com/new-homes-las-vegas",
+  "maxPages": 3
+ },
+ "Lennar": {
+  "start": "https://www.lennar.com/new-homes/nevada/las-vegas",
+  "maxPages": 6,
+  "perCommunity": true,
+  "communityLimit": 12
+ },
+ "Pinnacle Homes": {
+  "start": "https://pinnaclelv.com/",
+  "maxPages": 3,
+  "perCommunity": true,
+  "communityLimit": 12
+ },
+ "Pulte Group": {
+  "start": "https://www.pulte.com/homes/nevada/las-vegas",
+  "maxPages": 3
+ },
+ "Sekisui House": {
+  "start": "https://www.richmondamerican.com/nevada/las-vegas-new-homes/",
+  "maxPages": 3,
+  "perCommunity": true,
+  "communityLimit": 12
+ },
+ "Shawood": {
+  "start": "https://shawood.com/community/arcadia/",
+  "maxPages": 3,
+  "perCommunity": true,
+  "communityLimit": 12
+ },
+ "Shea Homes": {
+  "start": "https://www.sheahomes.com/qmi-listings/las-vegas-quick-move-in-homes",
+  "maxPages": 3
+ },
+ "Signature Homes": {
+  "start": "https://signaturehomes.com/communities/",
+  "maxPages": 3,
+  "perCommunity": true,
+  "communityLimit": 12
+ },
+ "Summit Homes": {
+  "start": "https://summithomesnv.com/move-in-ready/",
+  "maxPages": 3,
+  "perCommunity": true,
+  "communityLimit": 12
+ },
+ "Taylor Morrison": {
+  "start": "https://www.taylormorrison.com/nv/las-vegas",
+  "maxPages": 3
+ },
+ "Toll Brothers": {
+  "start": "https://www.tollbrothers.com/new-quick-move-in-homes/Las-Vegas-NV",
+  "maxPages": 3
+ },
+ "Touchstone Living": {
+  "start": "https://touchstoneliving.com/",
+  "maxPages": 3,
+  "perCommunity": true,
+  "communityLimit": 12
+ },
+ "Tri Pointe Homes": {
+  "start": "https://www.tripointehomes.com/find-your-home/quick-move-in-homes/nevada?type=communities",
+  "maxPages": 3,
+  "perCommunity": true,
+  "communityLimit": 12
+ }
+}

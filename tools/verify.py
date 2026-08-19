@@ -223,6 +223,118 @@ with sync_playwright() as p:
     pg.reload(); pg.wait_for_load_state("networkidle"); pg.wait_for_timeout(400)
     check("client + notes + communities persist across reload",
           pg.evaluate(f"!!clientOf({cid!r}) && (clientOf({cid!r}).notes||[]).length===1 && (clientOf({cid!r}).communities||[]).length===3"))
+
+    # ---------------- Ready Now ----------------
+    check("Ready Now database is present", pg.evaluate("QMI.length")>0, str(pg.evaluate("QMI.length")))
+    check("every Ready Now home has a stable id and a price or address",
+          pg.evaluate("QMI.every(h=>h.id && (h.price!=null||h.address))"))
+    total_q = pg.evaluate("QMI.length")
+    linked = pg.evaluate("QMI.filter(h=>h.subId).length")
+    check("homes link back to Market Watch subdivisions", linked >= total_q*0.9, "%d/%d" % (linked, total_q))
+    check("every subId resolves to a real subdivision",
+          pg.evaluate("QMI.filter(h=>h.subId).every(h=>SUBS.some(s=>s.id===h.subId))"))
+    check("no duplicate home ids", pg.evaluate("new Set(QMI.map(h=>h.id)).size===QMI.length"))
+    rn_ready = pg.evaluate("QMI.filter(h=>!h.gone&&!h.pointer&&h.status==='ready').length")
+    check("ready-now count in the mode switch matches the data",
+          pg.inner_text("#rnCount").strip()==str(rn_ready))
+
+    pg.click('#modeSwitch button[data-mode="rn"]'); pg.wait_for_timeout(400)
+    check("mode switch flips the shell to Ready Now",
+          pg.evaluate("document.body.getAttribute('data-mode')")=="rn"
+          and pg.locator("#tabs button[data-v='deals']").is_visible()
+          and not pg.locator("#tabs button[data-v='inventory']").is_visible())
+    check("default view is completed homes only",
+          pg.inner_text("#count").strip()==str(rn_ready),
+          "count=%s expected=%d" % (pg.inner_text("#count"), rn_ready))
+    check("cards render one per home", pg.locator(".rncard").count()==rn_ready, str(pg.locator(".rncard").count()))
+
+    pg.select_option("#rnBeds","4"); pg.wait_for_timeout(300)
+    exp4 = pg.evaluate("QMI.filter(h=>!h.gone&&!h.pointer&&h.status==='ready'&&h.beds>=4).length")
+    check("beds filter narrows to 4+", pg.inner_text("#count").strip()==str(exp4),
+          "%s vs %d" % (pg.inner_text("#count"), exp4))
+    pg.select_option("#rnBeds","0"); pg.wait_for_timeout(150)
+    pg.select_option("#rnStories","1"); pg.wait_for_timeout(300)
+    exp1 = pg.evaluate("QMI.filter(h=>!h.gone&&!h.pointer&&h.status==='ready'&&h.stories===1).length")
+    check("single-story filter works", pg.inner_text("#count").strip()==str(exp1),
+          "%s vs %d" % (pg.inner_text("#count"), exp1))
+    pg.select_option("#rnStories","0"); pg.wait_for_timeout(150)
+    pg.click('#rnAvail button[data-av="all"]'); pg.wait_for_timeout(300)
+    check("availability 'all' widens past ready-now", int(pg.inner_text("#count"))>rn_ready, pg.inner_text("#count"))
+    pg.click('#rnAvail button[data-av="ready"]'); pg.wait_for_timeout(250)
+
+    check("deal benchmarks are computed", pg.evaluate("QMI.filter(h=>h.deal&&h.deal.score>0).length")>0)
+    check("a plan-peer discount is never larger than the home's own price",
+          pg.evaluate("QMI.every(h=>!h.deal||!h.deal.planDelta||h.deal.planDelta<h.price)"))
+    check("deal scores stay in range", pg.evaluate("QMI.every(h=>!h.deal||(h.deal.score>=0&&h.deal.score<=100))"))
+    pg.evaluate("state.rn.deals=new Set(['plan']); render()"); pg.wait_for_timeout(300)
+    expp = pg.evaluate("rnFiltered().length")
+    check("'under the same plan' filter keeps only homes with that benchmark",
+          expp>0 and pg.evaluate("rnFiltered().every(h=>h.deal&&h.deal.planDelta>0)"), str(expp))
+    pg.evaluate("state.rn.deals=new Set(); render()"); pg.wait_for_timeout(250)
+
+    pg.click('#tabs button[data-v="map"]'); pg.wait_for_timeout(1200)
+    check("Ready Now map draws pins",
+          pg.locator("#mapcanvas .leaflet-marker-icon, #mapcanvas path.leaflet-interactive").count()>0)
+    pg.click('#tabs button[data-v="deals"]'); pg.wait_for_timeout(400)
+    check("Deals view ranks opportunities",
+          pg.locator(".deal-row").count()>0 and pg.locator(".deal-rank").first.inner_text()=="1")
+    pg.click('#tabs button[data-v="charts"]'); pg.wait_for_timeout(400)
+    check("Ready Now charts render", pg.locator(".chartgrid svg").count()>0)
+    pg.click('#tabs button[data-v="cards"]'); pg.wait_for_timeout(300)
+
+    pg.locator(".rncard").first.click(); pg.wait_for_timeout(400)
+    check("home detail opens", pg.locator("#homeModal.on").count()==1 and pg.locator(".hd-plan").count()==1)
+    hd = pg.inner_text("#homeInner")
+    check("home detail shows price, source and as-of", "$" in hd and "as of" in hd)
+    pg.click("#homeClose"); pg.wait_for_timeout(250)
+
+    sub_with = pg.evaluate("(QMI.find(h=>h.subId&&!h.pointer&&!h.gone&&h.status==='ready')||{}).subId")
+    pg.evaluate("jumpToSub(%r)" % sub_with); pg.wait_for_timeout(400)
+    check("Market Watch -> Ready Now jump filters to that community",
+          pg.evaluate("rnFiltered().length")>0
+          and pg.evaluate("rnFiltered().every(h=>h.subId===%r)" % sub_with))
+    pg.evaluate("rnSubFocus=null; render()"); pg.wait_for_timeout(250)
+    pg.click('#modeSwitch button[data-mode="mw"]'); pg.wait_for_timeout(400)
+    check("Market Watch cards carry the Ready Now tag", pg.locator(".tag.qmi").count()>0)
+    pg.evaluate("openPanel(%r)" % sub_with); pg.wait_for_timeout(400)
+    check("subdivision panel lists its Ready Now homes",
+          pg.locator(".qmi-sec").count()==1 and pg.locator(".qmi-sec .qs-row").count()>0)
+    pg.evaluate("closePanel()"); pg.wait_for_timeout(200)
+    check("the Inventory view now reads from the Ready Now database",
+          pg.evaluate("invFor(%r).standingHomes.length>0" % sub_with))
+
+    pg.click('#modeSwitch button[data-mode="rn"]'); pg.wait_for_timeout(350)
+    hid = pg.evaluate("rnFiltered()[0].id")
+    hprice = pg.evaluate("QMI_BY_ID[%r].price" % hid)
+    pg.evaluate("toggleClientHome(%r,%r)" % (cid, hid)); pg.wait_for_timeout(300)
+    check("home added to the client profile with a frozen snapshot",
+          pg.evaluate("(clientOf(%r).homes||[]).length===1 && clientOf(%r).homes[0].snap.price===%d" % (cid, cid, hprice)))
+    pg.evaluate("QMI_BY_ID[%r].price = %d" % (hid, hprice+40000))
+    check("a later builder price change does not rewrite the snapshot",
+          pg.evaluate("clientOf(%r).homes[0].snap.price===%d" % (cid, hprice))
+          and pg.evaluate("homeSnapDiffers(clientOf(%r).homes[0].snap)" % cid))
+    pg.evaluate("QMI_BY_ID[%r].price = %d" % (hid, hprice))
+
+    pg.evaluate("buildClientReport(%r)" % cid); pg.wait_for_timeout(1200)
+    rep2 = pg.inner_text("#printReport")
+    check("client report gains a Ready Now section",
+          "Ready Now" in rep2 and ("$"+format(hprice,",")) in rep2)
+
+    pg.evaluate("buildRnReport('deals')"); pg.wait_for_timeout(400)
+    rd = pg.inner_text("#printReport")
+    check("Ready Now deals report prints with provenance",
+          "Best Ready Now Opportunities" in rd and "builder-published" in rd
+          and pg.locator("#printReport .prep-item").count()>0)
+
+    with pg.expect_download() as di2:
+        pg.click("#exportBtn")
+    csv2 = open(di2.value.path(), encoding="utf-8").read()
+    check("Ready Now CSV exports home-level columns",
+          "Plan," in csv2 and "$/Sq Ft" in csv2 and "Deal Score" in csv2 and len(csv2.strip().splitlines())>1)
+
+    pg.reload(); pg.wait_for_load_state("networkidle"); pg.wait_for_timeout(600)
+    check("Ready Now mode persists across reload", pg.evaluate("state.mode")=="rn")
+    check("saved home survives reload", pg.evaluate("(clientOf(%r).homes||[]).length===1" % cid))
     browser.close()
 
 httpd.shutdown()

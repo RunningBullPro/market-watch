@@ -1,0 +1,54 @@
+{
+ "_note": "Builder marketing community name -> Market Watch SUBS id. Only needed where normalized matching cannot get there on its own (collections, 'at <master plan>' suffixes, brand prefixes). Reviewed by hand; build_readynow.py never guesses silently.",
+ "Taylor Morrison": {
+  "Opus at Cadence": "opus-190",
+  "The Amara Collection at Portofino at Lake Las Vegas": "portofino-192",
+  "The Coletta Collection at Portofino at Lake Las Vegas": "portofino-192",
+  "The Vista Pointe Collection at Portofino at Lake Las Vegas": "portofino-192",
+  "Verona at Lake Las Vegas": "verona-194",
+  "Ashland at Summerlin": "ashland",
+  "Lark Hill at Summerlin": "lark-hill",
+  "Windsor Heights": "windsor-heights-by-tm",
+  "Ovation at Mountain Falls": "ovation",
+  "Vivere at Mountain Falls": "vivere",
+  "Solstice": "solstice-by-tm",
+  "Esplanade at Red Rock": "esplanade-at-red-rock"
+ },
+ "D.R. Horton": {
+  "Symmetry Bay Phase III at Cadence": "symmetry-bay-42"
+ },
+ "KB Home": {
+  "Enclaves at Cloudbreak Ridge at Summerlin": "cloudbreak-enclaves"
+ },
+ "Shawood": {
+  "Arcadia": "arcadia-in-summerlin"
+ },
+ "Toll Brothers": {
+  "Toll Brothers at Ascension - Crestline Collection": "ascension-crestline",
+  "Toll Brothers at Ascension - Highrock Collection": "ascension-highrock",
+  "Toll Brothers at Inspirada - Amiata Collection": "amiata-198",
+  "Toll Brothers at Skye Canyon - Paloma Collection": "paloma"
+ },
+ "Century Communities": {
+  "Arroyo at Skyeview at Skye Canyon": "skyeview-arroyo",
+  "Mesa at Skyeview at Skye Canyon": "skyeview-mesa",
+  "Sierra at Skyeview at Skye Canyon": "skyeview-sierra",
+  "Terra at Skyeview at Skye Canyon": "skyeview-terra"
+ },
+ "Lennar": {
+  "Serena at Piazza Paradiso": "piazza-paradiso-105",
+  "Black Mountain Ranch – Highpointe": "black-mtn-ranch-highpoint-85",
+  "Black Mountain Ranch - Highpointe": "black-mtn-ranch-highpoint-85"
+ },
+ "Sekisui House": {
+  "Acacia at Cadence": "acacia-wh-144",
+  "Adair at Cadence": "adair-wh-145",
+  "Ambridge at Cadence": "ambridge-wh-148",
+  "Capella at Sunstone": "capella-at-sunstone-wh"
+ },
+ "Tri Pointe Homes": {
+  "Alder": "alder-at-kyle-pointe",
+  "Alpine Ridge": "alpine-ridge-at-kyle-pointe",
+  "Arrow Peak": "arrow-peak-at-kyle-pointe"
+ }
+}

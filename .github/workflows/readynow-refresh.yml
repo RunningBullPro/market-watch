@@ -1,0 +1,106 @@
+name: Ready Now weekly refresh
+
+# Pulls every builder's quick move-in listings (tools/readynow/feeds.json) through Monid's
+# context.dev schema extractor, folds them into the Ready Now database with price history,
+# recomputes the deal benchmarks, and opens a pull request with the result. It opens a PR
+# rather than pushing to main so a person sees what changed before it reaches the live site.
+#
+# Requires the repo secret MONID_API_KEY.
+
+on:
+  schedule:
+    - cron: '0 14 * * 2'      # Tuesdays, 14:00 UTC (07:00 Pacific)
+  workflow_dispatch:
+    inputs:
+      fresh:
+        description: 'Ignore the provider cache and refetch every page'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          npm install -g @monid-ai/cli
+          pip install pymupdf requests
+
+      - name: Configure Monid key
+        env:
+          MONID_API_KEY: ${{ secrets.MONID_API_KEY }}
+        run: |
+          if [ -z "$MONID_API_KEY" ]; then
+            echo "::error::MONID_API_KEY secret is not set. Add it in Settings > Secrets and variables > Actions."
+            exit 1
+          fi
+          NO_COLOR=1 monid keys add -k "$MONID_API_KEY" -l main || true
+          NO_COLOR=1 monid keys activate -l main || true
+
+      - name: Pull builder quick move-in listings
+        env:
+          NO_COLOR: '1'
+        run: python tools/qmi_scrape.py ${{ inputs.fresh && '--fresh' || '' }}
+
+      - name: Rebuild the Ready Now database
+        run: |
+          python tools/build_readynow.py parse tools/_work/readynow/web/*.json
+          python tools/build_readynow.py geocode
+          python tools/build_readynow.py apply
+
+      - name: Verify the app still works
+        run: |
+          pip install playwright
+          python -m playwright install --with-deps chromium
+          python tools/verify.py
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: readynow-refresh
+          path: |
+            tools/_work/readynow/web_report.md
+            tools/_work/readynow/apply_report.md
+          if-no-files-found: warn
+
+      - name: Open a pull request when something changed
+        if: success()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ ! -f tools/_work/readynow/HAS_CHANGES ]; then
+            echo "No inventory changes this week - nothing to open."
+            exit 0
+          fi
+          DATE=$(date +%Y-%m-%d)
+          BRANCH="readynow/$DATE"
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$BRANCH"
+          git add index.html tools/readynow/store.json tools/readynow/geocache.json
+          git commit -m "Ready Now weekly refresh - $DATE"
+          git push -u origin "$BRANCH"
+          {
+            cat tools/_work/readynow/apply_report.md
+            echo
+            echo '---'
+            echo
+            cat tools/_work/readynow/web_report.md
+          } > /tmp/pr_body.md
+          gh pr create --title "Ready Now weekly refresh - $DATE" \
+                       --body-file /tmp/pr_body.md --base main --head "$BRANCH"

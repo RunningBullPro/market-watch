@@ -7,6 +7,10 @@ mw-verify-*/
 *.xls
 Ads/
 Masterplans/
+# anchored: Git matches ignore patterns case-insensitively on Windows, so a bare
+# "ReadyNow/" also swallows tools/readynow/ (the pipeline itself, which must be tracked)
+/ReadyNow/
+/backups/
 
 # converter working dir
 tools/_work/
