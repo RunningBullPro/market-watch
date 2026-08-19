@@ -459,6 +459,7 @@ body[data-mode="rn"] .mw-only{display:none !important}
 .qs-note{font-size:11px;color:var(--muted);margin-top:8px}
 .tag.qmi{background:var(--rn-soft);color:var(--rn-d);border:1px solid #f4d5c3;cursor:pointer}
 .tag.qmi:hover{background:#fbe0d1}
+.tag.qmi.soon,.cellbadge.qmi.soon{background:var(--surface2);color:var(--ink2);border-color:var(--line)}
 .cellbadge.qmi{background:var(--rn-soft);color:var(--rn-d);cursor:pointer}
 </style>
 </head>
@@ -2372,7 +2373,14 @@ function homeSnapDiffers(snap){
 function qmiTagHTML(subId){
   const n=qmiHomes(subId).length, r=qmiReady(subId).length;
   if(!n) return '';
-  return `<span class="tag qmi" data-qmi="${esc(subId)}" title="${r} ready now, ${n} total quick move-in home${n>1?'s':''}">⚡ ${r||n} Ready Now</span>`;
+  // A community can have inventory without having any of it FINISHED. Say which it is:
+  // labelling three homes still under construction "3 Ready Now" is wrong in front of a client.
+  const soon=n-r;
+  const label = r? `⚡ ${r} Ready Now` : `⚡ ${soon} coming soon`;
+  const title = r
+    ? `${r} finished home${r>1?'s':''} you can move into now${soon?`, plus ${soon} finishing soon`:''}`
+    : `No finished homes yet - ${soon} due in the next few months`;
+  return `<span class="tag qmi${r?'':' soon'}" data-qmi="${esc(subId)}" title="${title}">${label}</span>`;
 }
 function jumpToSub(subId){
   setMode('rn');
@@ -2388,6 +2396,9 @@ function qmiStripHTML(subId){
   const homes=qmiHomes(subId), pts=qmiPointers(subId);
   if(!homes.length && !pts.length) return '';
   const ready=homes.filter(h=>h.status==='ready');
+  const heading = ready.length
+    ? `⚡ Ready Now in this community <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--muted)">${ready.length} finished${homes.length>ready.length?`, ${homes.length-ready.length} coming soon`:''}</span>`
+    : `⚡ Coming soon in this community <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--muted)">${homes.length} home${homes.length>1?'s':''} finishing, none complete yet</span>`;
   const show=(ready.length?ready:homes).slice(0,6);
   const rows=show.map(h=>`<div class="qs-row" data-qmihome="${esc(h.id)}">
       <span class="qs-plan">${esc(homeTitle(h))}</span>
@@ -2398,7 +2409,7 @@ function qmiStripHTML(subId){
     </div>`).join('');
   const more=(ready.length?ready:homes).length-show.length;
   return `<section class="qmi-sec">
-    <h5>⚡ Ready Now in this community <button class="tbtn" data-qmiall="${esc(subId)}" style="float:right;margin-top:-4px">See all ${homes.length}</button></h5>
+    <h5>${heading} <button class="tbtn" data-qmiall="${esc(subId)}" style="float:right;margin-top:-4px">See all ${homes.length}</button></h5>
     ${rows}
     ${more>0?`<div class="qs-more">+${more} more</div>`:''}
     ${pts.length?`<div class="qs-more">${pts.map(p=>esc(p.availLabel)).join(' · ')}</div>`:''}
@@ -2410,7 +2421,9 @@ function qmiStripHTML(subId){
 function qmiCellHTML(subId){
   const n=qmiHomes(subId).length, r=qmiReady(subId).length;
   if(!n) return '';
-  return ` <span class="cellbadge qmi" data-qmi="${esc(subId)}" title="${r} ready now of ${n} quick move-in home${n>1?'s':''}">⚡ ${r||n}</span>`;
+  const title = r? `${r} ready now of ${n} quick move-in home${n>1?'s':''}`
+                 : `No finished homes yet - ${n} due in the next few months`;
+  return ` <span class="cellbadge qmi${r?'':' soon'}" data-qmi="${esc(subId)}" title="${title}">⚡ ${r||n}${r?'':'·soon'}</span>`;
 }
 
 /* Chips describing the Ready Now filters, appended to the shared chip row. */

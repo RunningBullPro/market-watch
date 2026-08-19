@@ -296,6 +296,25 @@ with sync_playwright() as p:
     pg.evaluate("rnSubFocus=null; render()"); pg.wait_for_timeout(250)
     pg.click('#modeSwitch button[data-mode="mw"]'); pg.wait_for_timeout(400)
     check("Market Watch cards carry the Ready Now tag", pg.locator(".tag.qmi").count()>0)
+    # a community whose homes are all still under construction must not be labelled "Ready Now"
+    check("the tag never claims Ready Now when nothing is finished",
+          pg.evaluate("""()=>{
+            const bad=[];
+            SUBS.forEach(s=>{
+              const n=qmiHomes(s.id).length, r=qmiReady(s.id).length;
+              if(!n) return;
+              const h=qmiTagHTML(s.id);
+              if(r===0 && /Ready Now/.test(h)) bad.push(s.id);
+              if(r>0 && !new RegExp('\u26a1 '+r+' Ready Now').test(h)) bad.push(s.id);
+            });
+            return bad.length===0;
+          }"""))
+    tagged = pg.evaluate("SUBS.filter(s=>qmiHomes(s.id).length>0).length")
+    readysubs = pg.evaluate("SUBS.filter(s=>qmiReady(s.id).length>0).length")
+    check("tag counts reconcile with the Ready Now total",
+          pg.evaluate("SUBS.reduce((a,s)=>a+qmiReady(s.id).length,0)")
+          == pg.evaluate("QMI.filter(h=>!h.gone&&!h.pointer&&h.status==='ready'&&h.subId&&SUBS.some(x=>x.id===h.subId)).length"),
+          "%d subdivisions tagged, %d of them with a finished home" % (tagged, readysubs))
     pg.evaluate("openPanel(%r)" % sub_with); pg.wait_for_timeout(400)
     check("subdivision panel lists its Ready Now homes",
           pg.locator(".qmi-sec").count()==1 and pg.locator(".qmi-sec .qs-row").count()>0)
