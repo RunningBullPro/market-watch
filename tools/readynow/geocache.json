@@ -1292,5 +1292,674 @@
  "163 Inland Shores Lane, Henderson, NV ": null,
  "219 Sailing Sunset Way, Henderson, NV ": null,
  "184 Inland Shores Lane, Henderson, NV ": null,
- "4285 Park Edge Court, Las Vegas, NV ": null
+ "4285 Park Edge Court, Las Vegas, NV ": null,
+ "301 MOUNT LANGLEY ST, , NV ": {
+  "pt": [
+   36.016241855341,
+   -114.972356947034
+  ],
+  "p": "rooftop"
+ },
+ "Sunset Rd and Pabco Rd, Henderson, NV 89011": {
+  "pt": [
+   36.067449719852,
+   -114.9938477053
+  ],
+  "p": "rooftop"
+ },
+ "10302 Grey Poplar Court, Las Vegas, NV 10302": {
+  "pt": [
+   36.327926783348,
+   -115.32040310886
+  ],
+  "p": "rooftop"
+ },
+ "3359 SAN RIPALTA STREET, Henderson, NV ": {
+  "pt": [
+   35.935445023862,
+   -115.134487619263
+  ],
+  "p": "rooftop"
+ },
+ "3361 San Ripalta Street, Henderson, NV ": {
+  "pt": [
+   35.935435963698,
+   -115.134499647413
+  ],
+  "p": "rooftop"
+ },
+ "3357 San Ripalta Street, Henderson, NV ": {
+  "pt": [
+   35.935454084026,
+   -115.134475591113
+  ],
+  "p": "rooftop"
+ },
+ "292 Oboe Place Henderson, NV 89015, NV 89015": null,
+ "146 Castanet Lane Henderson, NV 89015, NV 89015": null,
+ "1021 Venice Avenue Henderson, NV 89015, NV 89015": null,
+ "9085 Damson Street | Lot SRA048, , NV ": null,
+ "9037 Damson Street | Lot SRA036, , NV ": null,
+ "10732 Barcroft Ave | Lot SRA069, , NV 10732": null,
+ "9065 Damson Street | Lot SRA043, , NV ": null,
+ "3824 TROPICAL ZEN AVE, , NV ": null,
+ "3832 TROPICAL ZEN AVE, , NV ": null,
+ "3817 TROPICAL ZEN AVE, , NV ": null,
+ "3829 TROPICAL ZEN AVE, , NV ": null,
+ "3833 TROPICAL ZEN AVE, , NV ": null,
+ "1088 SAFFRON TOUCAN LN, , NV ": {
+  "pt": [
+   36.0822788,
+   -115.010169
+  ],
+  "p": "street"
+ },
+ "1095 SAFFRON TOUCAN LN, , NV ": {
+  "pt": [
+   36.0822788,
+   -115.010169
+  ],
+  "p": "street"
+ },
+ "1098 SAFFRON TOUCAN LN, , NV ": {
+  "pt": [
+   36.0822788,
+   -115.010169
+  ],
+  "p": "street"
+ },
+ "990 Desert Spruce St, , NV ": null,
+ "3460 Via Lucca Ave, , NV ": {
+  "pt": [
+   36.0019258,
+   -115.1856891
+  ],
+  "p": "street"
+ },
+ "9289 KYRA PEAK AVE, Las Vegas, NV ": null,
+ "10405 DIANA SUMMIT ST, , NV 10405": {
+  "pt": [
+   36.3333497,
+   -115.2981498
+  ],
+  "p": "street"
+ },
+ "9418 STELLA SUMMIT DR, , NV ": {
+  "pt": [
+   36.3334038,
+   -115.3014528
+  ],
+  "p": "street"
+ },
+ "9394 STELLA SUMMIT DR, , NV ": {
+  "pt": [
+   36.3334038,
+   -115.3014528
+  ],
+  "p": "street"
+ },
+ "9786 OLIVIA EDGE ST, Las Vegas, NV ": {
+  "pt": [
+   36.3260009,
+   -115.3049169
+  ],
+  "p": "street"
+ },
+ "Homesite #0023, , NV ": null,
+ "9780 OLIVIA EDGE ST, Las Vegas, NV ": {
+  "pt": [
+   36.3260009,
+   -115.3049169
+  ],
+  "p": "street"
+ },
+ "Homesite #0022, , NV ": null,
+ "9285 KENT FALLS PL, Las Vegas, NV ": {
+  "pt": [
+   36.3224358,
+   -115.3054383
+  ],
+  "p": "street"
+ },
+ "9289 KENT FALLS PL, Las Vegas, NV ": {
+  "pt": [
+   36.3224358,
+   -115.3054383
+  ],
+  "p": "street"
+ },
+ "376 FULLERTON PEAK DR, , NV ": {
+  "pt": [
+   36.013545,
+   -114.9721695
+  ],
+  "p": "street"
+ },
+ "1630 AMALFI ARCHES PL Henderson, NV, NV ": null,
+ "5584 Discovery Rock Street, Las Vegas, NV ": null,
+ "5528 Discovery Rock Street, Las Vegas, NV ": null,
+ "5541 Discovery Rock Street, Las Vegas, NV ": null,
+ "9735 W Washburn Dr, Las Vegas, NV ": null,
+ "5165 Dusk Skyscape St, Las Vegas, NV ": {
+  "pt": [
+   36.2537093,
+   -115.3071018
+  ],
+  "p": "street"
+ },
+ "921 Cottonwood Hill Pl, Henderson, NV 89011": {
+  "pt": [
+   36.0629874,
+   -114.9819526
+  ],
+  "p": "street"
+ },
+ "Homesite 2, , NV ": null,
+ "Homesite 5, , NV ": null,
+ "10381 Hanging Lake Street, Las Vegas, NV 10381": {
+  "pt": [
+   36.3335057,
+   -115.3223743
+  ],
+  "p": "street"
+ },
+ "10312 Peako Hills Avenue, Las Vegas, NV 10312": {
+  "pt": [
+   36.3339064,
+   -115.3215196
+  ],
+  "p": "street"
+ },
+ "10301 Grey Poplar Court, Las Vegas, NV 10301": {
+  "pt": [
+   36.3279048,
+   -115.3203903
+  ],
+  "p": "street"
+ },
+ "10286 Grey Poplar Court  •  Las Vegas, Nevada, NV 10286": {
+  "pt": [
+   36.327925009197,
+   -115.320353137034
+  ],
+  "p": "rooftop"
+ },
+ "9221 Harworth Street, , NV ": {
+  "pt": [
+   36.3221776,
+   -115.3238495
+  ],
+  "p": "street"
+ },
+ "9227 Salas Street, , NV ": null,
+ "53 Bellissima Lago Court, , NV ": null,
+ "58 Bellissima Lago Court, , NV ": null,
+ "45 Bellissima Lago Court, , NV ": null,
+ "50 Bellissima Lago Court, , NV ": null,
+ "163 Inland Shores Lane, , NV ": null,
+ "219 Sailing Sunset Way, , NV ": null,
+ "184 Inland Shores Lane, , NV ": null,
+ "570 Hamilton Drive Mesquite, NV 89027, NV 89027": {
+  "pt": [
+   36.838521162694,
+   -114.081562448587
+  ],
+  "p": "rooftop"
+ },
+ "6223 ATLAN POINTE AVE, , NV ": {
+  "pt": [
+   36.273612333234,
+   -115.337159292611
+  ],
+  "p": "rooftop"
+ },
+ "374 Tigullio Avenue\\ \\ Henderson, Nevada 89011, NV 89011": {
+  "pt": [
+   36.129265003549,
+   -114.918361558971
+  ],
+  "p": "rooftop"
+ },
+ "361 Faro Di Portofino Court\\ \\ Henderson, Nevada 89011, NV 89011": {
+  "pt": [
+   36.12803748212,
+   -114.918621669271
+  ],
+  "p": "rooftop"
+ },
+ "359 Faro Di Portofino Court\\ \\ Henderson, Nevada 89011, NV 89011": {
+  "pt": [
+   36.128039190209,
+   -114.918725179008
+  ],
+  "p": "rooftop"
+ },
+ "1940 Hydrangea PL Las Vegas, NV 89106, NV 89106": null,
+ "8528 Balfour Meadows Avenue | Lot AG0025, , NV ": null,
+ "9433 STELLA SUMMIT DR, Las Vegas, NV ": {
+  "pt": [
+   36.3334038,
+   -115.3014528
+  ],
+  "p": "street"
+ },
+ "9425 STELLA SUMMIT DR, Las Vegas, NV ": {
+  "pt": [
+   36.3334038,
+   -115.3014528
+  ],
+  "p": "street"
+ },
+ "9281 KYRA PEAK AVE, , NV ": null,
+ "9282 KYRA PEAK AVE, , NV ": null,
+ "9289 KYRA PEAK AVE, , NV ": null,
+ "10382 ARIANNA SUMMIT ST, , NV 10382": {
+  "pt": [
+   36.3337093,
+   -115.2990084
+  ],
+  "p": "street"
+ },
+ "374 FULLERTON PEAK DR, , NV ": {
+  "pt": [
+   36.013545,
+   -114.9721695
+  ],
+  "p": "street"
+ },
+ "9992 DECANO RIDGE ST, , NV ": null,
+ "123 Tardando Avenue\\ \\ Henderson, Nevada 89015, NV 89015": null,
+ "113 Tardando Avenue\\ \\ Henderson, Nevada 89015, NV 89015": null,
+ "103 Tardando Avenue\\ \\ Henderson, Nevada 89015, NV 89015": null,
+ "316 Cabasa Place\\ \\ Henderson, Nevada 89015, NV 89015": null,
+ "44 Via Montoro\\ \\ Henderson, Nevada 89011, NV 89011": null,
+ "58 Via Montoro\\ \\ Henderson, Nevada 89011, NV 89011": null,
+ "46 Via Montoro\\ \\ Henderson, Nevada 89011, NV 89011": null,
+ "203 Paraggi Bay Drive\\ \\ Henderson, Nevada 89011, NV 89011": null,
+ "2209 Abraham Avenue\\ \\ Las Vegas, Nevada 89106, NV 89106": null,
+ "4468 Golden Horizon Street\\ \\ Pahrump, Nevada 89061, NV 89061": null,
+ "4871 Short Putt Court\\ \\ Pahrump, Nevada 89061, NV 89061": null,
+ "3345 E Cactus Canyon Drive\\ \\ Pahrump, Nevada 89061, NV 89061": null,
+ "4355 E Brusca Way\\ \\ Pahrump, Nevada 89061, NV 89061": null,
+ "4375 E Murlo Road\\ \\ Pahrump, Nevada 89061, NV 89061": null,
+ "3335 E Cactus Canyon Drive\\ \\ Pahrump, Nevada 89061, NV 89061": null,
+ "12230 Elderwood Street\\ \\ Las Vegas, Nevada 89138, NV 12230": null,
+ "652 Semitone Lane\\ \\ Henderson, Nevada 89015, NV 89015": null,
+ "655 Semitone Lane\\ \\ Henderson, Nevada 89015, NV 89015": null,
+ "292 Museo Del Parco Drive\\ \\ Henderson, Nevada 89011, NV 89011": null,
+ "19 Via Montoro\\ \\ Henderson, Nevada 89011, NV 89011": null,
+ "23 Via Montoro\\ \\ Henderson, Nevada 89011, NV 89011": null,
+ "1518 Song Lark Lane\\ \\ Las Vegas, Nevada 89138, NV 89138": null,
+ "648 Semitone Lane\\ \\ Henderson, Nevada 89015, NV 89015": null,
+ "646 Semitone Lane\\ \\ Henderson, Nevada 89015, NV 89015": null,
+ "331 Adufe Place\\ \\ Henderson, Nevada 89015, NV 89015": null,
+ "650 Semitone Lane\\ \\ Henderson, Nevada 89015, NV 89015": null,
+ "2132 Abraham Avenue\\ \\ Las Vegas, Nevada 89106, NV 89106": null,
+ "2208 Abraham Avenue\\ \\ Las Vegas, Nevada 89106, NV 89106": null,
+ "2212 Abraham Avenue\\ \\ Las Vegas, Nevada 89106, NV 89106": null,
+ "2200 Abraham Avenue\\ \\ Las Vegas, Nevada 89106, NV 89106": null,
+ "4418 Golden Horizon Street\\ \\ Pahrump, Nevada 89061, NV 89061": null,
+ "4950 N Celestial Avenue\\ \\ Pahrump, Nevada 89061, NV 89061": null,
+ "4428 Golden Horizon Street\\ \\ Pahrump, Nevada 89061, NV 89061": null,
+ "4539 S Chianti Court\\ \\ Pahrump, Nevada 89061, NV 89061": null,
+ "4530 S Piaggia Court\\ \\ Pahrump, Nevada 89061, NV 89061": null,
+ "10440 Desert Peony Avenue, Las Vegs, NV 10440": null,
+ "10448 Desert Peony Avenue, Las Vegs, NV 10448": null,
+ "51 Parkwood Ridge Street, , NV ": {
+  "pt": [
+   36.1837539,
+   -115.369803
+  ],
+  "p": "street"
+ },
+ "10432 Radley Avenue, Las Vegas, NV 10432": {
+  "pt": [
+   36.3230686,
+   -115.3213783
+  ],
+  "p": "street"
+ },
+ "9228 Simon Street, Las Vegas, NV ": {
+  "pt": [
+   36.3222272,
+   -115.3202338
+  ],
+  "p": "street"
+ },
+ "12186 Pink Sunrise Street, , NV 12186": {
+  "pt": [
+   36.1941127,
+   -115.3618505
+  ],
+  "p": "street"
+ },
+ "1081 Soaring Sage Avenue, , NV ": {
+  "pt": [
+   36.1936819,
+   -115.3621745
+  ],
+  "p": "street"
+ },
+ "1030 Soaring Sage Avenue, , NV ": {
+  "pt": [
+   36.1930771,
+   -115.3620435
+  ],
+  "p": "street"
+ },
+ "1040 Soaring Sage Avenue, , NV ": {
+  "pt": [
+   36.1931843,
+   -115.3619399
+  ],
+  "p": "street"
+ },
+ "971 Golden Summit Avenue, , NV ": {
+  "pt": [
+   36.1924233,
+   -115.3622635
+  ],
+  "p": "street"
+ },
+ "961 Golden Summit Avenue, , NV ": {
+  "pt": [
+   36.1923279,
+   -115.3623638
+  ],
+  "p": "street"
+ },
+ "951 Golden Summit Avenue, , NV ": {
+  "pt": [
+   36.1922519,
+   -115.3625092
+  ],
+  "p": "street"
+ },
+ "168 Inland Shores Lane, Henderson, NV ": null,
+ "4269 Park Edge Court, Las Vegas, NV ": null,
+ "293 Oboe Place Henderson, NV 89015, NV 89015": null,
+ "1945 Hydrangea PL Las Vegas, NV 89106, NV 89106": null,
+ "1948 Hydrangea PL Las Vegas, NV 89106, NV 89106": null,
+ "10781 Birch Meadows Ave, , NV 10781": {
+  "pt": [
+   36.3156286,
+   -115.3308167
+  ],
+  "p": "street"
+ },
+ "10773 Birch Meadows Ave, , NV 10773": {
+  "pt": [
+   36.3156286,
+   -115.3308167
+  ],
+  "p": "street"
+ },
+ "9449 STELLA SUMMIT DR, Las Vegas, NV ": {
+  "pt": [
+   36.3334038,
+   -115.3014528
+  ],
+  "p": "street"
+ },
+ "10405 DIANA SUMMIT ST, Las Vegas, NV 10405": {
+  "pt": [
+   36.3333497,
+   -115.2981498
+  ],
+  "p": "street"
+ },
+ "9282 JULIA SUMMIT AVE, Las Vegas, NV ": {
+  "pt": [
+   36.3341949,
+   -115.2986967
+  ],
+  "p": "street"
+ },
+ "9277 KENT FALLS PL, Las Vegas, NV ": {
+  "pt": [
+   36.3224358,
+   -115.3054383
+  ],
+  "p": "street"
+ },
+ "361 FRANCIS PEAK DR, Henderson, NV ": {
+  "pt": [
+   36.0135483,
+   -114.9715052
+  ],
+  "p": "street"
+ },
+ "374 FULLERTON PEAK DR, Henderson, NV ": {
+  "pt": [
+   36.013545,
+   -114.9721695
+  ],
+  "p": "street"
+ },
+ "367 FRANCIS PEAK DR, Henderson, NV ": {
+  "pt": [
+   36.0135483,
+   -114.9715052
+  ],
+  "p": "street"
+ },
+ "1630 AMALFI ARCHES PL, Henderson, NV ": null,
+ "1634 AMALFI ARCHES PL, Henderson, NV ": null,
+ "1506 CAPRI CASCADES CT, Henderson, NV ": null,
+ "1638 AMALFI ARCHES PL, Henderson, NV ": null,
+ "1605 AMALFI ARCHES PL, Henderson, NV ": null,
+ "4259 Sunset Chaser Court Las Vegas, NV 89147, NV 89147": null,
+ "4283 Sunset Chaser Court Las Vegas, NV 89147, NV 89147": null,
+ "661 Semitone Lane, Henderson, NV 89015": {
+  "pt": [
+   36.0497081,
+   -114.9867404
+  ],
+  "p": "street"
+ },
+ "652 Semitone Lane, Henderson, NV 89015": {
+  "pt": [
+   36.0497081,
+   -114.9867404
+  ],
+  "p": "street"
+ },
+ "292 Museo Del Parco Drive, Henderson, NV 89011": {
+  "pt": [
+   36.1293974,
+   -114.9126526
+  ],
+  "p": "street"
+ },
+ "4418 Golden Horizon Street, Pahrump, NV 89061": null,
+ "4950 N Celestial Avenue, Pahrump, NV 89061": null,
+ "4428 Golden Horizon Street, Pahrump, NV 89061": null,
+ "648 Semitone Lane, Henderson, NV 89015": {
+  "pt": [
+   36.0497081,
+   -114.9867404
+  ],
+  "p": "street"
+ },
+ "646 Semitone Lane, Henderson, NV 89015": {
+  "pt": [
+   36.0497081,
+   -114.9867404
+  ],
+  "p": "street"
+ },
+ "650 Semitone Lane, Henderson, NV 89015": {
+  "pt": [
+   36.0497081,
+   -114.9867404
+  ],
+  "p": "street"
+ },
+ "331 Adufe Place, Henderson, NV 89015": null,
+ "4530 S Piaggia Court, Pahrump, NV 89061": {
+  "pt": [
+   36.1530972,
+   -115.935924
+  ],
+  "p": "street"
+ },
+ "3330 E Cactus Canyon Drive, Pahrump, NV 89061": {
+  "pt": [
+   36.1486625,
+   -115.9309432
+  ],
+  "p": "street"
+ },
+ "4539 S Chianti Court, Pahrump, NV 89061": {
+  "pt": [
+   36.1530683,
+   -115.9367578
+  ],
+  "p": "street"
+ },
+ "2132 Abraham Avenue, Las Vegas, NV 89106": null,
+ "2208 Abraham Avenue, Las Vegas, NV 89106": null,
+ "2212 Abraham Avenue, Las Vegas, NV 89106": null,
+ "2200 Abraham Avenue, Las Vegas, NV 89106": null,
+ "2216 Abraham Avenue, Las Vegas, NV 89106": null,
+ "655 Talon Ridge St, Las Vegas, NV ": {
+  "pt": [
+   36.1895569,
+   -115.3549183
+  ],
+  "p": "street"
+ },
+ "651 Talon Ridge St, Las Vegas, NV ": {
+  "pt": [
+   36.1894829,
+   -115.3549266
+  ],
+  "p": "street"
+ },
+ "971571 Stone Agave Ct, Las Vegas, NV ": null,
+ "129635 Talon Ridge St, Las Vegas, NV ": null,
+ "3078545 Hidden Arroyo Ct, Las Vegas, NV ": null,
+ "38237 La Stella St, Henderson, NV 38237": null,
+ "36245 La Stella St, Henderson, NV 36245": null,
+ "52395 Sul Lago St, Henderson, NV 52395": null,
+ "37241 La Stella St, Henderson, NV 37241": null,
+ "22525 Cracked Stone St, Henderson, NV 22525": {
+  "pt": [
+   35.9363658,
+   -115.1362
+  ],
+  "p": "street"
+ },
+ "82513 Cracked Stone St, Henderson, NV 82513": {
+  "pt": [
+   35.9363658,
+   -115.1362
+  ],
+  "p": "street"
+ },
+ "512524 Cracked Stone St, Henderson, NV ": null,
+ "32523 Cracked Stone St, Henderson, NV 32523": {
+  "pt": [
+   35.9363658,
+   -115.1362
+  ],
+  "p": "street"
+ },
+ "453351 Roebling Opal Way, Henderson, NV ": null,
+ "502526 Cracked Stone St, Henderson, NV ": null,
+ "522522 Cracked Stone St, Henderson, NV ": null,
+ "382504 Indigo Mountain St, Henderson, NV ": null,
+ "481496 High Salute Ct, Boulder City, NV ": null,
+ "431513 Silver Shield Ct, Boulder City, NV ": null,
+ "451504 Honor Line St, Boulder City, NV ": null,
+ "Home Site 249132 Las Manaitas Ave, Unit 202, NV ": null,
+ "Home Site 885713 Gilded Horizon Ave, Las Vegas, NV ": null,
+ "Home Site 1595721 Kings Bluff Ave, Las Vegas, NV ": null,
+ "Home Site 157121 Serene Creek St, Las Vegas, NV ": null,
+ "Home Site 1655917 Kings Bluff Ave, Las Vegas, NV ": null,
+ "Home Site 1665923 Kings Bluff Ave, Las Vegas, NV ": null,
+ "Home Site 1305912 Topaz Ledge Ct, Las Vegas, NV ": null,
+ "Home Site 184878 Shady Ridge Dr, Las Vegas, NV ": null,
+ "Home Site 4410784 White Granite Ave, Las Vegas, NV ": null,
+ "Home Site 954834 Verde Bloom St, Las Vegas, NV ": null,
+ "Home Site 964842 Verde Bloom Street, Las Vegas, NV ": null,
+ "Home Site 9411333 W. Charleston Blvd, Las Vegas, NV ": null,
+ "Home Site 511333 W Charleston Blvd, Las Vegas, NV ": null,
+ "Home Site 9711333 Charleston Blvd, Las Vegas, NV ": null,
+ "Home Site 5211333 W Charleston Blvd, Las Vegas, NV ": null,
+ "Home Site 911333 W. Charleston Blvd, Las Vegas, NV ": null,
+ "Home Site 9911333 W. Charleston Blvd, Las Vegas, NV ": null,
+ "Home Site 9511333 W. Charleston Blvd, Las Vegas, NV ": null,
+ "Home Site 12811519 Morning Leap Ct, Las Vegas, NV ": null,
+ "Home Site 1101612 Stone Agave Ct, Las Vegas, NV ": null,
+ "Home Site 991583 Stone Agave St, Las Vegas, NV ": null,
+ "Home Site 971571 Stone Agave Ct, Las Vegas, NV ": null,
+ "Home Site 114654 Talon Ridge St, Las Vegas, NV ": null,
+ "Home Site 129635 Talon Ridge St, Las Vegas, NV ": null,
+ "Home Site 127643 Talon Ridge St, Las Vegas, NV ": null,
+ "Home Site 111642 Talon Ridge St, Las Vegas, NV ": null,
+ "Home Site 46172 Royal Topaz Ct, Las Vegas, NV 46172": null,
+ "Home Site 3078545 Hidden Arroyo Ct, Las Vegas, NV ": null,
+ "Home Site 23180 Grange Creek Ln, Las Vegas, NV 23180": null,
+ "Home Site 54192 Rambling Vista St, Las Vegas, NV 54192": null,
+ "Home Site 6253 Talon Heights St, Las Vegas, NV ": null,
+ "Home Site 1112417 Serenity Rock Ave, Las Vegas, NV ": null,
+ "Home Site 1589020 Cielo Canyon St, Las Vegas, NV ": null,
+ "12231 Summer Bloom Lane, Las Vegas, NV 12231": {
+  "pt": [
+   36.1979765,
+   -115.3626463
+  ],
+  "p": "street"
+ },
+ "12236 Summer Bloom Lane, Las Vegas, NV 12236": {
+  "pt": [
+   36.1982727,
+   -115.3628165
+  ],
+  "p": "street"
+ },
+ "10286 Grey Poplar Court, , NV 10286": {
+  "pt": [
+   36.3279048,
+   -115.3203903
+  ],
+  "p": "street"
+ },
+ "27 Sumter Ridge Street, Las Vegas, NV ": {
+  "pt": [
+   36.1842552,
+   -115.370511
+  ],
+  "p": "street"
+ },
+ "51 Parkwood Ridge Street, Las Vegas, NV ": {
+  "pt": [
+   36.1837539,
+   -115.369803
+  ],
+  "p": "street"
+ },
+ "3357 San Ripalta Street Henderson, NV, NV ": {
+  "pt": [
+   35.935454084026,
+   -115.134475591113
+  ],
+  "p": "rooftop"
+ },
+ "3359 San Ripalta Street Henderson, Nevada, NV ": {
+  "pt": [
+   35.935445023862,
+   -115.134487619263
+  ],
+  "p": "rooftop"
+ },
+ "3361 San Ripalta Street Henderson, Nevada, NV ": {
+  "pt": [
+   35.935435963698,
+   -115.134499647413
+  ],
+  "p": "rooftop"
+ },
+ "168 Inland Shores Lane, , NV ": null
 }

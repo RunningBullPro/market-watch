@@ -563,12 +563,17 @@ def sources_of(homes):
     return out
 
 
-def project(homes):
+def project(homes, sub_ids=None):
     out = []
     for h in sorted(homes, key=lambda x: (x.get("area") or "", x.get("community") or "",
                                           x.get("price") or 0)):
         rec = {k: h.get(k) for k in APP_FIELDS if h.get(k) not in (None, "", False)}
         rec["id"] = h["id"]
+        # A community that sells out drops off the weekly HBR feed while its homes linger
+        # in the store, so the link can outlive the subdivision. The store keeps subId as
+        # the durable record; the app must never carry one that no longer resolves.
+        if sub_ids is not None and rec.get("subId") and rec["subId"] not in sub_ids:
+            rec.pop("subId")
         if h.get("planFull") == h.get("plan"):
             rec.pop("planFull", None)
         hist = h.get("priceHistory") or []
@@ -659,9 +664,16 @@ def cmd_apply():
 
     asof = max([h.get("asOf") or "" for h in app_homes] or [C.today()])
     builders = sorted({h["builder"] for h in app_homes if not h.get("gone")})
-    subs_covered = len({h.get("subId") for h in app_homes if h.get("subId") and not h.get("gone")})
+    sub_ids = {s["id"] for s in load_subs()}
+    stale = sorted({h["subId"] for h in app_homes
+                    if h.get("subId") and h["subId"] not in sub_ids})
+    if stale:
+        print("communities gone from the HBR feed - dropping the app link on their homes: "
+              + ", ".join(stale))
+    subs_covered = len({h.get("subId") for h in app_homes
+                        if h.get("subId") in sub_ids and not h.get("gone")})
     coverage = "%s · %d communities" % (", ".join(builders), subs_covered)
-    inject(project(app_homes), asof, coverage, sources_of(app_homes))
+    inject(project(app_homes, sub_ids), asof, coverage, sources_of(app_homes))
 
     write_change_report(before, store, app_homes)
     live = [h for h in app_homes if not h.get("gone")]
