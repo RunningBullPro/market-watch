@@ -1961,5 +1961,64 @@
   ],
   "p": "rooftop"
  },
- "168 Inland Shores Lane, , NV ": null
+ "168 Inland Shores Lane, , NV ": null,
+ "3359 San Ripalta Street, , NV ": {
+  "pt": [
+   35.935445023862,
+   -115.134487619263
+  ],
+  "p": "rooftop"
+ },
+ "4352 Tallow Falls Avenue, , NV ": {
+  "pt": [
+   36.013102034772,
+   -115.197864979215
+  ],
+  "p": "rooftop"
+ },
+ "150 Castanet Lane Henderson, NV 89015, NV 89015": null,
+ "10407 Sapphire Storm Street Las Vegas, NV 89141, NV 10407": null,
+ "1921 Hydrangea PL Las Vegas, NV 89106, NV 89106": null,
+ "1929 Hydrangea PL Las Vegas, NV 89106, NV 89106": null,
+ "1923 Hydrangea PL Las Vegas, NV 89106, NV 89106": null,
+ "1927 Hydrangea PL Las Vegas, NV 89106, NV 89106": null,
+ "1930 Hydrangea PL Las Vegas, NV 89106, NV 89106": null,
+ "79 Via Magrini Henderson, NV 89011, NV 89011": null,
+ "77 Via Magrini Henderson, NV 89011, NV 89011": null,
+ "78 Via Magrini Henderson, NV 89011, NV 89011": null,
+ "9297 KYRA PEAK AVE, Las Vegas, NV ": null,
+ "380 FULLERTON PEAK DR, Henderson, NV ": {
+  "pt": [
+   36.013545,
+   -114.9721695
+  ],
+  "p": "street"
+ },
+ "1521 CAPRI CASCADES CT, Henderson, NV ": null,
+ "1509 CAPRI CASCADES CT, Henderson, NV ": null,
+ "4265 Sunset Chaser Court, Las Vegas, NV 89147": null,
+ "4253 Sunset Chaser Court, Las Vegas, NV 89147": null,
+ "4271 Sunset Chaser Court, Las Vegas, NV 89147": null,
+ "4289 Sunset Chaser Court, Las Vegas, NV 89147": null,
+ "12224 Summer Bloom Lane, , NV 12224": {
+  "pt": [
+   36.1985025,
+   -115.3625408
+  ],
+  "p": "street"
+ },
+ "4269 Park Edge Court, , NV ": {
+  "pt": [
+   36.0127655,
+   -115.1970737
+  ],
+  "p": "street"
+ },
+ "4285 Park Edge Court, , NV ": {
+  "pt": [
+   36.0127655,
+   -115.1970737
+  ],
+  "p": "street"
+ }
 }
