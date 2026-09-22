@@ -44,11 +44,20 @@
   "Acacia at Cadence": "acacia-wh-144",
   "Adair at Cadence": "adair-wh-145",
   "Ambridge at Cadence": "ambridge-wh-148",
-  "Capella at Sunstone": "capella-at-sunstone-wh"
+  "Capella at Sunstone": "capella-at-sunstone-wh",
+  "Ashwood at Cadence": "ashwood-wh-151",
+  "Lyra at Sunstone Collection One": "lyra-wh",
+  "Lyra at Sunstone Collection Two": "lyra-wh",
+  "Dove Rock in Summerlin": "dove-rock-wh"
  },
  "Tri Pointe Homes": {
   "Alder": "alder-at-kyle-pointe",
   "Alpine Ridge": "alpine-ridge-at-kyle-pointe",
-  "Arrow Peak": "arrow-peak-at-kyle-pointe"
+  "Arrow Peak": "arrow-peak-at-kyle-pointe",
+  "Carlisle Peak at Summerlin": "carlisle"
+ },
+ "Beazer Homes": {
+  "Rosa Point Community": "rosa-point",
+  "Verona": "verona-by-beazer-11"
  }
 }

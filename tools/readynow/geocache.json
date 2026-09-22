@@ -1961,5 +1961,97 @@
   ],
   "p": "rooftop"
  },
- "168 Inland Shores Lane, , NV ": null
+ "168 Inland Shores Lane, , NV ": null,
+ "3359 San Ripalta Street, Henderson, NV ": {
+  "pt": [
+   35.935445023862,
+   -115.134487619263
+  ],
+  "p": "rooftop"
+ },
+ "150 Castanet Lane Henderson, NV 89015, NV 89015": null,
+ "10407 Sapphire Storm Street Las Vegas, NV 89141, NV 10407": null,
+ "1921 Hydrangea PL Las Vegas, NV 89106, NV 89106": null,
+ "1929 Hydrangea PL Las Vegas, NV 89106, NV 89106": null,
+ "1927 Hydrangea PL Las Vegas, NV 89106, NV 89106": null,
+ "1930 Hydrangea PL Las Vegas, NV 89106, NV 89106": null,
+ "1923 Hydrangea PL Las Vegas, NV 89106, NV 89106": null,
+ "79 Via Magrini Henderson, NV 89011, NV 89011": null,
+ "80 Via Magrini Henderson, NV 89011, NV 89011": null,
+ "77 Via Magrini Henderson, NV 89011, NV 89011": null,
+ "78 Via Magrini Henderson, NV 89011, NV 89011": null,
+ "1201 Cloudbreak Cove Dr., , NV ": {
+  "pt": [
+   36.1947398,
+   -115.3738844
+  ],
+  "p": "street"
+ },
+ "1193 Cloudbreak Cove Dr., , NV ": {
+  "pt": [
+   36.1946025,
+   -115.3739221
+  ],
+  "p": "street"
+ },
+ "4240 Mount Bonnell Ave., North Las Vegas, NV ": {
+  "pt": [
+   36.2687365,
+   -115.0810016
+  ],
+  "p": "street"
+ },
+ "4253 Sunset Chaser Court, Las Vegas, NV 89147": null,
+ "4271 Sunset Chaser Court, Las Vegas, NV 89147": null,
+ "4289 Sunset Chaser Court, Las Vegas, NV 89147": null,
+ "/findmyhome/nevada/henderson/ashwood-at-cadence/aster-lot-20, , NV ": null,
+ "66 Via Montoro, Henderson, NV 89011": {
+  "pt": [
+   36.0867478,
+   -114.9189644
+  ],
+  "p": "street"
+ },
+ "4110 E Brusca Way, Pahrump, NV 89061": {
+  "pt": [
+   36.1533401,
+   -115.9352402
+  ],
+  "p": "street"
+ },
+ "4100 E Brusca Way, Pahrump, NV 89061": {
+  "pt": [
+   36.1533401,
+   -115.9352402
+  ],
+  "p": "street"
+ },
+ "3525 E Cactus Canyon Drive, Pahrump, NV 89061": {
+  "pt": [
+   36.1486625,
+   -115.9309432
+  ],
+  "p": "street"
+ },
+ "3495 E Cactus Canyon Drive, Pahrump, NV 89061": {
+  "pt": [
+   36.1486625,
+   -115.9309432
+  ],
+  "p": "street"
+ },
+ "4090 E Brusca Way, Pahrump, NV 89061": {
+  "pt": [
+   36.1533401,
+   -115.9352402
+  ],
+  "p": "street"
+ },
+ "12224 Summer Bloom Lane, , NV 12224": {
+  "pt": [
+   36.1985025,
+   -115.3625408
+  ],
+  "p": "street"
+ }
 }

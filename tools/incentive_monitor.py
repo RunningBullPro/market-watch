@@ -12,7 +12,7 @@ It writes tools/_work/refresh_report.md and, if anything needs attention, tools/
 The heavy rewriting of offer text stays a human/LLM review step - this job's role is to tell you
 exactly which builders and links changed so the twice-weekly update is targeted, not guesswork.
 """
-import json, re, subprocess, pathlib, os, datetime
+import json, re, subprocess, pathlib, os, shutil, datetime
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 HTML = (ROOT / "index.html").read_text(encoding="utf-8")
@@ -35,16 +35,22 @@ OFFER_HINTS = re.compile(r"apr|rate|buydown|incentive|offer|closing|credit|save|
                          r"down payment|assistance|design|appliance|flex|%|\$\s?\d", re.I)
 
 def octen(url):
-    body = {"urls": [url], "max_age_seconds": 3600, "format": "markdown",
-            "query": "current incentive offer promotion rate buydown closing cost credit "
-                     "down payment assistance design appliance price savings expiration"}
+    # NO "query": octen returns query-relevant HIGHLIGHTS when one is given and the COMPLETE page
+    # content when it is not. Highlights drop and truncate figures, so checking stored rates against
+    # them reports offers as changed when the page still shows them verbatim (every builder came back
+    # "changed" on 2026-09-18 for exactly this reason). Full content is what term-checking needs.
+    body = {"urls": [url], "max_age_seconds": 3600, "format": "markdown", "timeout": 45}
     (WORK / "body.json").write_text(json.dumps(body))
     out = WORK / "out.json"
     if out.exists(): out.unlink()
+    # On Windows the CLI is monid.cmd; subprocess needs the resolved path either way, and
+    # Git Bash rewrites the "-e /extract" argument into a filesystem path without the guard.
+    exe = shutil.which("monid") or shutil.which("monid.cmd") or "monid"
     try:
-        subprocess.run(["monid", "run", "-p", "octen", "-e", "/extract",
+        subprocess.run([exe, "run", "-p", "octen", "-e", "/extract",
                         "-f", str(WORK / "body.json"), "-w", "90", "-o", str(out)],
-                       capture_output=True, timeout=200, env={**os.environ, "NO_COLOR": "1"})
+                       capture_output=True, timeout=200,
+                       env={**os.environ, "NO_COLOR": "1", "MSYS_NO_PATHCONV": "1"})
     except Exception as e:
         return {"ok": False, "reason": "monid error: %s" % e}
     if not out.exists():
@@ -56,13 +62,16 @@ def octen(url):
         return {"ok": False, "reason": "unparseable response"}
     if not r or r.get("status") != "success":
         return {"ok": False, "reason": "page did not render (status=%s)" % (r or {}).get("status")}
-    text = (r.get("full_content") or "") + " " + " ".join(r.get("highlights") or [])
+    text = (r.get("full_content") or r.get("content") or "") + " " + " ".join(r.get("highlights") or [])
     return {"ok": True, "text": text, "has_offer": bool(OFFER_HINTS.search(text))}
+
+MONTHS = ("January|February|March|April|May|June|July|August|September|October|November|December")
+LONG_DATE = re.compile(r"(?:%s)\s+\d{1,2}(?:st|nd|rd|th)?,?\s+\d{4}" % MONTHS, re.I)
 
 def stored_terms(text):
     rates = re.findall(r"\d+\.\d+%", text)
     amounts = re.findall(r"\$[\d,]{3,}", text)
-    dates = re.findall(r"\d{1,2}/\d{1,2}/\d{2,4}", text)
+    dates = re.findall(r"\d{1,2}/\d{1,2}/\d{2,4}", text) + LONG_DATE.findall(text)
     return rates, amounts, dates
 
 def missing_terms(stored, page):
@@ -73,8 +82,9 @@ def missing_terms(stored, page):
         if r.rstrip("%") not in p: miss.append(r)
     for a in set(amounts):
         if a.replace("$", "").replace(",", "") not in p: miss.append(a)
+    pd = page.lower().replace(",", "")
     for d in set(dates):
-        if d not in page: miss.append(d)
+        if d not in page and d.lower().replace(",", "") not in pd: miss.append(d)
     return miss
 
 # collect (label, url, stored_text) targets: builder promos + community offers
@@ -90,6 +100,12 @@ seen, uniq = set(), []
 for label, url, text in targets:
     if url in seen: continue
     seen.add(url); uniq.append((label, url, text))
+
+# Pages whose offer lives in a rotating hero carousel: the extractor only ever sees the first
+# slide, so stored terms taken from a later slide read as missing every run. Verify these in a
+# real browser (Chrome on :9222) rather than chasing the flag. See tools/DATASET_UPDATE.md.
+PARTIAL_RENDER = {"https://www.tollbrothers.com/new-quick-move-in-homes/Las-Vegas-NV":
+                  "hero is a 2-slide carousel; octen sees slide 1 only - verify in browser"}
 
 dead, no_offer, changed, ok = [], [], [], []
 for label, url, text in uniq:
@@ -116,7 +132,9 @@ if no_offer:
     lines += ["- **%s** - %s" % (l, u) for l, u in no_offer] + [""]
 if changed:
     lines += ["## Stored terms not found on page (%d) - review; offer may have changed" % len(changed), ""]
-    lines += ["- **%s** - %s  (missing: %s)" % (l, u, ", ".join(m)) for l, u, m in changed] + [""]
+    lines += ["- **%s** - %s  (missing: %s)%s" % (l, u, ", ".join(m),
+               ("\n  NOTE: " + PARTIAL_RENDER[u]) if u in PARTIAL_RENDER else "")
+              for l, u, m in changed] + [""]
 lines += ["## OK - link resolves and terms still present (%d)" % len(ok), ""]
 lines += ["- %s" % l for l, u in ok] + [""]
 
