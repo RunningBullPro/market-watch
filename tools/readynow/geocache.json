@@ -1961,5 +1961,171 @@
   ],
   "p": "rooftop"
  },
- "168 Inland Shores Lane, , NV ": null
+ "168 Inland Shores Lane, , NV ": null,
+ "5133 Sparkling Moon St, Las Vegas, NV ": {
+  "pt": [
+   36.252670821829,
+   -115.208172697999
+  ],
+  "p": "rooftop"
+ },
+ "3359 San Ripalta Street, , NV ": {
+  "pt": [
+   35.935445023862,
+   -115.134487619263
+  ],
+  "p": "rooftop"
+ },
+ "150 Castanet Lane Henderson, NV 89015, NV 89015": null,
+ "10399 Sapphire Storm Street Las Vegas, NV 89141, NV 10399": null,
+ "10414 Sapphire Storm Street Las Vegas, NV 89141, NV 10414": null,
+ "10407 Sapphire Storm Street Las Vegas, NV 89141, NV 10407": null,
+ "79 Via Magrini Henderson, NV 89011, NV 89011": null,
+ "80 Via Magrini Henderson, NV 89011, NV 89011": null,
+ "77 Via Magrini Henderson, NV 89011, NV 89011": null,
+ "78 Via Magrini Henderson, NV 89011, NV 89011": null,
+ "1032 Gentle Swan St, , NV ": {
+  "pt": [
+   36.0797324,
+   -115.0090943
+  ],
+  "p": "street"
+ },
+ "1044 Gentle Swan St, , NV ": {
+  "pt": [
+   36.0797324,
+   -115.0090943
+  ],
+  "p": "street"
+ },
+ "913 Black Heron St, , NV ": {
+  "pt": [
+   36.0754171,
+   -115.0072273
+  ],
+  "p": "street"
+ },
+ "919 Black Heron St, , NV ": {
+  "pt": [
+   36.0754171,
+   -115.0072273
+  ],
+  "p": "street"
+ },
+ "925 Black Heron St, , NV ": {
+  "pt": [
+   36.0754171,
+   -115.0072273
+  ],
+  "p": "street"
+ },
+ "989 Appian Way, , NV ": {
+  "pt": [
+   36.0060995,
+   -114.9842729
+  ],
+  "p": "street"
+ },
+ "998 Desert Spruce St, , NV ": null,
+ "3509 Via Lucca Ave, , NV ": {
+  "pt": [
+   36.0019258,
+   -115.1856891
+  ],
+  "p": "street"
+ },
+ "3496 Via Lucca Ave, , NV ": {
+  "pt": [
+   36.0019258,
+   -115.1856891
+  ],
+  "p": "street"
+ },
+ "1201 Cloudbreak Cove Dr. Las Vegas, NV, NV ": {
+  "pt": [
+   36.1947398,
+   -115.3738844
+  ],
+  "p": "street"
+ },
+ "1193 Cloudbreak Cove Dr. Las Vegas, NV, NV ": {
+  "pt": [
+   36.1946025,
+   -115.3739221
+  ],
+  "p": "street"
+ },
+ "9297 KYRA PEAK AVE, Las Vegas, NV ": null,
+ "1429 Bianca Falls Dr, , NV ": {
+  "pt": [
+   36.0985027,
+   -114.9180499
+  ],
+  "p": "street"
+ },
+ "1465 Bianca Falls Dr, , NV ": {
+  "pt": [
+   36.0985027,
+   -114.9180499
+  ],
+  "p": "street"
+ },
+ "1509 CAPRI CASCADES CT, , NV ": null,
+ "1521 CAPRI CASCADES CT, , NV ": null,
+ "9418 ISABEL MOUNT AVE, Las Vegas, NV ": {
+  "pt": [
+   36.3350236,
+   -115.3013619
+  ],
+  "p": "street"
+ },
+ "9768 OLIVIA EDGE ST, Las Vegas, NV ": {
+  "pt": [
+   36.3260009,
+   -115.3049169
+  ],
+  "p": "street"
+ },
+ "380 FULLERTON PEAK DR, Henderson, NV ": {
+  "pt": [
+   36.013545,
+   -114.9721695
+  ],
+  "p": "street"
+ },
+ "4253 Sunset Chaser Court, Las Vegas, NV 89147": null,
+ "4271 Sunset Chaser Court, Las Vegas, NV 89147": null,
+ "4289 Sunset Chaser Court, Las Vegas, NV 89147": null,
+ "12050 Natural Haven Ave, Las Vegas, NV 12050": {
+  "pt": [
+   36.1920238,
+   -115.3591894
+  ],
+  "p": "street"
+ },
+ "10199 GARNET BEND PLACE, Las Vegas, NV 10199": {
+  "pt": [
+   36.3335601,
+   -115.3091093
+  ],
+  "p": "street"
+ },
+ "661 Semitone Lane\\ \\ Henderson, Nevada 89015, NV 89015": null,
+ "66 Via Montoro\\ \\ Henderson, Nevada 89011, NV 89011": null,
+ "4110 E Brusca Way\\ \\ Pahrump, Nevada 89061, NV 89061": null,
+ "12224 Summer Bloom Lane, , NV 12224": {
+  "pt": [
+   36.1985025,
+   -115.3625408
+  ],
+  "p": "street"
+ },
+ "27 Sumter Ridge Street, , NV ": {
+  "pt": [
+   36.1842552,
+   -115.370511
+  ],
+  "p": "street"
+ },
+ "61 Bellissima Lago Court, Henderson, NV ": null
 }
