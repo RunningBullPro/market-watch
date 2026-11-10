@@ -2053,5 +2053,1192 @@
    -115.3625408
   ],
   "p": "street"
+ },
+ "337 Patricia Pl, Mesquite, NV ": {
+  "pt": [
+   36.797399391566,
+   -114.102599973833
+  ],
+  "p": "rooftop"
+ },
+ "6247 ATLAN POINTE AVE, Las Vegas, NV ": {
+  "pt": [
+   36.273599205924,
+   -115.337157551388
+  ],
+  "p": "rooftop"
+ },
+ "121 Scarhill Track Ave, Henderson, NV ": {
+  "pt": [
+   36.069526503107,
+   -114.982598321723
+  ],
+  "p": "rooftop"
+ },
+ "5149 Sparkling Moon St, Las Vegas, NV ": {
+  "pt": [
+   36.252839587784,
+   -115.208173282555
+  ],
+  "p": "rooftop"
+ },
+ "5133 Sparkling Moon St, Las Vegas, NV ": {
+  "pt": [
+   36.252669186062,
+   -115.208173683989
+  ],
+  "p": "rooftop"
+ },
+ "214 Paraggi Bay Drive, Henderson, NV 89011": {
+  "pt": [
+   36.129247091326,
+   -114.916729807476
+  ],
+  "p": "rooftop"
+ },
+ "210 Paraggi Bay Drive, Henderson, NV 89011": {
+  "pt": [
+   36.129313472166,
+   -114.91680692246
+  ],
+  "p": "rooftop"
+ },
+ "1333 Charleston Blvd, Las Vegas, NV ": {
+  "pt": [
+   36.15893944116,
+   -115.13487939789
+  ],
+  "p": "rooftop"
+ },
+ "1333 W Charleston Blvd, Las Vegas, NV ": {
+  "pt": [
+   36.15893944116,
+   -115.13487939789
+  ],
+  "p": "rooftop"
+ },
+ "2524 Cracked Stone St, Henderson, NV ": {
+  "pt": [
+   35.936384967502,
+   -115.136111053942
+  ],
+  "p": "rooftop"
+ },
+ "2522 Cracked Stone St, Henderson, NV ": {
+  "pt": [
+   35.936398959709,
+   -115.136125899184
+  ],
+  "p": "rooftop"
+ },
+ "4352 Tallow Falls Avenue, , NV ": {
+  "pt": [
+   36.013101675538,
+   -115.197864578076
+  ],
+  "p": "rooftop"
+ },
+ "null, , NV ": {
+  "pt": [
+   36.1718605,
+   -115.2630975
+  ],
+  "p": "street"
+ },
+ "320 WINSOME AVE, , NV ": {
+  "pt": [
+   36.2531865,
+   -115.1359455
+  ],
+  "p": "street"
+ },
+ "309 LYNNVIEW AVE, , NV ": {
+  "pt": [
+   36.2520813,
+   -115.1359114
+  ],
+  "p": "street"
+ },
+ "308 WINSOME AVE, , NV ": {
+  "pt": [
+   36.2531865,
+   -115.1359455
+  ],
+  "p": "street"
+ },
+ "316 WINSOME AVE, , NV ": {
+  "pt": [
+   36.2531865,
+   -115.1359455
+  ],
+  "p": "street"
+ },
+ "313 WINSOME AVE, , NV ": {
+  "pt": [
+   36.2531865,
+   -115.1359455
+  ],
+  "p": "street"
+ },
+ "8575 Balfour Meadows Avenue, , NV ": {
+  "pt": [
+   36.0233633,
+   -115.2772212
+  ],
+  "p": "street"
+ },
+ "8574 W. Agate Avenue, , NV ": {
+  "pt": [
+   36.0248459,
+   -115.1791106
+  ],
+  "p": "street"
+ },
+ "8568 W. Agate Avenue, , NV ": {
+  "pt": [
+   36.0246868,
+   -115.1753693
+  ],
+  "p": "street"
+ },
+ "8587 Balfour Meadows Avenue, , NV ": {
+  "pt": [
+   36.0233633,
+   -115.2772212
+  ],
+  "p": "street"
+ },
+ "8588 Balfour Meadows Avenue, , NV ": {
+  "pt": [
+   36.0233633,
+   -115.2772212
+  ],
+  "p": "street"
+ },
+ "8789 GRABILL SPRUCE ST, , NV ": null,
+ "8821 VANHOY CREEK ST, , NV ": {
+  "pt": [
+   36.3150642,
+   -115.3296506
+  ],
+  "p": "street"
+ },
+ "8825 VANHOY CREEK ST, , NV ": {
+  "pt": [
+   36.3150642,
+   -115.3296506
+  ],
+  "p": "street"
+ },
+ "8813 VANHOY CREEK ST, , NV ": {
+  "pt": [
+   36.3150642,
+   -115.3296506
+  ],
+  "p": "street"
+ },
+ "8129 VANHOY CREEK ST, , NV ": {
+  "pt": [
+   36.3150642,
+   -115.3296506
+  ],
+  "p": "street"
+ },
+ "8160 VANHOY CREEK ST, , NV ": {
+  "pt": [
+   36.3150642,
+   -115.3296506
+  ],
+  "p": "street"
+ },
+ "10728 Barcroft Ave, , NV 10728": {
+  "pt": [
+   36.3195731,
+   -115.3296208
+  ],
+  "p": "street"
+ },
+ "10716 Barcroft Ave, , NV 10716": {
+  "pt": [
+   36.3195731,
+   -115.3296208
+  ],
+  "p": "street"
+ },
+ "9089 Damson Street, , NV ": {
+  "pt": [
+   36.3196573,
+   -115.3299695
+  ],
+  "p": "street"
+ },
+ "10713 Barcroft Ave, , NV 10713": {
+  "pt": [
+   36.3195731,
+   -115.3296208
+  ],
+  "p": "street"
+ },
+ "9041 Damson Street, , NV ": {
+  "pt": [
+   36.3196573,
+   -115.3299695
+  ],
+  "p": "street"
+ },
+ "9045 Damson Street, , NV ": {
+  "pt": [
+   36.3196573,
+   -115.3299695
+  ],
+  "p": "street"
+ },
+ "10748 Birch Meadows Ave, , NV 10748": {
+  "pt": [
+   36.3156286,
+   -115.3308167
+  ],
+  "p": "street"
+ },
+ "10740 Birch Meadows Ave, , NV 10740": {
+  "pt": [
+   36.3156286,
+   -115.3308167
+  ],
+  "p": "street"
+ },
+ "10757 Birch Meadows Ave, , NV 10757": {
+  "pt": [
+   36.3156286,
+   -115.3308167
+  ],
+  "p": "street"
+ },
+ "10741 Birch Meadows Ave, , NV 10741": {
+  "pt": [
+   36.3156286,
+   -115.3308167
+  ],
+  "p": "street"
+ },
+ "10756 Birch Meadows Ave, , NV 10756": {
+  "pt": [
+   36.3156286,
+   -115.3308167
+  ],
+  "p": "street"
+ },
+ "10733 Birch Meadows Ave, , NV 10733": {
+  "pt": [
+   36.3156286,
+   -115.3308167
+  ],
+  "p": "street"
+ },
+ "10732 Birch Meadows Ave, , NV 10732": {
+  "pt": [
+   36.3156286,
+   -115.3308167
+  ],
+  "p": "street"
+ },
+ "9836 Saxton Peak Avenue, , NV ": {
+  "pt": [
+   36.0129496,
+   -115.3083903
+  ],
+  "p": "street"
+ },
+ "9824 Saxton Peak Avenue, , NV ": {
+  "pt": [
+   36.0129496,
+   -115.3083903
+  ],
+  "p": "street"
+ },
+ "9878 Saxton Peak Avenue, , NV ": {
+  "pt": [
+   36.0129496,
+   -115.3083903
+  ],
+  "p": "street"
+ },
+ "9848 Saxton Peak Avenue, , NV ": {
+  "pt": [
+   36.0129496,
+   -115.3083903
+  ],
+  "p": "street"
+ },
+ "9866 Saxton Peak Avenue, , NV ": {
+  "pt": [
+   36.0129496,
+   -115.3083903
+  ],
+  "p": "street"
+ },
+ "839 ATLEIGH AVE, , NV ": {
+  "pt": [
+   36.0741803,
+   -115.0266728
+  ],
+  "p": "street"
+ },
+ "841 ATLEIGH AVE, , NV ": {
+  "pt": [
+   36.0741803,
+   -115.0266728
+  ],
+  "p": "street"
+ },
+ "835 ATLEIGH AVE, , NV ": {
+  "pt": [
+   36.0741803,
+   -115.0266728
+  ],
+  "p": "street"
+ },
+ "849 ATLEIGH AVE, , NV ": {
+  "pt": [
+   36.0741803,
+   -115.0266728
+  ],
+  "p": "street"
+ },
+ "843 ATLEIGH AVE, , NV ": {
+  "pt": [
+   36.0741803,
+   -115.0266728
+  ],
+  "p": "street"
+ },
+ "1206 Sun Parakeet Dr, , NV ": {
+  "pt": [
+   36.0845296,
+   -115.0101914
+  ],
+  "p": "street"
+ },
+ "1202 Sun Parakeet Dr, , NV ": {
+  "pt": [
+   36.0845296,
+   -115.0101914
+  ],
+  "p": "street"
+ },
+ "1204 Sun Parakeet Dr, , NV ": {
+  "pt": [
+   36.0845296,
+   -115.0101914
+  ],
+  "p": "street"
+ },
+ "1038 Peacock Plume St, , NV ": {
+  "pt": [
+   36.0800658,
+   -115.0099678
+  ],
+  "p": "street"
+ },
+ "1040 Peacock Plume St, , NV ": {
+  "pt": [
+   36.0800658,
+   -115.0099678
+  ],
+  "p": "street"
+ },
+ "566 Ivory Peacock Ct, , NV ": {
+  "pt": [
+   36.0792929,
+   -115.0103729
+  ],
+  "p": "street"
+ },
+ "10355 Roma Moonlight St, , NV 10355": {
+  "pt": [
+   36.001691,
+   -115.1872457
+  ],
+  "p": "street"
+ },
+ "10319 Roma Moonlight St, , NV 10319": {
+  "pt": [
+   36.001691,
+   -115.1872457
+  ],
+  "p": "street"
+ },
+ "10349 Roma Moonlight St, , NV 10349": {
+  "pt": [
+   36.001691,
+   -115.1872457
+  ],
+  "p": "street"
+ },
+ "11848 MIMICKING SONG LN, Las Vegas, NV 11848": {
+  "pt": [
+   36.2024972,
+   -115.3546677
+  ],
+  "p": "street"
+ },
+ "1552 Luca Mountain Ln, Henderson, NV ": {
+  "pt": [
+   36.0983578,
+   -114.9157413
+  ],
+  "p": "street"
+ },
+ "1513 CAPRI CASCADES CT, Henderson, NV ": null,
+ "317 Sam Way, Mesquite, NV ": {
+  "pt": [
+   36.7978599,
+   -114.1017473
+  ],
+  "p": "street"
+ },
+ "327 Sam Way, Mesquite, NV ": {
+  "pt": [
+   36.7978599,
+   -114.1017473
+  ],
+  "p": "street"
+ },
+ "11817 MIMICKING SONG LN, Las Vegas, NV 11817": {
+  "pt": [
+   36.2023006,
+   -115.3537921
+  ],
+  "p": "street"
+ },
+ "1670 Capri Falls Ct, Henderson, NV ": {
+  "pt": [
+   36.1001222,
+   -114.9208015
+  ],
+  "p": "street"
+ },
+ "1597 PIAZZA PARADISO LN, Henderson, NV ": null,
+ "1662 Portofino Falls Pl, Henderson, NV ": {
+  "pt": [
+   36.09929,
+   -114.915417
+  ],
+  "p": "street"
+ },
+ "9620 WILD ROCK COURT, Las Vegas, NV ": null,
+ "1658 Portofino Falls Pl, Henderson, NV ": {
+  "pt": [
+   36.09929,
+   -114.915417
+  ],
+  "p": "street"
+ },
+ "9951 KIMURA HILLS AVE, Las Vegas, NV ": {
+  "pt": [
+   36.2215396,
+   -115.3120047
+  ],
+  "p": "street"
+ },
+ "9781 SUNSET CANYON AVENUE, Las Vegas, NV ": null,
+ "10904 LEWIS POINTE AVE, Las Vegas, NV 10904": {
+  "pt": [
+   36.274241,
+   -115.3356361
+  ],
+  "p": "street"
+ },
+ "1468 Bianca Falls Dr, Henderson, NV ": {
+  "pt": [
+   36.0985027,
+   -114.9180499
+  ],
+  "p": "street"
+ },
+ "9612 WILD ROCK COURT, Las Vegas, NV ": null,
+ "1663 Capri Falls Ct, Henderson, NV ": {
+  "pt": [
+   36.1001222,
+   -114.9208015
+  ],
+  "p": "street"
+ },
+ "167 COLONY SQUARE WAY, Henderson, NV ": {
+  "pt": [
+   36.0506784,
+   -114.9767685
+  ],
+  "p": "street"
+ },
+ "10910 LEWIS POINTE AVE, Las Vegas, NV 10910": {
+  "pt": [
+   36.274241,
+   -115.3356361
+  ],
+  "p": "street"
+ },
+ "1480 Bianca Falls Dr, Henderson, NV ": {
+  "pt": [
+   36.0985027,
+   -114.9180499
+  ],
+  "p": "street"
+ },
+ "193 SUNNYVALE SPRING ST, Las Vegas, NV ": {
+  "pt": [
+   36.1802685,
+   -115.3710674
+  ],
+  "p": "street"
+ },
+ "1485 GREAT SNIPE AVE, Las Vegas, NV ": {
+  "pt": [
+   36.1971831,
+   -115.355578
+  ],
+  "p": "street"
+ },
+ "8131 GUSTY BROOK STREET, Las Vegas, NV ": null,
+ "2688 SUNRISE MIST PL, Henderson, NV ": {
+  "pt": [
+   35.9320724,
+   -115.146836
+  ],
+  "p": "street"
+ },
+ "1533 CAPRI CASCADES CT, Henderson, NV ": null,
+ "12428 BREEZY BLUFF AVE, Las Vegas, NV 12428": {
+  "pt": [
+   36.1809075,
+   -115.370637
+  ],
+  "p": "street"
+ },
+ "1542 DOLCE VENTO PL, Henderson, NV ": null,
+ "1655 Portofino Falls Pl, Henderson, NV ": {
+  "pt": [
+   36.09929,
+   -114.915417
+  ],
+  "p": "street"
+ },
+ "9568 SAGEBRUSH GROVE STREET, Las Vegas, NV ": null,
+ "9572 SAGEBRUSH GROVE STREET, Las Vegas, NV ": null,
+ "12412 BREEZY BLUFF AVE, Las Vegas, NV 12412": {
+  "pt": [
+   36.1805797,
+   -115.3701255
+  ],
+  "p": "street"
+ },
+ "189 STARDUST GROVE AVE, North Las Vegas, NV ": null,
+ "3399 DANCING WATERS ST, Las Vegas, NV ": {
+  "pt": [
+   36.2210536,
+   -115.3128292
+  ],
+  "p": "street"
+ },
+ "1467 SORA RAIL ST, Las Vegas, NV ": {
+  "pt": [
+   36.1969958,
+   -115.3544256
+  ],
+  "p": "street"
+ },
+ "1465 Bianca Falls Dr, Henderson, NV ": {
+  "pt": [
+   36.0985027,
+   -114.9180499
+  ],
+  "p": "street"
+ },
+ "10502 DIANA SUMMIT ST, Las Vegas, NV 10502": {
+  "pt": [
+   36.3333497,
+   -115.2981498
+  ],
+  "p": "street"
+ },
+ "304 CRESCENT GLOW LN, Henderson, NV ": {
+  "pt": [
+   36.0520945,
+   -114.9766005
+  ],
+  "p": "street"
+ },
+ "9571 AGAVE GROVE COURT, Las Vegas, NV ": null,
+ "9563 AGAVE GROVE COURT, Las Vegas, NV ": null,
+ "9619 WILD ROCK COURT, Las Vegas, NV ": null,
+ "1504 GREAT SNIPE AVE, Las Vegas, NV ": {
+  "pt": [
+   36.197628,
+   -115.3553127
+  ],
+  "p": "street"
+ },
+ "139 ANSLEY PARK DR, Henderson, NV ": {
+  "pt": [
+   36.0502989,
+   -114.9769292
+  ],
+  "p": "street"
+ },
+ "221 STARDUST GROVE AVE, , NV ": null,
+ "6383 Zephyr Peak Ct., , NV ": null,
+ "9261 Fountain Creek Ct., , NV ": {
+  "pt": [
+   36.0209877,
+   -115.2114873
+  ],
+  "p": "street"
+ },
+ "4288 Sunset Chaser Court, Las Vegas, NV 89147": null,
+ "4294 Sunset Chaser Court, Las Vegas, NV 89147": null,
+ "12050 Natural Haven Ave, Las Vegas, NV 12050": {
+  "pt": [
+   36.1920238,
+   -115.3591894
+  ],
+  "p": "street"
+ },
+ "10205 GARNET BEND PLACE, , NV 10205": {
+  "pt": [
+   36.3335601,
+   -115.3091093
+  ],
+  "p": "street"
+ },
+ "9725 SANGRIA SUNRISE AVENUE, , NV ": {
+  "pt": [
+   36.3350873,
+   -115.3107628
+  ],
+  "p": "street"
+ },
+ "10057 SANGRIA SUNRISE AVE, , NV 10057": {
+  "pt": [
+   36.3350873,
+   -115.3107628
+  ],
+  "p": "street"
+ },
+ "128 Las Manaitas Ave Ut 301, , NV ": null,
+ "132 Las Manaitas Ave, Las Vegas, NV ": {
+  "pt": [
+   36.1739962,
+   -115.2953582
+  ],
+  "p": "street"
+ },
+ "738 Emerald Gates Ave, Las Vegas, NV ": {
+  "pt": [
+   36.2851737,
+   -115.2219185
+  ],
+  "p": "street"
+ },
+ "713 Gilded Horizon Ave, Las Vegas, NV ": {
+  "pt": [
+   36.2867506,
+   -115.2212838
+  ],
+  "p": "street"
+ },
+ "6932 Silver Palace St, , NV ": {
+  "pt": [
+   36.2875483,
+   -115.2205051
+  ],
+  "p": "street"
+ },
+ "121 Serene Creek St, Las Vegas, NV ": {
+  "pt": [
+   36.2874127,
+   -115.2236651
+  ],
+  "p": "street"
+ },
+ "917 Kings Bluff Ave, Las Vegas, NV ": {
+  "pt": [
+   36.2897829,
+   -115.2217848
+  ],
+  "p": "street"
+ },
+ "51 Serene Creek St, Las Vegas, NV ": {
+  "pt": [
+   36.2874127,
+   -115.2236651
+  ],
+  "p": "street"
+ },
+ "923 Kings Bluff Ave, Las Vegas, NV ": {
+  "pt": [
+   36.2897829,
+   -115.2217848
+  ],
+  "p": "street"
+ },
+ "912 Topaz Ledge Ct, Las Vegas, NV ": {
+  "pt": [
+   36.2882112,
+   -115.2229391
+  ],
+  "p": "street"
+ },
+ "9 Serene Creek St, Las Vegas, NV ": {
+  "pt": [
+   36.2874127,
+   -115.2236651
+  ],
+  "p": "street"
+ },
+ "893 Shady Ridge Dr, Las Vegas, NV ": null,
+ "1519 Morning Leap Ct, Las Vegas, NV ": {
+  "pt": [
+   36.1991827,
+   -115.3489542
+  ],
+  "p": "street"
+ },
+ "1612 Stone Agave St, Las Vegas, NV ": null,
+ "1583 Stone Agave St, Las Vegas, NV ": null,
+ "1525 Morning Leap Ct, Las Vegas, NV ": {
+  "pt": [
+   36.1991827,
+   -115.3489542
+  ],
+  "p": "street"
+ },
+ "1588 Stone Agave St, Las Vegas, NV ": null,
+ "654 Talon Ridge St, Las Vegas, NV ": {
+  "pt": [
+   36.1895066,
+   -115.3546364
+  ],
+  "p": "street"
+ },
+ "635 Talon Ridge St, Las Vegas, NV ": {
+  "pt": [
+   36.1891428,
+   -115.3549637
+  ],
+  "p": "street"
+ },
+ "643 Talon Ridge St, Las Vegas, NV ": {
+  "pt": [
+   36.1892942,
+   -115.3549435
+  ],
+  "p": "street"
+ },
+ "642 Talon Ridge St, Las Vegas, NV ": {
+  "pt": [
+   36.1892529,
+   -115.354673
+  ],
+  "p": "street"
+ },
+ "172 Royal Topaz Ct, Las Vegas, NV ": null,
+ "8545 Hidden Arroyo Ct, Las Vegas, NV ": null,
+ "29 Talon Heights St, Las Vegas, NV ": {
+  "pt": [
+   36.1869808,
+   -115.3686886
+  ],
+  "p": "street"
+ },
+ "229 Grange Creek Ln, Las Vegas, NV ": {
+  "pt": [
+   36.1854945,
+   -115.3672211
+  ],
+  "p": "street"
+ },
+ "12212 Evening Summit Ave, , NV 12212": {
+  "pt": [
+   36.1877969,
+   -115.3658805
+  ],
+  "p": "street"
+ },
+ "53 Talon Heights St, Las Vegas, NV ": {
+  "pt": [
+   36.1869808,
+   -115.3686886
+  ],
+  "p": "street"
+ },
+ "12417 Serenity Rock Ave, Las Vegas, NV 12417": {
+  "pt": [
+   36.1852754,
+   -115.3697786
+  ],
+  "p": "street"
+ },
+ "12557 Crested Mesa Ln, Las Vegas, NV 12557": {
+  "pt": [
+   36.191489,
+   -115.3759532
+  ],
+  "p": "street"
+ },
+ "12568 Crested Mesa Ln, Las Vegas, NV 12568": {
+  "pt": [
+   36.1920697,
+   -115.373436
+  ],
+  "p": "street"
+ },
+ "395 Sul Lago St, Henderson, NV ": null,
+ "241 La Stella St, Henderson, NV ": null,
+ "25 Cracked Stone St, , NV ": {
+  "pt": [
+   35.9363658,
+   -115.1362
+  ],
+  "p": "street"
+ },
+ "524 Cracked Stone St, , NV ": {
+  "pt": [
+   35.9363658,
+   -115.1362
+  ],
+  "p": "street"
+ },
+ "23 Cracked Stone St, , NV ": {
+  "pt": [
+   35.9363658,
+   -115.1362
+  ],
+  "p": "street"
+ },
+ "522 Cracked Stone St, , NV ": {
+  "pt": [
+   35.9363658,
+   -115.1362
+  ],
+  "p": "street"
+ },
+ "27 Cracked Stone St, , NV ": {
+  "pt": [
+   35.9363658,
+   -115.1362
+  ],
+  "p": "street"
+ },
+ "1500 Honor Line St, Boulder City, NV ": null,
+ "1496 High Salute Ct, Boulder City, NV ": null,
+ "1499 High Salute Ct, Boulder City, NV ": null,
+ "1504 Honor Line St, Boulder City, NV ": null,
+ "301 Las Manaitas Ave, Las Vegas, NV ": {
+  "pt": [
+   36.1739962,
+   -115.2953582
+  ],
+  "p": "street"
+ },
+ "932 Silver Palace St, Las Vegas, NV ": {
+  "pt": [
+   36.2875483,
+   -115.2205051
+  ],
+  "p": "street"
+ },
+ "2212 Evening Summit Ave, Las Vegas, NV ": {
+  "pt": [
+   36.1880493,
+   -115.3667057
+  ],
+  "p": "street"
+ },
+ "225 Cracked Stone St, Henderson, NV ": {
+  "pt": [
+   35.9363658,
+   -115.1362
+  ],
+  "p": "street"
+ },
+ "523 Cracked Stone St, Henderson, NV ": {
+  "pt": [
+   35.9363658,
+   -115.1362
+  ],
+  "p": "street"
+ },
+ "527 Cracked Stone St, Henderson, NV ": {
+  "pt": [
+   35.9363658,
+   -115.1362
+  ],
+  "p": "street"
+ },
+ "12230 Summer Bloom Lane, , NV 12230": {
+  "pt": [
+   36.1983522,
+   -115.3627187
+  ],
+  "p": "street"
+ },
+ "12171 Summer Bloom Lane, , NV 12171": {
+  "pt": [
+   36.1989407,
+   -115.3613789
+  ],
+  "p": "street"
+ },
+ "1543 Lily Hana Place, , NV ": {
+  "pt": [
+   36.1976191,
+   -115.36347
+  ],
+  "p": "street"
+ },
+ "1549 Lily Hana Place, , NV ": {
+  "pt": [
+   36.1977023,
+   -115.3635795
+  ],
+  "p": "street"
+ },
+ "9912 Juniper Valley Street, , NV ": {
+  "pt": [
+   36.328702,
+   -115.3221349
+  ],
+  "p": "street"
+ },
+ "10456 Mountain Aster Avenue, , NV 10456": {
+  "pt": [
+   36.3296586,
+   -115.3229084
+  ],
+  "p": "street"
+ },
+ "10473 Mountain Aster Avenue, , NV 10473": {
+  "pt": [
+   36.3296586,
+   -115.3229084
+  ],
+  "p": "street"
+ },
+ "10457 Mountain Aster Avenue, , NV 10457": {
+  "pt": [
+   36.3296586,
+   -115.3229084
+  ],
+  "p": "street"
+ },
+ "10440 Desert Peony Avenue, , NV 10440": {
+  "pt": [
+   36.3280088,
+   -115.3228798
+  ],
+  "p": "street"
+ },
+ "10489 Desert Peony Avenue, , NV 10489": {
+  "pt": [
+   36.3280088,
+   -115.3228798
+  ],
+  "p": "street"
+ },
+ "10481 Prickly Poppy Avenue, , NV 10481": {
+  "pt": [
+   36.3274637,
+   -115.3229509
+  ],
+  "p": "street"
+ },
+ "10456 Smokey Mariposa Avenue, , NV 10456": {
+  "pt": [
+   36.3302248,
+   -115.3227382
+  ],
+  "p": "street"
+ },
+ "9928 Juniper Valley Street, , NV ": {
+  "pt": [
+   36.328702,
+   -115.3221349
+  ],
+  "p": "street"
+ },
+ "27 Sumter Ridge Street, , NV ": {
+  "pt": [
+   36.1842552,
+   -115.370511
+  ],
+  "p": "street"
+ },
+ "50 Pickett Grove Street, , NV ": {
+  "pt": [
+   36.1838393,
+   -115.3713554
+  ],
+  "p": "street"
+ },
+ "35 Sumter Ridge Street, , NV ": {
+  "pt": [
+   36.1841625,
+   -115.3706503
+  ],
+  "p": "street"
+ },
+ "43 Sumter Ridge Street, , NV ": {
+  "pt": [
+   36.1839819,
+   -115.3707579
+  ],
+  "p": "street"
+ },
+ "50 Sumter Ridge Street, , NV ": {
+  "pt": [
+   36.1837709,
+   -115.370271
+  ],
+  "p": "street"
+ },
+ "42 Sumter Ridge Street, , NV ": {
+  "pt": [
+   36.1838951,
+   -115.3701694
+  ],
+  "p": "street"
+ },
+ "12485 Overland Cove Avenue, , NV 12485": {
+  "pt": [
+   36.1826217,
+   -115.3722017
+  ],
+  "p": "street"
+ },
+ "10449 Heavenly Mountain Court, , NV 10449": {
+  "pt": [
+   36.3237144,
+   -115.3238388
+  ],
+  "p": "street"
+ },
+ "10518 Radley Avenue, , NV 10518": {
+  "pt": [
+   36.3230686,
+   -115.3213784
+  ],
+  "p": "street"
+ },
+ "10542 Radley Avenue, , NV 10542": {
+  "pt": [
+   36.3230686,
+   -115.3213784
+  ],
+  "p": "street"
+ },
+ "9263 Harworth Street, , NV ": {
+  "pt": [
+   36.3221776,
+   -115.3238495
+  ],
+  "p": "street"
+ },
+ "9245 Harworth Street, , NV ": {
+  "pt": [
+   36.3221776,
+   -115.3238495
+  ],
+  "p": "street"
+ },
+ "9269 Harworth Street, , NV ": {
+  "pt": [
+   36.3221776,
+   -115.3238495
+  ],
+  "p": "street"
+ },
+ "9228 Harworth Street, , NV ": {
+  "pt": [
+   36.3221776,
+   -115.3238495
+  ],
+  "p": "street"
+ },
+ "9240 Harworth Street, , NV ": {
+  "pt": [
+   36.3221776,
+   -115.3238495
+  ],
+  "p": "street"
+ },
+ "9246 Harworth Street, , NV ": {
+  "pt": [
+   36.3221776,
+   -115.3238495
+  ],
+  "p": "street"
+ },
+ "9264 Harworth Street, , NV ": {
+  "pt": [
+   36.3221776,
+   -115.3238495
+  ],
+  "p": "street"
+ },
+ "9270 Harworth Street, , NV ": {
+  "pt": [
+   36.3221776,
+   -115.3238495
+  ],
+  "p": "street"
+ },
+ "9251 Harworth Street, , NV ": {
+  "pt": [
+   36.3221776,
+   -115.3238495
+  ],
+  "p": "street"
+ },
+ "9257 Harworth Street, , NV ": {
+  "pt": [
+   36.3221776,
+   -115.3238495
+  ],
+  "p": "street"
+ },
+ "9275 Harworth Street, , NV ": {
+  "pt": [
+   36.3221776,
+   -115.3238495
+  ],
+  "p": "street"
+ },
+ "46 Villa Cora Lane, , NV ": null,
+ "62 Bellissima Lago Court, , NV ": null,
+ "37 Villa Cora Lane, , NV ": null,
+ "49 Villa Cora Lane, , NV ": null,
+ "45 La Cova Way, , NV ": {
+  "pt": [
+   36.113035,
+   -114.9156942
+  ],
+  "p": "street"
+ },
+ "61 Bellissima Lago Court, , NV ": null,
+ "171 Inland Shores Lane, , NV ": null,
+ "163 Sailing Sunset Way, , NV ": null,
+ "167 Sailing Sunset Way, , NV ": null,
+ "160 Sailing Sunset Way, , NV ": null,
+ "164 Sailing Sunset Way, , NV ": null,
+ "172 Inland Shores Lane, , NV ": null,
+ "215 Sailing Sunset Way, , NV ": null,
+ "159 Sailing Sunset Way, , NV ": null,
+ "155 Sailing Sunset Way, , NV ": null,
+ "4269 Park Edge Court, , NV ": {
+  "pt": [
+   36.0127655,
+   -115.1970737
+  ],
+  "p": "street"
  }
 }
